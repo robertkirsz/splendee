@@ -122,7 +122,7 @@ const cards = [
   new Card({ id: 86, level: 3, color: 'red',   value: 3, cost: { white: 3, blue: 5, green: 3, red: 0, black: 3 } }),
   new Card({ id: 87, level: 3, color: 'red',   value: 4, cost: { white: 0, blue: 0, green: 7, red: 0, black: 0 } }),
   new Card({ id: 88, level: 3, color: 'red',   value: 4, cost: { white: 0, blue: 3, green: 6, red: 3, black: 0 } }),
-  new Card({ id: 89, level: 3, color: 'red',   value: 5, cost: { white: 0, blue: 0, green: 7, red: 3, black: 0 } }),
+  new Card({ id: 89, level: 3, color: 'red',   value: 5, cost: { white: 0, blue: 0, green: 7, red: 3, black: 0 } })
 ]
 
 export default cards
