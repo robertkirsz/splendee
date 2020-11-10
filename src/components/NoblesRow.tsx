@@ -17,6 +17,7 @@ function NobleCard({ value, cost }: NobleInterface) {
         background="rgba(255, 255, 255, 0.5)"
       >
         <span>{value}</span>
+
         <Div columnTop={4}>
           {cost.black > 0 && <Cost color="black">{cost.black}</Cost>}
           {cost.red > 0 && <Cost color="red">{cost.red}</Cost>}
@@ -30,19 +31,28 @@ function NobleCard({ value, cost }: NobleInterface) {
 }
 
 const Card = styled.div`
-  display: flex;
   flex: none;
-  border-radius: 8px;
+
+  display: flex;
+
   width: 110px;
   height: 130px;
-  border: 1px solid;
+
   background: #ccc;
+  border: 1px solid;
+  border-radius: 8px;
 `
 
 const Cost = styled.span<{ color: CardColorsType }>`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 18px;
+
   background: ${({ color }) => color};
-  padding: 3px 4px;
   border-radius: 4px;
+
   color: white;
   font-weight: bold;
   -webkit-text-stroke: 1px black;
@@ -52,7 +62,7 @@ export default function NoblesRow() {
   return (
     <Div listLeft>
       {nobles.map((noble) => (
-        <NobleCard {...noble} />
+        <NobleCard key={noble.id} {...noble} />
       ))}
     </Div>
   )

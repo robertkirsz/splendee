@@ -6,58 +6,76 @@ import Div from 'styled-kit/Div'
 import { CardColorsType } from '../types'
 import cards, { CardInterface } from '../cards'
 
-function Card({ value, cost }: CardInterface) {
+function Card({ value, cost, color }: CardInterface) {
   return (
-    <StyledCard>
-      <Div
-        column
-        itemsCenter
-        justifyBetween
-        padding={8}
-        background="rgba(255, 255, 255, 0.5)"
-      >
-        <span>{value > 0 ? value : ''}</span>
-        <Div columnTop={4}>
-          {cost.black > 0 && <Cost color="black">{cost.black}</Cost>}
-          {cost.red > 0 && <Cost color="red">{cost.red}</Cost>}
-          {cost.green > 0 && <Cost color="green">{cost.green}</Cost>}
-          {cost.blue > 0 && <Cost color="blue">{cost.blue}</Cost>}
-          {cost.white > 0 && <Cost color="white">{cost.white}</Cost>}
-        </Div>
+    <StyledCard column justifyBetween cardColor={color}>
+      <Div height={40} padding={8} background="rgba(255, 255, 255, 0.5)">
+        {value > 0 ? value : ''}
+      </Div>
+
+      <Div columnTop={2} padding={8}>
+        {cost.white > 0 && <Cost color="white">{cost.white}</Cost>}
+        {cost.blue > 0 && <Cost color="blue">{cost.blue}</Cost>}
+        {cost.green > 0 && <Cost color="green">{cost.green}</Cost>}
+        {cost.red > 0 && <Cost color="red">{cost.red}</Cost>}
+        {cost.black > 0 && <Cost color="black">{cost.black}</Cost>}
       </Div>
     </StyledCard>
   )
 }
 
-const StyledCard = styled.div`
-  display: flex;
+const StyledCard = styled(Div)<{ cardColor: CardColorsType }>`
   flex: none;
-  border-radius: 8px;
+
   width: 120px;
-  height: 150px;
+  height: 170px;
+
+  background: ${({ cardColor }) => cardColor};
   border: 1px solid;
-  background: #ccc;
+  border-radius: 8px;
 `
 
 const Cost = styled.span<{ color: CardColorsType }>`
   display: flex;
   justify-content: center;
   align-items: center;
-  background: ${({ color }) => color};
+
   width: 25px;
   height: 25px;
+
+  background: ${({ color }) => color};
+  border: 1px solid white;
   border-radius: 50%;
+
   color: white;
   font-weight: bold;
   -webkit-text-stroke: 1px black;
 `
 
 export default function CardsBoard() {
+  const level1Cards = cards.filter((card) => card.level === 1)
+  const level2Cards = cards.filter((card) => card.level === 2)
+  const level3Cards = cards.filter((card) => card.level === 3)
+
   return (
-    <Div listLeft overflow="auto">
-      {cards.map((card) => (
-        <Card {...card} />
-      ))}
+    <Div columnTop>
+      <Div listLeft overflow="auto">
+        {level1Cards.map((card) => (
+          <Card key={card.id} {...card} />
+        ))}
+      </Div>
+
+      <Div listLeft overflow="auto">
+        {level2Cards.map((card) => (
+          <Card key={card.id} {...card} />
+        ))}
+      </Div>
+
+      <Div listLeft overflow="auto">
+        {level3Cards.map((card) => (
+          <Card key={card.id} {...card} />
+        ))}
+      </Div>
     </Div>
   )
 }
