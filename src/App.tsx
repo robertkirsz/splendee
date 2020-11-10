@@ -1,16 +1,17 @@
 import React from 'react'
+// @ts-ignore
+import Div from 'styled-kit/Div'
+
 import GemsBank from './components/GemsBank'
 import NoblesRow from './components/NoblesRow'
 import CardsBoard from './components/CardsBoard'
 
-function App() {
+export default function App() {
   return (
-    <div>
+    <Div columnTop>
       <GemsBank />
       <NoblesRow />
       <CardsBoard />
-    </div>
+    </Div>
   )
 }
-
-export default App

@@ -9,7 +9,7 @@ interface CostInterface {
   black: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
 }
 
-interface CardInterface {
+export interface CardInterface {
   id: number
   level: 1 | 2 | 3
   value: 0 | 1 | 2 | 3 | 4 | 5
