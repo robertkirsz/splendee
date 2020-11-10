@@ -1,4 +1,4 @@
-import { CardColorsType } from './types'
+import { CardColorsType } from '../types'
 
 // prettier-ignore
 interface CostInterface {

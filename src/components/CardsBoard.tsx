@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import Div from 'styled-kit/Div'
 
 import { CardColorsType } from '../types'
-import cards, { CardInterface } from '../cards'
+import cards, { CardInterface } from '../tokens/cards'
 
 function Card({ value, cost, color }: CardInterface) {
   return (

@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import Div from 'styled-kit/Div'
 
 import { CardColorsType } from '../types'
-import nobles, { NobleInterface } from '../nobles'
+import nobles, { NobleInterface } from '../tokens/nobles'
 
 function NobleCard({ value, cost }: NobleInterface) {
   return (
