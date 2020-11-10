@@ -7,7 +7,7 @@ interface CostInterface {
   black: 0 | 3 | 4
 }
 
-interface NobleInterface {
+export interface NobleInterface {
   id: number
   value: 3
   cost: CostInterface
