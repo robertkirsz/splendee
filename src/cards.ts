@@ -1,3 +1,5 @@
+import { CardColorsType } from './types'
+
 // prettier-ignore
 interface CostInterface {
   red:   0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
@@ -11,7 +13,7 @@ interface CardInterface {
   id: number
   level: 1 | 2 | 3
   value: 0 | 1 | 2 | 3 | 4 | 5
-  color: 'red' | 'green' | 'blue' | 'white' | 'black'
+  color: CardColorsType
   cost: CostInterface
 }
 
