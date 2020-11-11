@@ -81,11 +81,12 @@ export default function CardsBoard() {
   return (
     <Div columnTop>
       {uniqueCardLevels.map(level => (
-        <Div key={level} listLeft overflow="auto">
+        <Div key={level} listLeft>
           <CardsStack level={level} />
 
           {cards
             .filter(card => card.level === level)
+            .slice(0, 4)
             .map(card => (
               <Card key={card.id} {...card} />
             ))}

@@ -13,6 +13,7 @@ function PlayerPanel() {
       <button onClick={() => (game.isRunning ? game.stop() : game.start())}>
         {game.isRunning ? 'Stop' : 'Start'} game
       </button>
+
       <span>Game ID: {game.id}</span>
     </Div>
   )

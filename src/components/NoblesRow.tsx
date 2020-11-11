@@ -62,7 +62,7 @@ export default function NoblesRow() {
   const { nobles } = useContext(gameStore)
 
   return (
-    <Div listLeft>
+    <Div listLeft selfCenter>
       {nobles.map(noble => (
         <Noble key={noble.id} {...noble} />
       ))}

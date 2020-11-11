@@ -10,8 +10,8 @@ export default function GemsBank() {
   const gemColors = Object.keys(gems) as GemColorsType[]
 
   return (
-    <Div listLeft>
-      {gemColors.map((color) => (
+    <Div columnTop selfCenter>
+      {gemColors.map(color => (
         <GemContainer key={color} color={color}>
           {gems[color]}
         </GemContainer>

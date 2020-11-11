@@ -9,11 +9,13 @@ import PlayerPanel from 'components/PlayerPanel'
 
 export default function App() {
   return (
-    <Div columnTop>
+    <Div listLeft>
+      <Div columnTop>
+        <NoblesRow />
+        <CardsBoard />
+        <PlayerPanel />
+      </Div>
       <GemsBank />
-      <NoblesRow />
-      <CardsBoard />
-      <PlayerPanel />
     </Div>
   )
 }
