@@ -10,6 +10,8 @@ import getNobles from 'tokens/nobles'
 class Game {
   id: string
   isRunning: boolean
+  currentRound: number
+  activePlayerId: string
   nobles: NobleInterface[]
   cards: CardInterface[]
   players: PlayerInterface[]
@@ -18,6 +20,8 @@ class Game {
     makeObservable(this, {
       id: observable,
       isRunning: observable,
+      currentRound: observable,
+      activePlayerId: observable,
       nobles: observable,
       cards: observable,
       players: observable,
@@ -27,10 +31,34 @@ class Game {
     })
 
     this.id = uuidv4()
-    this.players = []
+    this.players = [
+      {
+        id: '0',
+        name: 'Robert',
+        currentRound: 0,
+        score: 0,
+        gems: { red: 0, green: 0, blue: 0, white: 0, black: 0, gold: 0 },
+      },
+      {
+        id: '1',
+        name: 'Marzenka',
+        currentRound: 0,
+        score: 0,
+        gems: { red: 0, green: 0, blue: 0, white: 0, black: 0, gold: 0 },
+      },
+      {
+        id: '2',
+        name: 'Kasia',
+        currentRound: 0,
+        score: 0,
+        gems: { red: 0, green: 0, blue: 0, white: 0, black: 0, gold: 0 },
+      },
+    ]
     this.isRunning = false
+    this.currentRound = 1
+    this.activePlayerId = this.players[0].id
     this.cards = _.shuffle(getCards())
-    this.nobles = _.shuffle(getNobles())
+    this.nobles = _.shuffle(getNobles()).slice(0, this.numberOfPlayers + 1)
   }
 
   get numberOfPlayers() {
