@@ -3,8 +3,8 @@ import styled from 'styled-components'
 // @ts-ignore
 import Div from 'styled-kit/Div'
 
-import { CardColorsType } from '../types'
-import nobles, { NobleInterface } from '../tokens/nobles'
+import { CardColorsType } from 'types'
+import nobles, { NobleInterface } from 'tokens/nobles'
 
 function NobleCard({ value, cost }: NobleInterface) {
   return (

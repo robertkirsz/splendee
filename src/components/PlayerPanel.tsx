@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite'
 // @ts-ignore
 import Div from 'styled-kit/Div'
 
-import { gameStore } from '../store'
+import { gameStore } from 'store'
 
 function PlayerPanel() {
   const game = useContext(gameStore)

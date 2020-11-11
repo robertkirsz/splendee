@@ -2,7 +2,7 @@ import { createContext } from 'react'
 import { makeObservable, observable, action, computed } from 'mobx'
 import { v4 as uuidv4 } from 'uuid'
 
-import { GemAmountInterface } from './types'
+import { GemAmountInterface } from 'types'
 
 interface Player {
   id: string

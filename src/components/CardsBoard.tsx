@@ -3,8 +3,8 @@ import styled from 'styled-components'
 // @ts-ignore
 import Div from 'styled-kit/Div'
 
-import { CardColorsType, CardInterface } from '../types'
-import cards from '../tokens/cards'
+import { CardColorsType, CardInterface } from 'types'
+import cards from 'tokens/cards'
 
 function Card({ value, cost, color }: CardInterface) {
   return (

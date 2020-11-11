@@ -3,8 +3,8 @@ import styled from 'styled-components'
 // @ts-ignore
 import Div from 'styled-kit/Div'
 
-import { GemColorsType } from '../types'
-import gems from '../tokens/gems'
+import { GemColorsType } from 'types'
+import gems from 'tokens/gems'
 
 export default function GemsBank() {
   const gemColors = Object.keys(gems) as GemColorsType[]
