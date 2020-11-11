@@ -1,4 +1,6 @@
-const gems = {
+import { GemAmountInterface } from '../types'
+
+const gems: GemAmountInterface = {
   red: 7,
   green: 7,
   blue: 7,

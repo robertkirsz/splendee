@@ -1,21 +1,4 @@
-import { CardColorsType } from '../types'
-
-// prettier-ignore
-interface CostInterface {
-  red:   0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
-  green: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
-  blue:  0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
-  white: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
-  black: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
-}
-
-export interface CardInterface {
-  id: number
-  level: 1 | 2 | 3
-  value: 0 | 1 | 2 | 3 | 4 | 5
-  color: CardColorsType
-  cost: CostInterface
-}
+import { CardInterface } from '../types'
 
 class Card {
   id: CardInterface['id']
