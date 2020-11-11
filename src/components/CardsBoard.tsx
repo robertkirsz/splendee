@@ -1,10 +1,10 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import styled from 'styled-components'
 // @ts-ignore
 import Div from 'styled-kit/Div'
 
 import { CardColorsType, CardInterface } from 'types'
-import cards from 'tokens/cards'
+import { gameStore } from 'store'
 
 function Card({ value, cost, color }: CardInterface) {
   return (
@@ -52,38 +52,7 @@ const Cost = styled.span<{ color: CardColorsType }>`
   -webkit-text-stroke: 1px black;
 `
 
-export default function CardsBoard() {
-  const level1Cards = cards.filter((card) => card.level === 1)
-  const level2Cards = cards.filter((card) => card.level === 2)
-  const level3Cards = cards.filter((card) => card.level === 3)
-
-  return (
-    <Div columnTop>
-      <Div listLeft overflow="auto">
-        <CardStack level={1} />
-        {level1Cards.map((card) => (
-          <Card key={card.id} {...card} />
-        ))}
-      </Div>
-
-      <Div listLeft overflow="auto">
-        <CardStack level={2} />
-        {level2Cards.map((card) => (
-          <Card key={card.id} {...card} />
-        ))}
-      </Div>
-
-      <Div listLeft overflow="auto">
-        <CardStack level={3} />
-        {level3Cards.map((card) => (
-          <Card key={card.id} {...card} />
-        ))}
-      </Div>
-    </Div>
-  )
-}
-
-function CardStack({ level }: { level: CardInterface['level'] }) {
+function CardsStack({ level }: { level: CardInterface['level'] }) {
   return (
     <Div
       flexNone
@@ -97,6 +66,29 @@ function CardStack({ level }: { level: CardInterface['level'] }) {
     >
       {[...Array(level)].map((_, index) => (
         <Div key={index} square={16} circle background="white" />
+      ))}
+    </Div>
+  )
+}
+
+export default function CardsBoard() {
+  const { cards } = useContext(gameStore)
+  const levels = [1, 2, 3] as CardInterface['level'][]
+
+  if (cards.length === 0) return null
+
+  return (
+    <Div columnTop>
+      {levels.map(level => (
+        <Div listLeft overflow="auto">
+          <CardsStack level={level} />
+
+          {cards
+            .filter(card => card.level === level)
+            .map(card => (
+              <Card key={card.id} {...card} />
+            ))}
+        </Div>
       ))}
     </Div>
   )

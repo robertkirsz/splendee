@@ -17,7 +17,7 @@ class Card {
 }
 
 // prettier-ignore
-const cards = [
+const getCards = () => [
   new Card({ id:  0, level: 1, color: 'black', value: 0, cost: { white: 1, blue: 1, green: 1, red: 1, black: 0 } }),
   new Card({ id:  1, level: 1, color: 'black', value: 0, cost: { white: 1, blue: 2, green: 1, red: 1, black: 0 } }),
   new Card({ id:  2, level: 1, color: 'black', value: 0, cost: { white: 2, blue: 2, green: 0, red: 1, black: 0 } }),
@@ -110,4 +110,4 @@ const cards = [
   new Card({ id: 89, level: 3, color: 'red',   value: 5, cost: { white: 0, blue: 0, green: 7, red: 3, black: 0 } })
 ]
 
-export default cards
+export default getCards

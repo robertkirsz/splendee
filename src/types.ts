@@ -1,3 +1,11 @@
+export interface PlayerInterface {
+  id: string
+  name: string
+  currentRound: number
+  score: number
+  gems: GemAmountInterface
+}
+
 export type CardColorsType = 'red' | 'green' | 'blue' | 'white' | 'black'
 
 // prettier-ignore

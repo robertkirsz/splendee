@@ -1,21 +1,16 @@
 import { createContext } from 'react'
 import { makeObservable, observable, action, computed } from 'mobx'
 import { v4 as uuidv4 } from 'uuid'
+import _ from 'lodash'
 
-import { GemAmountInterface } from 'types'
-
-interface Player {
-  id: string
-  name: string
-  currentRound: number
-  score: number
-  gems: GemAmountInterface
-}
+import { PlayerInterface, CardInterface } from 'types'
+import getCards from 'tokens/cards'
 
 class Game {
   id: string
-  players: Player[]
   isRunning: boolean
+  cards: CardInterface[]
+  players: PlayerInterface[]
 
   constructor() {
     makeObservable(this, {
@@ -30,6 +25,7 @@ class Game {
     this.id = uuidv4()
     this.players = []
     this.isRunning = false
+    this.cards = _.shuffle(getCards())
   }
 
   get numberOfPlayers() {
