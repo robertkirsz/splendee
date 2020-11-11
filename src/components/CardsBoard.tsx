@@ -60,22 +60,44 @@ export default function CardsBoard() {
   return (
     <Div columnTop>
       <Div listLeft overflow="auto">
+        <CardStack level={1} />
         {level1Cards.map((card) => (
           <Card key={card.id} {...card} />
         ))}
       </Div>
 
       <Div listLeft overflow="auto">
+        <CardStack level={2} />
         {level2Cards.map((card) => (
           <Card key={card.id} {...card} />
         ))}
       </Div>
 
       <Div listLeft overflow="auto">
+        <CardStack level={3} />
         {level3Cards.map((card) => (
           <Card key={card.id} {...card} />
         ))}
       </Div>
+    </Div>
+  )
+}
+
+function CardStack({ level }: { level: CardInterface['level'] }) {
+  return (
+    <Div
+      flexNone
+      itemsCenter
+      justifyCenter
+      width={120}
+      height={170}
+      background="gray"
+      radius={8}
+      listLeft
+    >
+      {[...Array(level)].map((_, index) => (
+        <Div key={index} square={16} circle background="white" />
+      ))}
     </Div>
   )
 }
