@@ -1,17 +1,4 @@
-// prettier-ignore
-interface CostInterface {
-  red:   0 | 3 | 4
-  green: 0 | 3 | 4
-  blue:  0 | 3 | 4
-  white: 0 | 3 | 4
-  black: 0 | 3 | 4
-}
-
-export interface NobleInterface {
-  id: number
-  value: 3
-  cost: CostInterface
-}
+import { NobleInterface } from 'types'
 
 class Noble {
   id: NobleInterface['id']
@@ -26,7 +13,7 @@ class Noble {
 }
 
 // prettier-ignore
-const nobles = [
+const getNobles = () => [
   new Noble({ id: 0, value: 3, cost: { white: 3, blue: 3, green: 3, red: 0, black: 0 } }),
   new Noble({ id: 1, value: 3, cost: { white: 0, blue: 3, green: 3, red: 3, black: 0 } }),
   new Noble({ id: 2, value: 3, cost: { white: 0, blue: 0, green: 3, red: 3, black: 3 } }),
@@ -39,4 +26,4 @@ const nobles = [
   new Noble({ id: 9, value: 3, cost: { white: 4, blue: 0, green: 0, red: 0, black: 4 } })
 ]
 
-export default nobles
+export default getNobles

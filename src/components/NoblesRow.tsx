@@ -1,14 +1,14 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import styled from 'styled-components'
 // @ts-ignore
 import Div from 'styled-kit/Div'
 
-import { CardColorsType } from 'types'
-import nobles, { NobleInterface } from 'tokens/nobles'
+import { CardColorsType, NobleInterface } from 'types'
+import { gameStore } from 'store'
 
-function NobleCard({ value, cost }: NobleInterface) {
+function Noble({ value, cost }: NobleInterface) {
   return (
-    <Card>
+    <StyledNoble>
       <Div
         column
         itemsCenter
@@ -26,11 +26,11 @@ function NobleCard({ value, cost }: NobleInterface) {
           {cost.white > 0 && <Cost color="white">{cost.white}</Cost>}
         </Div>
       </Div>
-    </Card>
+    </StyledNoble>
   )
 }
 
-const Card = styled.div`
+const StyledNoble = styled.div`
   flex: none;
 
   display: flex;
@@ -59,10 +59,12 @@ const Cost = styled.span<{ color: CardColorsType }>`
 `
 
 export default function NoblesRow() {
+  const { nobles } = useContext(gameStore)
+
   return (
     <Div listLeft>
-      {nobles.map((noble) => (
-        <NobleCard key={noble.id} {...noble} />
+      {nobles.map(noble => (
+        <Noble key={noble.id} {...noble} />
       ))}
     </Div>
   )

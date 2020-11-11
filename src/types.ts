@@ -8,13 +8,14 @@ export interface PlayerInterface {
 
 export type CardColorsType = 'red' | 'green' | 'blue' | 'white' | 'black'
 
-// prettier-ignore
+export type CardCostType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
+
 export interface CardCostInterface {
-  red:   0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
-  green: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
-  blue:  0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
-  white: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
-  black: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
+  red: CardCostType
+  green: CardCostType
+  blue: CardCostType
+  white: CardCostType
+  black: CardCostType
 }
 
 export interface CardInterface {
@@ -29,4 +30,20 @@ export type GemColorsType = CardColorsType | 'gold'
 
 export interface GemAmountInterface extends CardCostInterface {
   gold: 0 | 1 | 2 | 3 | 4 | 5
+}
+
+export type NobleCostType = 0 | 3 | 4
+
+export interface NobleCostInterface {
+  red: NobleCostType
+  green: NobleCostType
+  blue: NobleCostType
+  white: NobleCostType
+  black: NobleCostType
+}
+
+export interface NobleInterface {
+  id: number
+  value: 3
+  cost: NobleCostInterface
 }

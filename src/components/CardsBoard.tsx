@@ -75,8 +75,6 @@ export default function CardsBoard() {
   const { cards } = useContext(gameStore)
   const levels = [1, 2, 3] as CardInterface['level'][]
 
-  if (cards.length === 0) return null
-
   return (
     <Div columnTop>
       {levels.map(level => (
