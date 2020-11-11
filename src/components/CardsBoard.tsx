@@ -73,12 +73,15 @@ function CardsStack({ level }: { level: CardInterface['level'] }) {
 
 export default function CardsBoard() {
   const { cards } = useContext(gameStore)
-  const levels = [1, 2, 3] as CardInterface['level'][]
+  const cardLevels = cards.map(({ level }) => level)
+  const uniqueCardLevels = cardLevels.filter(
+    (level, index, array) => array.indexOf(level) === index
+  )
 
   return (
     <Div columnTop>
-      {levels.map(level => (
-        <Div listLeft overflow="auto">
+      {uniqueCardLevels.map(level => (
+        <Div key={level} listLeft overflow="auto">
           <CardsStack level={level} />
 
           {cards
