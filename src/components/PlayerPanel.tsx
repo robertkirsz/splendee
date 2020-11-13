@@ -1,20 +1,49 @@
 import React, { useContext } from 'react'
 import { observer } from 'mobx-react-lite'
-// @ts-ignore
 import Div from 'styled-kit/Div'
 
 import { gameStore } from 'store'
 
 function PlayerPanel() {
-  const game = useContext(gameStore)
+  const { id, isRunning, players, activePlayerId, stop, start } = useContext(
+    gameStore
+  )
 
   return (
-    <Div listLeft>
-      <button onClick={() => (game.isRunning ? game.stop() : game.start())}>
-        {game.isRunning ? 'Stop' : 'Start'} game
-      </button>
+    <Div columnTop>
+      <Div columnTop selfStart>
+        {players.map(player => (
+          <Div
+            key={player.id}
+            listLeft
+            padding={8}
+            radius={4}
+            border={`2px solid ${
+              player.id === activePlayerId ? 'green' : 'black'
+            }`}
+          >
+            <span>
+              {player.name} ({player.score}/15)
+            </span>
 
-      <span>Game ID: {game.id}</span>
+            <Div listLeft>
+              {Object.entries(player.gems).map(([color, value]) => (
+                <span key={color}>
+                  {color}: {value}
+                </span>
+              ))}
+            </Div>
+          </Div>
+        ))}
+      </Div>
+
+      <Div listLeft>
+        <button onClick={isRunning ? stop : start}>
+          {isRunning ? 'Stop' : 'Start'} game
+        </button>
+
+        <span>Game ID: {id}</span>
+      </Div>
     </Div>
   )
 }

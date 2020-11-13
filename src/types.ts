@@ -4,6 +4,7 @@ export interface PlayerInterface {
   currentRound: number
   score: number
   gems: GemAmountInterface
+  cards: CardInterface[]
 }
 
 export type CardColorsType = 'red' | 'green' | 'blue' | 'white' | 'black'

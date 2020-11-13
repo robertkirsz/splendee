@@ -7,6 +7,26 @@ import { PlayerInterface, CardInterface, NobleInterface } from 'types'
 import getCards from 'tokens/cards'
 import getNobles from 'tokens/nobles'
 
+class Player {
+  id: PlayerInterface['id'] = uuidv4()
+  name: PlayerInterface['name']
+  currentRound: PlayerInterface['currentRound'] = 0
+  score: PlayerInterface['score'] = 0
+  gems: PlayerInterface['gems'] = {
+    red: 0,
+    green: 0,
+    blue: 0,
+    white: 0,
+    black: 0,
+    gold: 0,
+  }
+  cards: PlayerInterface['cards'] = []
+
+  constructor({ name }: { name: PlayerInterface['name'] }) {
+    this.name = name
+  }
+}
+
 class Game {
   id: string
   isRunning: boolean
@@ -32,27 +52,9 @@ class Game {
 
     this.id = uuidv4()
     this.players = [
-      {
-        id: '0',
-        name: 'Robert',
-        currentRound: 0,
-        score: 0,
-        gems: { red: 0, green: 0, blue: 0, white: 0, black: 0, gold: 0 },
-      },
-      {
-        id: '1',
-        name: 'Marzenka',
-        currentRound: 0,
-        score: 0,
-        gems: { red: 0, green: 0, blue: 0, white: 0, black: 0, gold: 0 },
-      },
-      {
-        id: '2',
-        name: 'Kasia',
-        currentRound: 0,
-        score: 0,
-        gems: { red: 0, green: 0, blue: 0, white: 0, black: 0, gold: 0 },
-      },
+      new Player({ name: 'Robert' }),
+      new Player({ name: 'Marzenka' }),
+      new Player({ name: 'Kasia' }),
     ]
     this.isRunning = false
     this.currentRound = 1
