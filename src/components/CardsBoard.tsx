@@ -1,6 +1,5 @@
 import React, { useContext } from 'react'
 import styled from 'styled-components'
-// @ts-ignore
 import Div from 'styled-kit/Div'
 
 import { CardColorsType, CardInterface } from 'types'
@@ -74,9 +73,9 @@ function CardsStack({ level }: { level: CardInterface['level'] }) {
 export default function CardsBoard() {
   const { cards } = useContext(gameStore)
   const cardLevels = cards.map(({ level }) => level)
-  const uniqueCardLevels = cardLevels.filter(
-    (level, index, array) => array.indexOf(level) === index
-  )
+  const uniqueCardLevels = cardLevels
+    .filter((level, index, array) => array.indexOf(level) === index)
+    .sort()
 
   return (
     <Div columnTop>

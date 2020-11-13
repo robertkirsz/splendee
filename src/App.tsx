@@ -1,5 +1,4 @@
 import React from 'react'
-// @ts-ignore
 import Div from 'styled-kit/Div'
 
 import GemsBank from 'components/GemsBank'

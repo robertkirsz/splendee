@@ -65,11 +65,11 @@ class Game {
     return this.players.length
   }
 
-  start() {
+  public start = () => {
     this.isRunning = true
   }
 
-  stop() {
+  public stop = () => {
     this.isRunning = false
   }
 }

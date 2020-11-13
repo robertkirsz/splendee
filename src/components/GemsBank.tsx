@@ -1,6 +1,5 @@
 import React from 'react'
 import styled from 'styled-components'
-// @ts-ignore
 import Div from 'styled-kit/Div'
 
 import { GemColorsType } from 'types'
