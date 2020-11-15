@@ -32,6 +32,7 @@ class Player {
     makeObservable(this, {
       gems: observable,
       cards: observable,
+      cardPoints: computed,
       earnGem: action,
     })
 
@@ -40,6 +41,16 @@ class Player {
 
   get score(): PlayerInterface['score'] {
     return this.cards.reduce((score, card) => score + card.value, 0)
+  }
+
+  get cardPoints(): any {
+    return this.cards.reduce(
+      (prev, curr) => ({
+        ...prev,
+        [curr.color]: (prev[curr.color] || 0) + curr.value,
+      }),
+      { red: 0, green: 0, blue: 0, white: 0, black: 0 }
+    )
   }
 
   public earnGem = (color: GemColorsType) => {

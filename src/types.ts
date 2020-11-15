@@ -5,6 +5,7 @@ export interface PlayerInterface {
   score: number
   gems: GemAmountInterface
   cards: CardInterface[]
+  cardPoints: { [key in CardColorsType]: number }
   earnGem(color: GemColorsType): void
 }
 

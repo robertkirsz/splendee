@@ -29,10 +29,18 @@ function PlayerPanel() {
             <span>No of cards: {player.cards.length}</span>
 
             <Div listLeft>
-              {Object.entries(player.gems).map(([color, value]) => (
-                <span key={color}>
-                  {color}: {value}
-                </span>
+              {Object.entries(player.cardPoints).map(([color, value]) => (
+                <Div
+                  key={color}
+                  columnTop
+                  border={`1px solid ${color}`}
+                  radius={4}
+                  padding={4}
+                >
+                  <span>Cards {value}</span>
+                  {/* @ts-ignore */}
+                  <span>Gems {player.gems[color]}</span>
+                </Div>
               ))}
             </Div>
           </Div>
