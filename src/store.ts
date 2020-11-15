@@ -84,6 +84,7 @@ class Game {
       start: action,
       stop: action,
       buyCard: action,
+      earnGem: action,
       changeActivePlayer: action,
     })
 

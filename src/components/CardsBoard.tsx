@@ -7,10 +7,18 @@ import { CardColorsType, CardInterface } from 'types'
 import { gameStore } from 'store'
 
 interface CardElementInterface extends CardInterface {
+  // TODO: maybe I can do it without undefined?
+  isPurchasable: boolean | undefined
   onClick(): void
 }
 
-function Card({ value, cost, color, ...props }: CardElementInterface) {
+function Card({
+  value,
+  cost,
+  color,
+  isPurchasable,
+  ...props
+}: CardElementInterface) {
   return (
     <Div
       column
@@ -20,7 +28,9 @@ function Card({ value, cost, color, ...props }: CardElementInterface) {
       background={color}
       border="1px solid"
       radius={8}
-      clickable
+      clickable={isPurchasable}
+      // @ts-ignore
+      style={isPurchasable ? { boxShadow: '0 0 15px 5px green' } : null}
       {...props}
     >
       <Div height={40} padding={8} background="rgba(255, 255, 255, 0.5)">
@@ -75,7 +85,7 @@ function CardsStack({ level }: { level: CardInterface['level'] }) {
 }
 
 function CardsBoard() {
-  const { cards, cardLevels, buyCard } = useContext(gameStore)
+  const { cards, cardLevels, activePlayer, buyCard } = useContext(gameStore)
 
   return (
     <Div columnTop>
@@ -88,9 +98,36 @@ function CardsBoard() {
 
             <CardsStack level={level} />
 
-            {currentLevelCards.slice(0, 4).map(card => (
-              <Card key={card.id} onClick={() => buyCard(card)} {...card} />
-            ))}
+            {currentLevelCards.slice(0, 4).map(card => {
+              let isPurchasable: boolean | undefined = undefined
+
+              // TODO: maybe this can happen in the store?
+              for (let color in card.cost) {
+                if (isPurchasable === false) break
+
+                if (
+                  // @ts-ignore
+                  !card.cost[color] ||
+                  // @ts-ignore
+                  card.cost[color] <=
+                    // @ts-ignore
+                    activePlayer?.cardPoints[color] + activePlayer?.gems[color]
+                ) {
+                  isPurchasable = true
+                } else {
+                  isPurchasable = false
+                }
+              }
+
+              return (
+                <Card
+                  key={card.id}
+                  onClick={() => isPurchasable && buyCard(card)}
+                  isPurchasable={isPurchasable}
+                  {...card}
+                />
+              )
+            })}
           </Div>
         )
       })}
