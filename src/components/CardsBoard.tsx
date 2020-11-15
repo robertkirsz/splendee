@@ -1,13 +1,28 @@
 import React, { useContext } from 'react'
+import { observer } from 'mobx-react-lite'
 import styled from 'styled-components'
 import Div from 'styled-kit/Div'
 
 import { CardColorsType, CardInterface } from 'types'
 import { gameStore } from 'store'
 
-function Card({ value, cost, color }: CardInterface) {
+interface CardElementInterface extends CardInterface {
+  onClick(): void
+}
+
+function Card({ value, cost, color, ...props }: CardElementInterface) {
   return (
-    <StyledCard column justifyBetween cardColor={color}>
+    <Div
+      column
+      justifyBetween
+      width={120}
+      height={170}
+      background={color}
+      border="1px solid"
+      radius={8}
+      clickable
+      {...props}
+    >
       <Div height={40} padding={8} background="rgba(255, 255, 255, 0.5)">
         {value > 0 ? value : ''}
       </Div>
@@ -19,20 +34,9 @@ function Card({ value, cost, color }: CardInterface) {
         {cost.red > 0 && <Cost color="red">{cost.red}</Cost>}
         {cost.black > 0 && <Cost color="black">{cost.black}</Cost>}
       </Div>
-    </StyledCard>
+    </Div>
   )
 }
-
-const StyledCard = styled(Div)<{ cardColor: CardColorsType }>`
-  flex: none;
-
-  width: 120px;
-  height: 170px;
-
-  background: ${({ cardColor }) => cardColor};
-  border: 1px solid;
-  border-radius: 8px;
-`
 
 const Cost = styled.span<{ color: CardColorsType }>`
   display: flex;
@@ -70,27 +74,28 @@ function CardsStack({ level }: { level: CardInterface['level'] }) {
   )
 }
 
-export default function CardsBoard() {
-  const { cards } = useContext(gameStore)
-  const cardLevels = cards.map(({ level }) => level)
-  const uniqueCardLevels = cardLevels
-    .filter((level, index, array) => array.indexOf(level) === index)
-    .sort()
+function CardsBoard() {
+  const { cards, cardLevels, buyCard } = useContext(gameStore)
 
   return (
     <Div columnTop>
-      {uniqueCardLevels.map(level => (
-        <Div key={level} listLeft>
-          <CardsStack level={level} />
+      {cardLevels.map(level => {
+        const currentLevelCards = cards.filter(card => card.level === level)
 
-          {cards
-            .filter(card => card.level === level)
-            .slice(0, 4)
-            .map(card => (
-              <Card key={card.id} {...card} />
+        return (
+          <Div key={level} itemsCenter listLeft>
+            <span>{currentLevelCards.length}</span>
+
+            <CardsStack level={level} />
+
+            {currentLevelCards.slice(0, 4).map(card => (
+              <Card key={card.id} onClick={() => buyCard(card)} {...card} />
             ))}
-        </Div>
-      ))}
+          </Div>
+        )
+      })}
     </Div>
   )
 }
+
+export default observer(CardsBoard)

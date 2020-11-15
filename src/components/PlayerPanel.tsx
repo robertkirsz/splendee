@@ -26,6 +26,8 @@ function PlayerPanel() {
               {player.name} ({player.score}/15)
             </span>
 
+            <span>No of cards: {player.cards.length}</span>
+
             <Div listLeft>
               {Object.entries(player.gems).map(([color, value]) => (
                 <span key={color}>

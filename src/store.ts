@@ -11,7 +11,6 @@ class Player {
   id: PlayerInterface['id'] = uuidv4()
   name: PlayerInterface['name']
   currentRound: PlayerInterface['currentRound'] = 0
-  score: PlayerInterface['score'] = 0
   gems: PlayerInterface['gems'] = {
     red: 0,
     green: 0,
@@ -23,7 +22,16 @@ class Player {
   cards: PlayerInterface['cards'] = []
 
   constructor({ name }: { name: PlayerInterface['name'] }) {
+    makeObservable(this, {
+      gems: observable,
+      cards: observable,
+    })
+
     this.name = name
+  }
+
+  get score(): PlayerInterface['score'] {
+    return this.cards.reduce((score, card) => score + card.value, 0)
   }
 }
 
@@ -35,6 +43,7 @@ class Game {
   nobles: NobleInterface[]
   cards: CardInterface[]
   players: PlayerInterface[]
+  cardLevels: CardInterface['level'][]
 
   constructor() {
     makeObservable(this, {
@@ -48,6 +57,7 @@ class Game {
       numberOfPlayers: computed,
       start: action,
       stop: action,
+      buyCard: action,
     })
 
     this.id = uuidv4()
@@ -61,6 +71,11 @@ class Game {
     this.activePlayerId = this.players[0].id
     this.cards = _.shuffle(getCards())
     this.nobles = _.shuffle(getNobles()).slice(0, this.numberOfPlayers + 1)
+
+    this.cardLevels = this.cards
+      .map(({ level }) => level)
+      .filter((level, index, array) => array.indexOf(level) === index)
+      .sort()
   }
 
   get numberOfPlayers() {
@@ -73,6 +88,13 @@ class Game {
 
   public stop = () => {
     this.isRunning = false
+  }
+
+  public buyCard = (card: CardInterface) => {
+    const cardIndex = this.cards.findIndex(({ id }) => id === card.id)
+    const cardFound = this.cards.splice(cardIndex, 1)[0]
+    const player = this.players.find(({ id }) => id === this.activePlayerId)
+    if (player) player.cards.push(cardFound)
   }
 }
 
