@@ -84,6 +84,7 @@ class Game {
       start: action,
       stop: action,
       buyCard: action,
+      changeActivePlayer: action,
     })
 
     this.id = uuidv4()
@@ -141,6 +142,10 @@ class Game {
     if (!this.gems[color]) return
     this.gems[color]--
     this.activePlayer?.earnGem(color)
+  }
+
+  public changeActivePlayer = (id: PlayerInterface['id']) => {
+    this.activePlayerId = id
   }
 }
 

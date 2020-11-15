@@ -5,9 +5,15 @@ import Div from 'styled-kit/Div'
 import { gameStore } from 'store'
 
 function PlayerPanel() {
-  const { id, isRunning, players, activePlayerId, stop, start } = useContext(
-    gameStore
-  )
+  const {
+    id,
+    isRunning,
+    players,
+    activePlayerId,
+    changeActivePlayer,
+    stop,
+    start,
+  } = useContext(gameStore)
 
   return (
     <Div columnTop>
@@ -21,6 +27,9 @@ function PlayerPanel() {
             border={`2px solid ${
               player.id === activePlayerId ? 'green' : 'black'
             }`}
+            clickable
+            // @ts-ignore
+            onClick={() => changeActivePlayer(player.id)}
           >
             <span>
               {player.name} ({player.score}/15)
