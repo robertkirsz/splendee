@@ -3,7 +3,14 @@ import { makeObservable, observable, action, computed } from 'mobx'
 import { v4 as uuidv4 } from 'uuid'
 import _ from 'lodash'
 
-import { PlayerInterface, CardInterface, NobleInterface } from 'types'
+import {
+  PlayerInterface,
+  CardInterface,
+  NobleInterface,
+  GemAmountInterface,
+  GemColorsType,
+} from 'types'
+
 import getCards from 'tokens/cards'
 import getNobles from 'tokens/nobles'
 
@@ -25,6 +32,7 @@ class Player {
     makeObservable(this, {
       gems: observable,
       cards: observable,
+      earnGem: action,
     })
 
     this.name = name
@@ -32,6 +40,10 @@ class Player {
 
   get score(): PlayerInterface['score'] {
     return this.cards.reduce((score, card) => score + card.value, 0)
+  }
+
+  public earnGem = (color: GemColorsType) => {
+    this.gems[color]++
   }
 }
 
@@ -42,6 +54,7 @@ class Game {
   activePlayerId: string
   nobles: NobleInterface[]
   cards: CardInterface[]
+  gems: GemAmountInterface
   players: PlayerInterface[]
   cardLevels: CardInterface['level'][]
 
@@ -54,23 +67,36 @@ class Game {
       nobles: observable,
       cards: observable,
       players: observable,
+      gems: observable,
       numberOfPlayers: computed,
+      activePlayer: computed,
       start: action,
       stop: action,
       buyCard: action,
     })
 
     this.id = uuidv4()
+
     this.players = [
       new Player({ name: 'Robert' }),
       new Player({ name: 'Marzenka' }),
       new Player({ name: 'Kasia' }),
     ]
+
     this.isRunning = false
     this.currentRound = 1
     this.activePlayerId = this.players[0].id
     this.cards = _.shuffle(getCards())
     this.nobles = _.shuffle(getNobles()).slice(0, this.numberOfPlayers + 1)
+
+    this.gems = {
+      red: 7,
+      green: 7,
+      blue: 7,
+      white: 7,
+      black: 7,
+      gold: 5,
+    }
 
     this.cardLevels = this.cards
       .map(({ level }) => level)
@@ -78,8 +104,12 @@ class Game {
       .sort()
   }
 
-  get numberOfPlayers() {
+  public get numberOfPlayers() {
     return this.players.length
+  }
+
+  public get activePlayer() {
+    return this.players.find(({ id }) => id === this.activePlayerId)
   }
 
   public start = () => {
@@ -93,8 +123,13 @@ class Game {
   public buyCard = (card: CardInterface) => {
     const cardIndex = this.cards.findIndex(({ id }) => id === card.id)
     const cardFound = this.cards.splice(cardIndex, 1)[0]
-    const player = this.players.find(({ id }) => id === this.activePlayerId)
-    if (player) player.cards.push(cardFound)
+    this.activePlayer?.cards.push(cardFound)
+  }
+
+  public earnGem = (color: GemColorsType) => {
+    if (!this.gems[color]) return
+    this.gems[color]--
+    this.activePlayer?.earnGem(color)
   }
 }
 

@@ -1,17 +1,25 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { observer } from 'mobx-react-lite'
 import styled from 'styled-components'
 import Div from 'styled-kit/Div'
 
 import { GemColorsType } from 'types'
-import gems from 'tokens/gems'
+import { gameStore } from 'store'
 
-export default function GemsBank() {
+function GemsBank() {
+  const { gems, earnGem } = useContext(gameStore)
+
   const gemColors = Object.keys(gems) as GemColorsType[]
 
   return (
     <Div columnTop selfCenter>
       {gemColors.map(color => (
-        <GemContainer key={color} color={color}>
+        <GemContainer
+          key={color}
+          color={color}
+          onClick={() => earnGem(color)}
+          disabled={!gems[color]}
+        >
           {gems[color]}
         </GemContainer>
       ))}
@@ -19,7 +27,9 @@ export default function GemsBank() {
   )
 }
 
-const GemContainer = styled.div<{ color: GemColorsType }>`
+export default observer(GemsBank)
+
+const GemContainer = styled.div<{ color: GemColorsType; disabled: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -34,4 +44,13 @@ const GemContainer = styled.div<{ color: GemColorsType }>`
   color: white;
   font-weight: bold;
   -webkit-text-stroke: 1px black;
+
+  cursor: pointer;
+
+  ${({ disabled }) =>
+    disabled &&
+    `
+    opacity: 0.5;
+    pointer-events: none;
+  `}
 `
