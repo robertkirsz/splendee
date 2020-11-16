@@ -132,8 +132,19 @@ class Game {
   public buyCard = (card: CardInterface) => {
     const cardIndex = this.cards.findIndex(({ id }) => id === card.id)
     const cardFound = this.cards.splice(cardIndex, 1)[0]
-    this.activePlayer?.cards.push(cardFound)
-    // TODO: pay the gem cost
+
+    // TODO: I want this to always exist
+    if (this.activePlayer) {
+      this.activePlayer.cards.push(cardFound)
+
+      for (let color in card.cost) {
+        // TODO: I don't get these 😭
+        // @ts-ignore
+        this.activePlayer.gems[color] -= card.cost[color]
+        // @ts-ignore
+        this.gems[color] += card.cost[color]
+      }
+    }
   }
 
   public earnGem = (color: GemColorsType) => {
