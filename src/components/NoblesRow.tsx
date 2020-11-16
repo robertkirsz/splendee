@@ -1,13 +1,46 @@
 import React, { useContext } from 'react'
+import { observer } from 'mobx-react-lite'
 import styled from 'styled-components'
 import Div from 'styled-kit/Div'
 
 import { CardInterface, NobleInterface } from 'types'
 import { gameStore } from 'store'
 
-function Noble({ value, cost }: NobleInterface) {
+export default observer(function NoblesRow() {
+  const { nobles, purchasableNoblesIds, earnNoble } = useContext(gameStore)
+
   return (
-    <StyledNoble>
+    <Div listLeft selfCenter>
+      {nobles.map(noble => {
+        const isPurchasable = purchasableNoblesIds.includes(noble.id)
+
+        return (
+          <Noble
+            key={noble.id}
+            value={noble.value}
+            cost={noble.cost}
+            isPurchasable={isPurchasable}
+            onClick={() => isPurchasable && earnNoble(noble.id)}
+          />
+        )
+      })}
+    </Div>
+  )
+})
+
+function Noble({
+  value,
+  cost,
+  isPurchasable,
+  onClick,
+}: {
+  value: NobleInterface['value']
+  cost: NobleInterface['cost']
+  isPurchasable: boolean
+  onClick(): void
+}) {
+  return (
+    <StyledNoble isPurchasable={isPurchasable} onClick={onClick}>
       <Div
         column
         itemsCenter
@@ -29,9 +62,8 @@ function Noble({ value, cost }: NobleInterface) {
   )
 }
 
-const StyledNoble = styled.div`
+const StyledNoble = styled.div<{ isPurchasable: boolean }>`
   flex: none;
-
   display: flex;
 
   width: 110px;
@@ -40,6 +72,9 @@ const StyledNoble = styled.div`
   background: #ccc;
   border: 1px solid;
   border-radius: 8px;
+
+  ${props =>
+    props.isPurchasable && 'box-shadow: 0 0 15px 5px green; cursor: pointer;'}
 `
 
 const Cost = styled.span<{ color: CardInterface['color'] }>`
@@ -56,15 +91,3 @@ const Cost = styled.span<{ color: CardInterface['color'] }>`
   font-weight: bold;
   -webkit-text-stroke: 1px black;
 `
-
-export default function NoblesRow() {
-  const { nobles } = useContext(gameStore)
-
-  return (
-    <Div listLeft selfCenter>
-      {nobles.map(noble => (
-        <Noble key={noble.id} {...noble} />
-      ))}
-    </Div>
-  )
-}

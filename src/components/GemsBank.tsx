@@ -6,7 +6,7 @@ import Div from 'styled-kit/Div'
 import { GemColorsType } from 'types'
 import { gameStore } from 'store'
 
-function GemsBank() {
+export default observer(function GemsBank() {
   const { gems, earnGem } = useContext(gameStore)
 
   const gemColors = Object.keys(gems) as GemColorsType[]
@@ -25,9 +25,7 @@ function GemsBank() {
       ))}
     </Div>
   )
-}
-
-export default observer(GemsBank)
+})
 
 const GemContainer = styled.div<{ color: GemColorsType; disabled: boolean }>`
   display: flex;

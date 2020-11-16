@@ -4,7 +4,7 @@ import Div from 'styled-kit/Div'
 
 import { gameStore } from 'store'
 
-function PlayerPanel() {
+export default observer(function PlayerPanel() {
   const {
     id,
     isRunning,
@@ -31,14 +31,17 @@ function PlayerPanel() {
             // @ts-ignore
             onClick={() => changeActivePlayer(player.id)}
           >
-            <span>
+            <span title="Score">
               {player.name} ({player.score}/15)
             </span>
 
-            <span>No of cards: {player.cards.length}</span>
+            <Div column>
+              <span># cards: {player.cards.length}</span>
+              <span># nobles: {player.nobles.length}</span>
+            </Div>
 
             <Div listLeft>
-              {Object.entries(player.cardPoints).map(([color, value]) => (
+              {Object.entries(player.cardColorPoints).map(([color, value]) => (
                 <Div
                   key={color}
                   columnTop
@@ -65,6 +68,4 @@ function PlayerPanel() {
       </Div>
     </Div>
   )
-}
-
-export default observer(PlayerPanel)
+})

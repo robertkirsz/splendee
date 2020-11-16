@@ -1,9 +1,9 @@
 import { NobleInterface } from 'types'
 
-class Noble {
-  id: NobleInterface['id']
-  value: NobleInterface['value']
-  cost: NobleInterface['cost']
+class Noble implements NobleInterface {
+  id
+  value
+  cost
 
   constructor({ id, value, cost }: NobleInterface) {
     this.id = id

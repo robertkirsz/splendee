@@ -14,7 +14,7 @@ import {
 import getCards from 'tokens/cards'
 import getNobles from 'tokens/nobles'
 
-class Player {
+class Player implements PlayerInterface {
   id: PlayerInterface['id'] = uuidv4()
   name: PlayerInterface['name'] = ''
   currentRound: PlayerInterface['currentRound'] = 0
@@ -27,12 +27,15 @@ class Player {
     gold: 0,
   }
   cards: PlayerInterface['cards'] = []
+  nobles: PlayerInterface['nobles'] = []
 
   constructor({ name }: { name: PlayerInterface['name'] }) {
     makeObservable(this, {
       gems: observable,
       cards: observable,
-      cardPoints: computed,
+      cardColorPoints: computed,
+      nobles: observable,
+      score: computed,
       earnGem: action,
     })
 
@@ -40,10 +43,13 @@ class Player {
   }
 
   get score(): PlayerInterface['score'] {
-    return this.cards.reduce((score, card) => score + card.value, 0)
+    return (
+      this.cards.reduce((score, card) => score + card.value, 0) +
+      this.nobles.reduce((score, noble) => score + noble.value, 0)
+    )
   }
 
-  get cardPoints(): any {
+  get cardColorPoints(): any {
     return this.cards.reduce(
       (prev, curr) => ({
         ...prev,
@@ -81,10 +87,12 @@ class Game {
       gems: observable,
       numberOfPlayers: computed,
       activePlayer: computed,
+      purchasableNoblesIds: computed,
       start: action,
       stop: action,
       buyCard: action,
       earnGem: action,
+      earnNoble: action,
       changeActivePlayer: action,
     })
 
@@ -121,6 +129,35 @@ class Game {
     return this.players.find(({ id }) => id === this.activePlayerId)
   }
 
+  public get purchasableNoblesIds() {
+    return this.nobles
+      .filter(noble => {
+        let isPurchasable: boolean | undefined = undefined
+
+        for (let color in noble.cost) {
+          if (isPurchasable === false) break
+
+          if (
+            // @ts-ignore
+            !noble.cost[color] ||
+            // @ts-ignore
+            noble.cost[color] <=
+              // @ts-ignore
+              this.activePlayer?.cardColorPoints[color] +
+                // @ts-ignore
+                this.activePlayer?.gems[color]
+          ) {
+            isPurchasable = true
+          } else {
+            isPurchasable = false
+          }
+        }
+
+        return isPurchasable
+      })
+      .map(noble => noble.id)
+  }
+
   public start = () => {
     this.isRunning = true
   }
@@ -129,6 +166,7 @@ class Game {
     this.isRunning = false
   }
 
+  // TODO: change to cardId, like in earnNoble?
   public buyCard = (card: CardInterface) => {
     const cardIndex = this.cards.findIndex(({ id }) => id === card.id)
     const cardFound = this.cards.splice(cardIndex, 1)[0]
@@ -151,6 +189,12 @@ class Game {
     if (!this.gems[color]) return
     this.gems[color]--
     this.activePlayer?.earnGem(color)
+  }
+
+  public earnNoble = (nobleId: NobleInterface['id']) => {
+    const nobleIndex = this.nobles.findIndex(({ id }) => id === nobleId)
+    const nobleFound = this.nobles.splice(nobleIndex, 1)[0]
+    this.activePlayer?.nobles.push(nobleFound)
   }
 
   public changeActivePlayer = (id: PlayerInterface['id']) => {
