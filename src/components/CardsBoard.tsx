@@ -5,6 +5,7 @@ import Div from 'styled-kit/Div'
 
 import { CardInterface } from 'types'
 import { gameStore } from 'store'
+import { getColor } from 'utils'
 
 export default observer(function CardsBoard() {
   const { cards, cardLevels, purchasableCardsIds, buyCard } = useContext(
@@ -60,7 +61,7 @@ function Card({
       justifyBetween
       width={120}
       height={170}
-      background={color}
+      background={getColor({ color })}
       border="1px solid"
       radius={8}
       clickable={isPurchasable}
@@ -91,13 +92,13 @@ const Cost = styled.span<{ color: CardInterface['color'] }>`
   width: 25px;
   height: 25px;
 
-  background: ${({ color }) => color};
+  background: ${getColor};
   border: 1px solid white;
   border-radius: 50%;
 
   color: white;
   font-weight: bold;
-  -webkit-text-stroke: 1px black;
+  text-shadow: 1px 1px 0 black;
 `
 
 function CardsStack({ level }: { level: CardInterface['level'] }) {

@@ -33,7 +33,6 @@ export default observer(function PlayerPanel({
       </span>
 
       <Div listLeft>
-        {/* {Object.keys(player.cardPoints).map(([color, value]) => ( */}
         {player.inventoryColors.map(color => (
           <Div
             key={color}
