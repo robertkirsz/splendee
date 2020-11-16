@@ -7,7 +7,9 @@ import { CardInterface } from 'types'
 import { gameStore } from 'store'
 
 export default observer(function CardsBoard() {
-  const { cards, cardLevels, activePlayer, buyCard } = useContext(gameStore)
+  const { cards, cardLevels, purchasableCardsIds, buyCard } = useContext(
+    gameStore
+  )
 
   return (
     <Div columnTop>
@@ -21,27 +23,7 @@ export default observer(function CardsBoard() {
             <CardsStack level={level} />
 
             {currentLevelCards.slice(0, 4).map(card => {
-              let isPurchasable: boolean | undefined = undefined
-
-              // TODO: maybe this can happen in the store?
-              for (let color in card.cost) {
-                if (isPurchasable === false) break
-
-                if (
-                  // @ts-ignore
-                  !card.cost[color] ||
-                  // @ts-ignore
-                  card.cost[color] <=
-                    // @ts-ignore
-                    activePlayer?.cardColorPoints[color] +
-                      // @ts-ignore
-                      activePlayer?.gems[color]
-                ) {
-                  isPurchasable = true
-                } else {
-                  isPurchasable = false
-                }
-              }
+              const isPurchasable = purchasableCardsIds.includes(card.id)
 
               return (
                 <Card

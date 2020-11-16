@@ -9,6 +9,7 @@ import {
   NobleInterface,
   GemAmountInterface,
   GemColorsType,
+  CostType,
 } from 'types'
 
 import getCards from 'tokens/cards'
@@ -87,6 +88,7 @@ class Game {
       gems: observable,
       numberOfPlayers: computed,
       activePlayer: computed,
+      purchasableCardsIds: computed,
       purchasableNoblesIds: computed,
       start: action,
       stop: action,
@@ -129,19 +131,19 @@ class Game {
     return this.players.find(({ id }) => id === this.activePlayerId)
   }
 
-  public get purchasableNoblesIds() {
-    return this.nobles
-      .filter(noble => {
+  private checkPurchasability = (tokens: { id: number; cost: CostType }[]) =>
+    tokens
+      .filter(token => {
         let isPurchasable: boolean | undefined = undefined
 
-        for (let color in noble.cost) {
+        for (let color in token.cost) {
           if (isPurchasable === false) break
 
           if (
             // @ts-ignore
-            !noble.cost[color] ||
+            !token.cost[color] ||
             // @ts-ignore
-            noble.cost[color] <=
+            token.cost[color] <=
               // @ts-ignore
               this.activePlayer?.cardColorPoints[color] +
                 // @ts-ignore
@@ -155,7 +157,14 @@ class Game {
 
         return isPurchasable
       })
-      .map(noble => noble.id)
+      .map(token => token.id)
+
+  public get purchasableCardsIds() {
+    return this.checkPurchasability(this.cards)
+  }
+
+  public get purchasableNoblesIds() {
+    return this.checkPurchasability(this.nobles)
   }
 
   public start = () => {

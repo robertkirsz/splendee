@@ -10,18 +10,20 @@ export interface PlayerInterface {
   earnGem(color: GemColorsType): void
 }
 
+export type CostType = {
+  red: number
+  green: number
+  blue: number
+  white: number
+  black: number
+}
+
 export interface CardInterface {
   id: number
-  level: 1 | 2 | 3
-  value: 0 | 1 | 2 | 3 | 4 | 5
+  level: number
+  value: number
   color: 'red' | 'green' | 'blue' | 'white' | 'black'
-  cost: {
-    red: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
-    green: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
-    blue: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
-    white: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
-    black: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
-  }
+  cost: CostType
 }
 
 export type GemColorsType =
@@ -33,22 +35,16 @@ export type GemColorsType =
   | 'gold'
 
 export interface GemAmountInterface {
-  red: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
-  green: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
-  blue: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
-  white: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
-  black: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
-  gold: 0 | 1 | 2 | 3 | 4 | 5
+  red: number
+  green: number
+  blue: number
+  white: number
+  black: number
+  gold: number
 }
 
 export interface NobleInterface {
   id: number
   value: 3
-  cost: {
-    red: 0 | 3 | 4
-    green: 0 | 3 | 4
-    blue: 0 | 3 | 4
-    white: 0 | 3 | 4
-    black: 0 | 3 | 4
-  }
+  cost: CostType
 }
