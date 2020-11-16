@@ -9,7 +9,6 @@ import {
   NobleInterface,
   GemAmountInterface,
   GemColorsType,
-  CostType,
 } from 'types'
 
 import getCards from 'tokens/cards'
@@ -35,6 +34,7 @@ class Player implements PlayerInterface {
       gems: observable,
       cards: observable,
       cardColorPoints: computed,
+      cardsAmount: computed,
       nobles: observable,
       score: computed,
       earnGem: action,
@@ -55,6 +55,16 @@ class Player implements PlayerInterface {
       (prev, curr) => ({
         ...prev,
         [curr.color]: (prev[curr.color] || 0) + curr.value,
+      }),
+      { red: 0, green: 0, blue: 0, white: 0, black: 0 }
+    )
+  }
+
+  get cardsAmount(): { [key in CardInterface['color']]: number } {
+    return this.cards.reduce(
+      (prev, curr) => ({
+        ...prev,
+        [curr.color]: (prev[curr.color] || 0) + 1,
       }),
       { red: 0, green: 0, blue: 0, white: 0, black: 0 }
     )
@@ -131,19 +141,19 @@ class Game {
     return this.players.find(({ id }) => id === this.activePlayerId)
   }
 
-  private checkPurchasability = (tokens: { id: number; cost: CostType }[]) =>
-    tokens
-      .filter(token => {
+  public get purchasableCardsIds() {
+    return this.cards
+      .filter(card => {
         let isPurchasable: boolean | undefined = undefined
 
-        for (let color in token.cost) {
+        for (let color in card.cost) {
           if (isPurchasable === false) break
 
           if (
             // @ts-ignore
-            !token.cost[color] ||
+            !card.cost[color] ||
             // @ts-ignore
-            token.cost[color] <=
+            card.cost[color] <=
               // @ts-ignore
               this.activePlayer?.cardColorPoints[color] +
                 // @ts-ignore
@@ -157,14 +167,34 @@ class Game {
 
         return isPurchasable
       })
-      .map(token => token.id)
-
-  public get purchasableCardsIds() {
-    return this.checkPurchasability(this.cards)
+      .map(card => card.id)
   }
 
   public get purchasableNoblesIds() {
-    return this.checkPurchasability(this.nobles)
+    return this.nobles
+      .filter(noble => {
+        let isPurchasable: boolean | undefined = undefined
+
+        for (let color in noble.cost) {
+          if (isPurchasable === false) break
+
+          if (
+            // @ts-ignore
+            noble.cost[color] <=
+            // @ts-ignore
+            this.activePlayer?.cardColorPoints[color] +
+              // @ts-ignore
+              this.activePlayer?.gems[color]
+          ) {
+            isPurchasable = true
+          } else {
+            isPurchasable = false
+          }
+        }
+
+        return isPurchasable
+      })
+      .map(noble => noble.id)
   }
 
   public start = () => {
@@ -182,15 +212,21 @@ class Game {
 
     // TODO: I want this to always exist
     if (this.activePlayer) {
-      this.activePlayer.cards.push(cardFound)
-
+      // Pay the cost
       for (let color in card.cost) {
-        // TODO: I don't get these 😭
-        // @ts-ignore
-        this.activePlayer.gems[color] -= card.cost[color]
-        // @ts-ignore
-        this.gems[color] += card.cost[color]
+        const remainingGemCost =
+          // @ts-ignore
+          card.cost[color] - this.activePlayer.cardColorPoints[color]
+
+        if (remainingGemCost > 0) {
+          // @ts-ignore
+          this.activePlayer.gems[color] -= remainingGemCost
+          // @ts-ignore
+          this.gems[color] += remainingGemCost
+        }
       }
+
+      this.activePlayer.cards.push(cardFound)
     }
   }
 

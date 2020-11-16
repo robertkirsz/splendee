@@ -49,9 +49,12 @@ export default observer(function PlayerPanel() {
                   radius={4}
                   padding={4}
                 >
-                  <span>Cards {value}</span>
+                  <span>
+                    {/* @ts-ignore */}
+                    🃏 #{player.cardsAmount[color]} 💲{value}
+                  </span>
                   {/* @ts-ignore */}
-                  <span>Gems {player.gems[color]}</span>
+                  <span>💎 {player.gems[color]}</span>
                 </Div>
               ))}
             </Div>
