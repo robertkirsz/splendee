@@ -33,8 +33,9 @@ class Player implements PlayerInterface {
     makeObservable(this, {
       gems: observable,
       cards: observable,
-      cardColorPoints: computed,
-      cardsAmount: computed,
+      inventoryColors: computed,
+      cardPoints: computed,
+      cardAmount: computed,
       nobles: observable,
       score: computed,
       earnGem: action,
@@ -50,7 +51,30 @@ class Player implements PlayerInterface {
     )
   }
 
-  get cardColorPoints(): any {
+  get inventoryColors(): CardInterface['color'][] {
+    const result = {
+      red: false,
+      green: false,
+      blue: false,
+      white: false,
+      black: false,
+    }
+
+    this.cards.forEach(card => (result[card.color] = true))
+
+    Object.entries(this.gems).forEach(([color, amount]) => {
+      // @ts-ignore
+      if (amount > 0) result[color] = true
+    })
+
+    // @ts-ignore
+    return Object.entries(result)
+      .filter(([color, exists]) => exists)
+      .map(([color]) => color)
+      .sort()
+  }
+
+  get cardPoints(): { [key in CardInterface['color']]: number } {
     return this.cards.reduce(
       (prev, curr) => ({
         ...prev,
@@ -60,7 +84,7 @@ class Player implements PlayerInterface {
     )
   }
 
-  get cardsAmount(): { [key in CardInterface['color']]: number } {
+  get cardAmount(): { [key in CardInterface['color']]: number } {
     return this.cards.reduce(
       (prev, curr) => ({
         ...prev,
@@ -155,7 +179,7 @@ class Game {
             // @ts-ignore
             card.cost[color] <=
               // @ts-ignore
-              this.activePlayer?.cardColorPoints[color] +
+              this.activePlayer?.cardPoints[color] +
                 // @ts-ignore
                 this.activePlayer?.gems[color]
           ) {
@@ -180,7 +204,7 @@ class Game {
 
           if (
             // @ts-ignore
-            noble.cost[color] <= this.activePlayer?.cardsAmount[color]
+            noble.cost[color] <= this.activePlayer?.cardAmount[color]
           ) {
             isPurchasable = true
           } else {
@@ -212,7 +236,7 @@ class Game {
       for (let color in card.cost) {
         const remainingGemCost =
           // @ts-ignore
-          card.cost[color] - this.activePlayer.cardColorPoints[color]
+          card.cost[color] - this.activePlayer.cardPoints[color]
 
         if (remainingGemCost > 0) {
           // @ts-ignore

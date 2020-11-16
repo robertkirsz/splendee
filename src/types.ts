@@ -5,8 +5,9 @@ export interface PlayerInterface {
   score: number
   gems: GemAmountInterface
   cards: CardInterface[]
-  cardColorPoints: { [key in CardInterface['color']]: number }
-  cardsAmount: { [key in CardInterface['color']]: number }
+  inventoryColors: CardInterface['color'][]
+  cardPoints: { [key in CardInterface['color']]: number }
+  cardAmount: { [key in CardInterface['color']]: number }
   nobles: NobleInterface[]
   earnGem(color: GemColorsType): void
 }

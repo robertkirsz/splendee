@@ -3,71 +3,53 @@ import { observer } from 'mobx-react-lite'
 import Div from 'styled-kit/Div'
 
 import { gameStore } from 'store'
+import { PlayerInterface } from 'types'
 
-export default observer(function PlayerPanel() {
-  const {
-    id,
-    isRunning,
-    players,
-    activePlayerId,
-    changeActivePlayer,
-    stop,
-    start,
-  } = useContext(gameStore)
+export default observer(function PlayerPanel({
+  player,
+}: {
+  player: PlayerInterface
+}) {
+  const { activePlayerId, changeActivePlayer } = useContext(gameStore)
 
   return (
-    <Div columnTop>
-      <Div columnTop selfStart>
-        {players.map(player => (
-          <Div
-            key={player.id}
-            listLeft
-            padding={8}
-            radius={4}
-            border={`2px solid ${
-              player.id === activePlayerId ? 'green' : 'black'
-            }`}
-            clickable
-            // @ts-ignore
-            onClick={() => changeActivePlayer(player.id)}
-          >
-            <span title="Score">
-              {player.name} ({player.score}/15)
-            </span>
-
-            <Div column>
-              <span># cards: {player.cards.length}</span>
-              <span># nobles: {player.nobles.length}</span>
-            </Div>
-
-            <Div listLeft>
-              {Object.entries(player.cardColorPoints).map(([color, value]) => (
-                <Div
-                  key={color}
-                  columnTop
-                  border={`1px solid ${color}`}
-                  radius={4}
-                  padding={4}
-                >
-                  <span>
-                    {/* @ts-ignore */}
-                    🃏 #{player.cardsAmount[color]} 💲{value}
-                  </span>
-                  {/* @ts-ignore */}
-                  <span>💎 {player.gems[color]}</span>
-                </Div>
-              ))}
-            </Div>
-          </Div>
-        ))}
-      </Div>
+    <Div
+      key={player.id}
+      listLeft
+      padding={8}
+      radius={4}
+      border="1px solid"
+      clickable
+      // @ts-ignore
+      onClick={() => changeActivePlayer(player.id)}
+      style={
+        player.id === activePlayerId
+          ? { boxShadow: '0 0 15px -3px green' }
+          : null
+      }
+    >
+      <span title="Score">
+        {player.name} ({player.score}/15)
+      </span>
 
       <Div listLeft>
-        <button onClick={isRunning ? stop : start}>
-          {isRunning ? 'Stop' : 'Start'} game
-        </button>
-
-        <span>Game ID: {id}</span>
+        {/* {Object.keys(player.cardPoints).map(([color, value]) => ( */}
+        {player.inventoryColors.map(color => (
+          <Div
+            key={color}
+            columnTop
+            border={`1px solid ${color}`}
+            radius={4}
+            padding={4}
+          >
+            <span>
+              {/* @ts-ignore */}
+              🃏 #{player.cardAmount[color]} 💲{player.cardPoints[color]}
+            </span>
+            {/* @ts-ignore */}
+            <span>💎 {player.gems[color]}</span>
+          </Div>
+        ))}
       </Div>
     </Div>
   )

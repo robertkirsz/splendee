@@ -4,7 +4,7 @@ import Div from 'styled-kit/Div'
 import GemsBank from 'components/GemsBank'
 import NoblesRow from 'components/NoblesRow'
 import CardsBoard from 'components/CardsBoard'
-import PlayerPanel from 'components/PlayerPanel'
+import StatsSection from 'components/StatsSection'
 
 export default function App() {
   return (
@@ -16,7 +16,7 @@ export default function App() {
         <GemsBank />
       </Div>
 
-      <PlayerPanel />
+      <StatsSection />
     </Div>
   )
 }
