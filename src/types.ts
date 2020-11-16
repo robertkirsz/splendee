@@ -5,48 +5,48 @@ export interface PlayerInterface {
   score: number
   gems: GemAmountInterface
   cards: CardInterface[]
-  cardPoints: { [key in CardColorsType]: number }
+  cardPoints: { [key in CardInterface['color']]: number }
   earnGem(color: GemColorsType): void
 }
-
-export type CardColorsType = 'red' | 'green' | 'blue' | 'white' | 'black'
-
-export type CardCostType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
-
-export interface CardCostInterface {
-  red: CardCostType
-  green: CardCostType
-  blue: CardCostType
-  white: CardCostType
-  black: CardCostType
-}
-
 export interface CardInterface {
   id: number
   level: 1 | 2 | 3
   value: 0 | 1 | 2 | 3 | 4 | 5
-  color: CardColorsType
-  cost: CardCostInterface
+  color: 'red' | 'green' | 'blue' | 'white' | 'black'
+  cost: {
+    red: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
+    green: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
+    blue: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
+    white: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
+    black: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
+  }
 }
 
-export type GemColorsType = CardColorsType | 'gold'
+export type GemColorsType =
+  | 'red'
+  | 'green'
+  | 'blue'
+  | 'white'
+  | 'black'
+  | 'gold'
 
-export interface GemAmountInterface extends CardCostInterface {
+export interface GemAmountInterface {
+  red: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
+  green: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
+  blue: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
+  white: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
+  black: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
   gold: 0 | 1 | 2 | 3 | 4 | 5
-}
-
-export type NobleCostType = 0 | 3 | 4
-
-export interface NobleCostInterface {
-  red: NobleCostType
-  green: NobleCostType
-  blue: NobleCostType
-  white: NobleCostType
-  black: NobleCostType
 }
 
 export interface NobleInterface {
   id: number
   value: 3
-  cost: NobleCostInterface
+  cost: {
+    red: 0 | 3 | 4
+    green: 0 | 3 | 4
+    blue: 0 | 3 | 4
+    white: 0 | 3 | 4
+    black: 0 | 3 | 4
+  }
 }

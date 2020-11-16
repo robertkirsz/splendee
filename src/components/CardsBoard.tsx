@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite'
 import styled from 'styled-components'
 import Div from 'styled-kit/Div'
 
-import { CardColorsType, CardInterface } from 'types'
+import { CardInterface } from 'types'
 import { gameStore } from 'store'
 
 interface CardElementInterface extends CardInterface {
@@ -48,7 +48,7 @@ function Card({
   )
 }
 
-const Cost = styled.span<{ color: CardColorsType }>`
+const Cost = styled.span<{ color: CardInterface['color'] }>`
   display: flex;
   justify-content: center;
   align-items: center;

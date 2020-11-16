@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import styled from 'styled-components'
 import Div from 'styled-kit/Div'
 
-import { CardColorsType, NobleInterface } from 'types'
+import { CardInterface, NobleInterface } from 'types'
 import { gameStore } from 'store'
 
 function Noble({ value, cost }: NobleInterface) {
@@ -42,7 +42,7 @@ const StyledNoble = styled.div`
   border-radius: 8px;
 `
 
-const Cost = styled.span<{ color: CardColorsType }>`
+const Cost = styled.span<{ color: CardInterface['color'] }>`
   display: flex;
   justify-content: center;
   align-items: center;

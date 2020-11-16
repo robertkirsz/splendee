@@ -16,7 +16,7 @@ import getNobles from 'tokens/nobles'
 
 class Player {
   id: PlayerInterface['id'] = uuidv4()
-  name: PlayerInterface['name']
+  name: PlayerInterface['name'] = ''
   currentRound: PlayerInterface['currentRound'] = 0
   gems: PlayerInterface['gems'] = {
     red: 0,
@@ -59,9 +59,9 @@ class Player {
 }
 
 class Game {
-  id: string
-  isRunning: boolean
-  currentRound: number
+  id: string = uuidv4()
+  isRunning: boolean = false
+  currentRound: number = 1
   activePlayerId: string
   nobles: NobleInterface[]
   cards: CardInterface[]
@@ -88,16 +88,12 @@ class Game {
       changeActivePlayer: action,
     })
 
-    this.id = uuidv4()
-
     this.players = [
       new Player({ name: 'Robert' }),
       new Player({ name: 'Marzenka' }),
       new Player({ name: 'Kasia' }),
     ]
 
-    this.isRunning = false
-    this.currentRound = 1
     this.activePlayerId = this.players[0].id
     this.cards = _.shuffle(getCards())
     this.nobles = _.shuffle(getNobles()).slice(0, this.numberOfPlayers + 1)
@@ -137,6 +133,7 @@ class Game {
     const cardIndex = this.cards.findIndex(({ id }) => id === card.id)
     const cardFound = this.cards.splice(cardIndex, 1)[0]
     this.activePlayer?.cards.push(cardFound)
+    // TODO: pay the gem cost
   }
 
   public earnGem = (color: GemColorsType) => {
