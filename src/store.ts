@@ -180,11 +180,7 @@ class Game {
 
           if (
             // @ts-ignore
-            noble.cost[color] <=
-            // @ts-ignore
-            this.activePlayer?.cardColorPoints[color] +
-              // @ts-ignore
-              this.activePlayer?.gems[color]
+            noble.cost[color] <= this.activePlayer?.cardsAmount[color]
           ) {
             isPurchasable = true
           } else {
