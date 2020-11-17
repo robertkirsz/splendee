@@ -7,6 +7,8 @@ import { CardInterface } from 'types'
 import { gameStore } from 'store'
 import { getColor } from 'utils'
 
+import CardsStack from 'components/CardsStack'
+
 export default observer(function CardsBoard() {
   const { cards, cardLevels, purchasableCardsIds, buyCard } = useContext(
     gameStore
@@ -19,9 +21,10 @@ export default observer(function CardsBoard() {
 
         return (
           <Div key={level} itemsCenter listLeft>
-            <span>{currentLevelCards.length}</span>
-
-            <CardsStack level={level} />
+            <CardsStack
+              level={level}
+              numberOfCards={currentLevelCards.length}
+            />
 
             {currentLevelCards.slice(0, 4).map(card => {
               const isPurchasable = purchasableCardsIds.includes(card.id)
@@ -100,22 +103,3 @@ const Cost = styled.span<{ color: CardInterface['color'] }>`
   font-weight: bold;
   text-shadow: 1px 1px 0 black;
 `
-
-function CardsStack({ level }: { level: CardInterface['level'] }) {
-  return (
-    <Div
-      flexNone
-      itemsCenter
-      justifyCenter
-      width={120}
-      height={170}
-      background="gray"
-      radius={8}
-      listLeft
-    >
-      {[...Array(level)].map((_, index) => (
-        <Div key={index} square={16} circle background="white" />
-      ))}
-    </Div>
-  )
-}
