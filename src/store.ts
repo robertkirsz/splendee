@@ -155,6 +155,7 @@ class Game {
       .map(({ level }) => level)
       .filter((level, index, array) => array.indexOf(level) === index)
       .sort()
+      .reverse()
   }
 
   public get numberOfPlayers() {
