@@ -2,13 +2,13 @@ interface IObjectKeys {
   [key: string]: string
 }
 
-export const getColor = ({ color }: { color: string }) => {
+export const getCardColor = ({ color }: { color: string }) => {
   const colors: IObjectKeys = {
-    white: '#ddd',
-    blue: 'blue',
-    green: 'green',
-    red: 'red',
-    black: 'black',
+    green: '#026f43',
+    red: '#d31b23',
+    black: '#36302f',
+    blue: '#0a64d1',
+    white: '#efece6',
   }
 
   return colors[color]

@@ -70,6 +70,7 @@ const StyledNoble = styled.div<{ isPurchasable: boolean }>`
   height: 130px;
 
   background: #ccc;
+  box-shadow: 0 2px 0 0 gray;
   border: 1px solid;
   border-radius: 8px;
 
@@ -89,5 +90,5 @@ const Cost = styled.span<{ color: CardInterface['color'] }>`
 
   color: white;
   font-weight: bold;
-  -webkit-text-stroke: 1px black;
+  text-shadow: 1px 1px 0 black;
 `

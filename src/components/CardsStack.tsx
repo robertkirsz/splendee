@@ -32,12 +32,15 @@ const Wrapper = styled.div<{ level: number }>`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
   width: 120px;
   height: 170px;
   padding: 8px;
+
   background: ${getCardStackColor};
   border: 8px solid white;
   border-radius: 8px;
-  color: white;
   box-shadow: 0 5px 0 0 gray;
+
+  color: white;
 `
