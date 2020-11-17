@@ -20,3 +20,12 @@ export default function App() {
     </Div>
   )
 }
+
+// Show cost of buying a card
+// Allow to register a card
+// Allow toregister a card from CardStack
+// Allow to spend gold
+
+/* LATER */
+// Limit to three different gems or two same if there are four remaining
+// Limit gem amount to 10
