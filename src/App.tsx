@@ -4,19 +4,23 @@ import Div from 'styled-kit/Div'
 import GemsBank from 'components/GemsBank'
 import NoblesRow from 'components/NoblesRow'
 import CardsBoard from 'components/CardsBoard'
-import StatsSection from 'components/StatsSection'
+import GameControls from 'components/GameControls'
+import PlayersSection from 'components/PlayersSection'
 
 export default function App() {
   return (
-    <Div columnTop itemsCenter>
-      <NoblesRow />
+    <Div border="1px solid" justifyBetween>
+      <PlayersSection />
+      <Div columnTop itemsCenter>
+        <NoblesRow />
 
-      <Div itemsCenter listLeft>
-        <CardsBoard />
-        <GemsBank />
+        <Div itemsCenter listLeft>
+          <CardsBoard />
+          <GemsBank />
+        </Div>
+
+        <GameControls />
       </Div>
-
-      <StatsSection />
     </Div>
   )
 }

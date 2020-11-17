@@ -19,14 +19,14 @@ class Player implements PlayerInterface {
   name: PlayerInterface['name'] = ''
   currentRound: PlayerInterface['currentRound'] = 0
   gems: PlayerInterface['gems'] = {
-    red: 0,
-    green: 0,
+    red: 7,
+    green: 6,
     blue: 0,
-    white: 0,
-    black: 0,
-    gold: 0,
+    white: 4,
+    black: 3,
+    gold: 1,
   }
-  cards: PlayerInterface['cards'] = []
+  cards: PlayerInterface['cards'] = _.shuffle(getCards()).slice(0, 30)
   nobles: PlayerInterface['nobles'] = []
 
   constructor({ name }: { name: PlayerInterface['name'] }) {

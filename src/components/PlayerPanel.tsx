@@ -1,36 +1,29 @@
 import React, { useContext } from 'react'
 import { observer } from 'mobx-react-lite'
+import styled from 'styled-components'
 import Div from 'styled-kit/Div'
 
-import { gameStore } from 'store'
 import { PlayerInterface } from 'types'
+import { gameStore } from 'store'
+import { sc } from 'utils'
 
-export default observer(function PlayerPanel({
-  player,
-}: {
+type Props = {
   player: PlayerInterface
-}) {
+}
+
+export default observer(function PlayerPanel({ player }: Props) {
   const { activePlayerId, changeActivePlayer } = useContext(gameStore)
 
   return (
-    <Div
+    <Wrapper
       key={player.id}
-      listLeft
-      padding={8}
-      radius={4}
-      border="1px solid"
-      clickable
-      // @ts-ignore
       onClick={() => changeActivePlayer(player.id)}
-      style={
-        player.id === activePlayerId
-          ? { boxShadow: '0 0 15px -3px green' }
-          : null
-      }
+      isActive={player.id === activePlayerId}
     >
-      <span title="Score">
-        {player.name} ({player.score}/15)
-      </span>
+      <Div column mRight={8}>
+        <span>{player.name}</span>
+        <span>({player.score}/15)</span>
+      </Div>
 
       <Div listLeft>
         {player.inventoryColors.map(color => (
@@ -50,6 +43,14 @@ export default observer(function PlayerPanel({
           </Div>
         ))}
       </Div>
-    </Div>
+    </Wrapper>
   )
 })
+
+const Wrapper = styled.div<{ isActive: boolean }>`
+  display: flex;
+  padding: 8px;
+  border: 1px solid;
+  border-radius: 8px;
+  ${sc('isActive')`box-shadow: '0 0 15px -3px green'`}
+`
