@@ -5,13 +5,12 @@ import styled from 'styled-components'
 import { CardInterface } from 'types'
 import { getCardStackColor } from 'utils'
 
-export default function CardsStack({
-  level,
-  numberOfCards,
-}: {
+type Props = {
   level: CardInterface['level']
   numberOfCards: number
-}) {
+}
+
+export default function CardsStack({ level, numberOfCards }: Props) {
   return (
     <Wrapper level={level}>
       <Div margin="auto" pTop={8}>

@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import Div from 'styled-kit/Div'
 
 import { CardInterface } from 'types'
-import { getCardColor } from 'utils'
+import { getCardColor, sc } from 'utils'
 
 interface CardElementInterface extends CardInterface {
   // TODO: maybe I can do it without undefined?
@@ -47,12 +47,17 @@ const Wrapper = styled.div<{
   height: 170px;
 
   background: ${getCardColor};
+
   box-shadow: 0 1px 0 0 gray;
-  border: 1px solid;
+  border: 1px solid gray;
   border-radius: 8px;
 
-  ${props =>
-    props.isPurchasable && 'box-shadow: 0 0 15px 5px green; cursor: pointer;'}
+  overflow: hidden;
+
+  ${sc('isPurchasable')`
+    box-shadow: 0 0 15px 5px green;
+    cursor: pointer;
+  `}
 `
 
 const Cost = styled.span<{ color: CardInterface['color'] }>`

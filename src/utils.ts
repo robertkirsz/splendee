@@ -36,3 +36,8 @@ export const getGemColor = ({ color }: { color: string }) => {
 
   return colors[color]
 }
+
+export const sc = (propName: string) => (css: TemplateStringsArray | any) =>
+  css.length
+    ? (props: any) => (props[propName] ? css : undefined)
+    : css[propName]

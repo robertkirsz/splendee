@@ -6,7 +6,7 @@ import Color from 'color'
 
 import { GemColorsType } from 'types'
 import { gameStore } from 'store'
-import { getGemColor } from 'utils'
+import { getGemColor, sc } from 'utils'
 
 export default observer(function GemsBank() {
   const { gems, earnGem } = useContext(gameStore)
@@ -52,9 +52,7 @@ const GemContainer = styled.div<{ color: any; disabled: boolean }>`
 
   cursor: pointer;
 
-  ${({ disabled }) =>
-    disabled &&
-    `
+  ${sc('disabled')`
     opacity: 0.5;
     pointer-events: none;
   `}
