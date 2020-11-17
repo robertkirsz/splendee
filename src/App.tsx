@@ -9,7 +9,7 @@ import PlayersSection from 'components/PlayersSection'
 
 export default function App() {
   return (
-    <Div border="1px solid" justifyBetween>
+    <Div justifyBetween>
       <PlayersSection />
       <Div columnTop itemsCenter>
         <NoblesRow />

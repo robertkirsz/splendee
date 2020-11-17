@@ -34,10 +34,7 @@ export default observer(function PlayerPanel({ player }: Props) {
             radius={4}
             padding={4}
           >
-            <span>
-              {/* @ts-ignore */}
-              🃏 #{player.cardAmount[color]} 💲{player.cardPoints[color]}
-            </span>
+            <CardHolder color={color} amount={player.cardAmount[color]} />
             <GemHolder color={color} amount={player.gems[color]} />
           </Div>
         ))}
@@ -51,24 +48,50 @@ const Wrapper = styled.div<{ isActive: boolean }>`
   padding: 8px;
   border: 1px solid;
   border-radius: 8px;
-  ${sc('isActive')`box-shadow: '0 0 15px -3px green'`}
+  ${sc('isActive')`box-shadow: 0 0 15px -3px green;`}
 `
 
-function GemHolder({ color, amount }: { color: string; amount: number }) {
+// TODO: make them vertical
+// TODO: show only a few and show a number if more
+// TODO: gold should be separate
+
+function CardHolder({ color, amount }: { color: string; amount: number }) {
   if (!amount) return null
 
   return (
-    <Div listLeft={-11}>
+    <Div listLeft={-12}>
       {[...Array(amount)].map((_, index) => (
         <span
           key={index}
           css={`
             display: block;
             background: ${getGemColor({ color })};
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
+            width: 18px;
+            height: 24px;
             border: 1px solid;
+            border-radius: 4px;
+          `}
+        />
+      ))}
+    </Div>
+  )
+}
+
+function GemHolder({ color, amount }: { color: string; amount: number }) {
+  if (!amount) return null
+
+  return (
+    <Div listLeft={-12}>
+      {[...Array(amount)].map((_, index) => (
+        <span
+          key={index}
+          css={`
+            display: block;
+            background: ${getGemColor({ color })};
+            width: 18px;
+            height: 18px;
+            border: 1px solid;
+            border-radius: 50%;
           `}
         />
       ))}
