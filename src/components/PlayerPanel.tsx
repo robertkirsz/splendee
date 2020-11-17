@@ -1,11 +1,11 @@
 import React, { useContext } from 'react'
 import { observer } from 'mobx-react-lite'
-import styled from 'styled-components'
+import styled from 'styled-components/macro'
 import Div from 'styled-kit/Div'
 
 import { PlayerInterface } from 'types'
 import { gameStore } from 'store'
-import { sc } from 'utils'
+import { getGemColor, sc } from 'utils'
 
 type Props = {
   player: PlayerInterface
@@ -38,8 +38,7 @@ export default observer(function PlayerPanel({ player }: Props) {
               {/* @ts-ignore */}
               🃏 #{player.cardAmount[color]} 💲{player.cardPoints[color]}
             </span>
-            {/* @ts-ignore */}
-            <span>💎 {player.gems[color]}</span>
+            <GemHolder color={color} amount={player.gems[color]} />
           </Div>
         ))}
       </Div>
@@ -54,3 +53,25 @@ const Wrapper = styled.div<{ isActive: boolean }>`
   border-radius: 8px;
   ${sc('isActive')`box-shadow: '0 0 15px -3px green'`}
 `
+
+function GemHolder({ color, amount }: { color: string; amount: number }) {
+  if (!amount) return null
+
+  return (
+    <Div listLeft={-11}>
+      {[...Array(amount)].map((_, index) => (
+        <span
+          key={index}
+          css={`
+            display: block;
+            background: ${getGemColor({ color })};
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 1px solid;
+          `}
+        />
+      ))}
+    </Div>
+  )
+}
