@@ -8,6 +8,8 @@ import type { CardInterface } from 'types'
 import { gameStore } from 'store'
 import { getCardColor, sc } from 'utils'
 
+import { GemIndicator } from 'components/PlayerPanel'
+
 type Props = {
   card: CardInterface
 }
@@ -31,14 +33,22 @@ export default observer(function Card({ card }: Props) {
     }
   })
 
-  const getCardButtonLabel =
-    'GET FOR ' + (colorCost.length > 0 ? colorCost.join(' ') : 'FREE')
-
   return (
     <Wrapper color={color} isPurchasable={isPurchasable}>
       <ButtonsOverlay>
         {isPurchasable && (
-          <button onClick={() => buyCard(card)}>{getCardButtonLabel}</button>
+          <button onClick={() => buyCard(card)}>
+            GET FOR{' '}
+            {colorCost.length > 0 ? (
+              <Div listLeft={-8}>
+                {colorCost.map((color, index) => (
+                  <GemIndicator key={index} color={color} />
+                ))}
+              </Div>
+            ) : (
+              'FREE'
+            )}
+          </button>
         )}
         {/* TODO */}
         {/* <button>RESERVE</button> */}

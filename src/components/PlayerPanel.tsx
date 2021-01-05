@@ -94,18 +94,23 @@ function GemHolder({ color, amount = 0 }: { color: string; amount: number }) {
   return (
     <Div listLeft={-12}>
       {[...Array(amount)].map((_, index) => (
-        <span
-          key={index}
-          css={`
-            display: block;
-            background: ${getGemColor({ color })};
-            width: 18px;
-            height: 18px;
-            border: 1px solid;
-            border-radius: 50%;
-          `}
-        />
+        <GemIndicator key={index} color={color} />
       ))}
     </Div>
+  )
+}
+
+export function GemIndicator({ color }: { color: string }) {
+  return (
+    <span
+      css={`
+        display: block;
+        background: ${getGemColor({ color })};
+        width: 18px;
+        height: 18px;
+        border: 1px solid;
+        border-radius: 50%;
+      `}
+    />
   )
 }
