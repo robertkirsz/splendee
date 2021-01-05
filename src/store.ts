@@ -250,7 +250,7 @@ class Game {
       for (let color in card.cost) {
         const remainingGemCost =
           // @ts-ignore
-          card.cost[color] - this.activePlayer.cardPoints[color]
+          card.cost[color] - this.activePlayer.cardAmount[color]
 
         if (remainingGemCost > 0) {
           // @ts-ignore

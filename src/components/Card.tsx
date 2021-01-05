@@ -13,17 +13,37 @@ type Props = {
 }
 
 export default observer(function Card({ card }: Props) {
-  const { purchasableCardsIds, buyCard } = useContext(gameStore)
-  const { id, level, value, cost, color } = card
+  const { activePlayer, purchasableCardsIds, buyCard } = useContext(gameStore)
+  const { id, value, cost, color } = card
 
   const isPurchasable = purchasableCardsIds.includes(id)
 
-  function handleClick() {
-    if (isPurchasable) buyCard({ id, level, value, color, cost })
-  }
+  const colorCost: string[] = []
+
+  Object.entries(cost).forEach(([color, amount]) => {
+    // @ts-ignore
+    const remaining = amount - activePlayer.cardAmount[color]
+
+    if (remaining > 0) {
+      for (let i = 0; i < remaining; i++) {
+        colorCost.push(color)
+      }
+    }
+  })
+
+  const getCardButtonLabel =
+    'GET FOR ' + (colorCost.length > 0 ? colorCost.join(' ') : 'FREE')
 
   return (
-    <Wrapper color={color} isPurchasable={isPurchasable} onClick={handleClick}>
+    <Wrapper color={color} isPurchasable={isPurchasable}>
+      <ButtonsOverlay>
+        {isPurchasable && (
+          <button onClick={() => buyCard(card)}>{getCardButtonLabel}</button>
+        )}
+        {/* TODO */}
+        {/* <button>RESERVE</button> */}
+      </ButtonsOverlay>
+
       <Div height={40} padding={8} background="rgba(255, 255, 255, 0.5)">
         {value > 0 ? value : ''}
       </Div>
@@ -39,6 +59,25 @@ export default observer(function Card({ card }: Props) {
   )
 })
 
+const ButtonsOverlay = styled.div`
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(255, 255, 255, 0.1);
+
+  > button {
+    margin: 8px;
+    cursor: pointer;
+  }
+`
+
 const Wrapper = styled.div<{
   color: CardInterface['color']
   isPurchasable?: boolean
@@ -49,6 +88,8 @@ const Wrapper = styled.div<{
 
   width: 120px;
   height: 170px;
+
+  position: relative;
 
   background: ${getCardColor};
 
@@ -62,6 +103,12 @@ const Wrapper = styled.div<{
     box-shadow: 0 0 15px 5px green;
     cursor: pointer;
   `}
+
+  &:hover {
+    ${ButtonsOverlay} {
+      display: flex;
+    }
+  }
 `
 
 const Cost = styled.span<{ color: CardInterface['color'] }>`

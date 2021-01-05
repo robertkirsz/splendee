@@ -20,7 +20,7 @@ export default observer(function PlayerPanel({ player }: Props) {
     inventoryColors,
     cardAmount,
     gems,
-    totalColorPoints,
+    // totalColorPoints,
   } = player
 
   return (
@@ -32,9 +32,9 @@ export default observer(function PlayerPanel({ player }: Props) {
       <Div column mRight={8}>
         <span>{name}</span>
         <span>({score}/15)</span>
-        <span>gemPoints: {JSON.stringify(gems)}</span>
-        <span>cardAmount: {JSON.stringify(cardAmount)}</span>
-        <span>totalColorPoints: {JSON.stringify(totalColorPoints)}</span>
+        {/* <span>gemPoints: {JSON.stringify(gems)}</span> */}
+        {/* <span>cardAmount: {JSON.stringify(cardAmount)}</span> */}
+        {/* <span>totalColorPoints: {JSON.stringify(totalColorPoints)}</span> */}
       </Div>
 
       <Div listLeft>
@@ -66,9 +66,8 @@ const Wrapper = styled.div<{ isActive: boolean }>`
 // TODO: make them vertical
 // TODO: show only a few and show a number if more
 
-function CardHolder({ color, amount }: { color: string; amount: number }) {
-  console.log('CardHolder', amount)
-  if (amount <= 0) return null
+function CardHolder({ color, amount = 0 }: { color: string; amount: number }) {
+  if (!amount) return null
 
   return (
     <Div listLeft={-12}>
@@ -89,9 +88,8 @@ function CardHolder({ color, amount }: { color: string; amount: number }) {
   )
 }
 
-function GemHolder({ color, amount }: { color: string; amount: number }) {
-  console.log('GemHolder', amount)
-  if (amount <= 0) return null
+function GemHolder({ color, amount = 0 }: { color: string; amount: number }) {
+  if (!amount) return null
 
   return (
     <Div listLeft={-12}>
