@@ -8,9 +8,7 @@ import CardsStack from 'components/CardsStack'
 import Card from 'components/Card'
 
 export default observer(function CardsBoard() {
-  const { cards, cardLevels, purchasableCardsIds, buyCard } = useContext(
-    gameStore
-  )
+  const { cards, cardLevels } = useContext(gameStore)
 
   return (
     <Div columnTop>
@@ -24,18 +22,9 @@ export default observer(function CardsBoard() {
               numberOfCards={currentLevelCards.length}
             />
 
-            {currentLevelCards.slice(0, 4).map(card => {
-              const isPurchasable = purchasableCardsIds.includes(card.id)
-
-              return (
-                <Card
-                  key={card.id}
-                  isPurchasable={isPurchasable}
-                  onClick={() => isPurchasable && buyCard(card)}
-                  {...card}
-                />
-              )
-            })}
+            {currentLevelCards.slice(0, 4).map(card => (
+              <Card key={card.id} card={card} />
+            ))}
           </Div>
         )
       })}

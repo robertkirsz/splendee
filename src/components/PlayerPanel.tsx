@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite'
 import styled from 'styled-components/macro'
 import Div from 'styled-kit/Div'
 
-import { PlayerInterface } from 'types'
+import type { PlayerInterface } from 'types'
 import { gameStore } from 'store'
 import { getGemColor, sc } from 'utils'
 
@@ -13,20 +13,32 @@ type Props = {
 
 export default observer(function PlayerPanel({ player }: Props) {
   const { activePlayerId, changeActivePlayer } = useContext(gameStore)
+  const {
+    id,
+    name,
+    score,
+    inventoryColors,
+    cardAmount,
+    gems,
+    totalColorPoints,
+  } = player
 
   return (
     <Wrapper
-      key={player.id}
-      onClick={() => changeActivePlayer(player.id)}
-      isActive={player.id === activePlayerId}
+      key={id}
+      onClick={() => changeActivePlayer(id)}
+      isActive={id === activePlayerId}
     >
       <Div column mRight={8}>
-        <span>{player.name}</span>
-        <span>({player.score}/15)</span>
+        <span>{name}</span>
+        <span>({score}/15)</span>
+        <span>gemPoints: {JSON.stringify(gems)}</span>
+        <span>cardAmount: {JSON.stringify(cardAmount)}</span>
+        <span>totalColorPoints: {JSON.stringify(totalColorPoints)}</span>
       </Div>
 
       <Div listLeft>
-        {player.inventoryColors.map(color => (
+        {inventoryColors.map(color => (
           <Div
             key={color}
             columnTop
@@ -34,8 +46,8 @@ export default observer(function PlayerPanel({ player }: Props) {
             radius={4}
             padding={4}
           >
-            <CardHolder color={color} amount={player.cardAmount[color]} />
-            <GemHolder color={color} amount={player.gems[color]} />
+            <CardHolder color={color} amount={cardAmount[color]} />
+            <GemHolder color={color} amount={gems[color]} />
           </Div>
         ))}
       </Div>
@@ -53,10 +65,10 @@ const Wrapper = styled.div<{ isActive: boolean }>`
 
 // TODO: make them vertical
 // TODO: show only a few and show a number if more
-// TODO: gold should be separate
 
 function CardHolder({ color, amount }: { color: string; amount: number }) {
-  if (!amount) return null
+  console.log('CardHolder', amount)
+  if (amount <= 0) return null
 
   return (
     <Div listLeft={-12}>
@@ -78,7 +90,8 @@ function CardHolder({ color, amount }: { color: string; amount: number }) {
 }
 
 function GemHolder({ color, amount }: { color: string; amount: number }) {
-  if (!amount) return null
+  console.log('GemHolder', amount)
+  if (amount <= 0) return null
 
   return (
     <Div listLeft={-12}>

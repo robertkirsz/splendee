@@ -19,24 +19,26 @@ class Player implements PlayerInterface {
   name: PlayerInterface['name'] = ''
   currentRound: PlayerInterface['currentRound'] = 0
   gems: PlayerInterface['gems'] = {
-    red: 7,
-    green: 6,
+    red: 0,
+    green: 0,
     blue: 0,
-    white: 4,
-    black: 3,
-    gold: 1,
+    white: 0,
+    black: 0,
+    gold: 0,
   }
-  cards: PlayerInterface['cards'] = _.shuffle(getCards()).slice(0, 30)
+  // cards: PlayerInterface['cards'] = _.shuffle(getCards()).slice(0, 30)
+  cards: PlayerInterface['cards'] = []
   nobles: PlayerInterface['nobles'] = []
 
   constructor({ name }: { name: PlayerInterface['name'] }) {
     makeObservable(this, {
+      nobles: observable,
       gems: observable,
       cards: observable,
-      inventoryColors: computed,
-      cardPoints: computed,
       cardAmount: computed,
-      nobles: observable,
+      cardPoints: computed,
+      totalColorPoints: computed,
+      inventoryColors: computed,
       score: computed,
       earnGem: action,
     })
@@ -68,13 +70,15 @@ class Player implements PlayerInterface {
     })
 
     // @ts-ignore
-    return Object.entries(result)
-      .filter(([color, exists]) => exists)
-      .map(([color]) => color)
-      .sort()
+    return (
+      Object.entries(result)
+        .filter(([color, exists]) => exists)
+        .map(([color]) => color)
+        .sort() || []
+    )
   }
 
-  get cardPoints(): { [key in CardInterface['color']]: number } {
+  get cardPoints(): PlayerInterface['cardPoints'] {
     return this.cards.reduce(
       (prev, curr) => ({
         ...prev,
@@ -84,7 +88,7 @@ class Player implements PlayerInterface {
     )
   }
 
-  get cardAmount(): { [key in CardInterface['color']]: number } {
+  get cardAmount(): PlayerInterface['cardAmount'] {
     return this.cards.reduce(
       (prev, curr) => ({
         ...prev,
@@ -92,6 +96,17 @@ class Player implements PlayerInterface {
       }),
       { red: 0, green: 0, blue: 0, white: 0, black: 0 }
     )
+  }
+
+  get totalColorPoints(): PlayerInterface['gems'] {
+    return {
+      red: this.gems.red + this.cardAmount.red,
+      green: this.gems.green + this.cardAmount.green,
+      blue: this.gems.blue + this.cardAmount.blue,
+      white: this.gems.white + this.cardAmount.white,
+      black: this.gems.black + this.cardAmount.black,
+      gold: this.gems.gold,
+    }
   }
 
   public earnGem = (color: GemColorsType) => {
@@ -180,9 +195,7 @@ class Game {
             // @ts-ignore
             card.cost[color] <=
               // @ts-ignore
-              this.activePlayer?.cardPoints[color] +
-                // @ts-ignore
-                this.activePlayer?.gems[color]
+              this.activePlayer?.totalColorPoints[color]
           ) {
             isPurchasable = true
           } else {

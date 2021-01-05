@@ -1,25 +1,29 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { observer } from 'mobx-react-lite'
 import styled from 'styled-components'
 import Div from 'styled-kit/Div'
 
-import { CardInterface } from 'types'
+import type { CardInterface } from 'types'
+
+import { gameStore } from 'store'
 import { getCardColor, sc } from 'utils'
 
-interface CardElementInterface extends CardInterface {
-  // TODO: maybe I can do it without undefined?
-  isPurchasable: boolean | undefined
-  onClick(): void
+type Props = {
+  card: CardInterface
 }
 
-export default function Card({
-  value,
-  cost,
-  color,
-  isPurchasable,
-  onClick,
-}: CardElementInterface) {
+export default observer(function Card({ card }: Props) {
+  const { purchasableCardsIds, buyCard } = useContext(gameStore)
+  const { id, level, value, cost, color } = card
+
+  const isPurchasable = purchasableCardsIds.includes(id)
+
+  function handleClick() {
+    if (isPurchasable) buyCard({ id, level, value, color, cost })
+  }
+
   return (
-    <Wrapper color={color} isPurchasable={isPurchasable} onClick={onClick}>
+    <Wrapper color={color} isPurchasable={isPurchasable} onClick={handleClick}>
       <Div height={40} padding={8} background="rgba(255, 255, 255, 0.5)">
         {value > 0 ? value : ''}
       </Div>
@@ -33,7 +37,7 @@ export default function Card({
       </Div>
     </Wrapper>
   )
-}
+})
 
 const Wrapper = styled.div<{
   color: CardInterface['color']

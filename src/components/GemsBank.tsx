@@ -56,4 +56,9 @@ const GemContainer = styled.div<{ color: any; disabled: boolean }>`
     opacity: 0.5;
     pointer-events: none;
   `}
+
+  &:last-child {
+    margin-top: 80px;
+    /* pointer-events: none; */
+  }
 `
