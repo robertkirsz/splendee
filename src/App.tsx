@@ -9,9 +9,10 @@ import PlayersSection from 'components/PlayersSection'
 
 export default function App() {
   return (
-    <Div justifyBetween>
+    <Div>
       <PlayersSection />
-      <Div columnTop itemsCenter>
+
+      <Div flex={1} columnTop itemsCenter>
         <NoblesRow />
 
         <Div itemsCenter listLeft>
@@ -25,10 +26,11 @@ export default function App() {
   )
 }
 
-// Show cost of buying a card
-// Allow to register a card
-// Allow toregister a card from CardStack
+/* TODO */
+// Allow to reserve a card
+// Allow to reserve a card from CardStack
 // Allow to spend gold
+// Disable clicking on gold
 
 /* LATER */
 // Limit to three different gems or two same if there are four remaining

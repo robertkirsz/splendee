@@ -37,21 +37,9 @@ export default observer(function Card({ card }: Props) {
     <Wrapper color={color} isPurchasable={isPurchasable}>
       <ButtonsOverlay>
         {isPurchasable && (
-          <button onClick={() => buyCard(card)}>
-            GET FOR{' '}
-            {colorCost.length > 0 ? (
-              <Div listLeft={-8}>
-                {colorCost.map((color, index) => (
-                  <GemIndicator key={index} color={color} />
-                ))}
-              </Div>
-            ) : (
-              'FREE'
-            )}
-          </button>
+          <BuyCardButton colorCost={colorCost} onClick={() => buyCard(card)} />
         )}
-        {/* TODO */}
-        {/* <button>RESERVE</button> */}
+        <button>RESERVE</button>
       </ButtonsOverlay>
 
       <Div height={40} padding={8} background="rgba(255, 255, 255, 0.5)">
@@ -68,6 +56,29 @@ export default observer(function Card({ card }: Props) {
     </Wrapper>
   )
 })
+
+function BuyCardButton({
+  colorCost,
+  onClick,
+}: {
+  colorCost: string[]
+  onClick: () => void
+}) {
+  return (
+    <button onClick={onClick}>
+      GET FOR{' '}
+      {colorCost.length > 0 ? (
+        <Div listLeft={-8}>
+          {colorCost.map((color, index) => (
+            <GemIndicator key={index} color={color} />
+          ))}
+        </Div>
+      ) : (
+        'FREE'
+      )}
+    </button>
+  )
+}
 
 const ButtonsOverlay = styled.div`
   display: none;
