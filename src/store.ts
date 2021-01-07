@@ -144,7 +144,6 @@ class Game {
       gems: observable,
       numberOfPlayers: computed,
       activePlayer: computed,
-      purchasableCardsIds: computed,
       purchasableNoblesIds: computed,
       start: action,
       stop: action,
@@ -189,33 +188,6 @@ class Game {
     return this.players.find(({ id }) => id === this.activePlayerId)
   }
 
-  public get purchasableCardsIds() {
-    return this.cards
-      .filter(card => {
-        let isPurchasable: boolean | undefined = undefined
-
-        for (let color in card.cost) {
-          if (isPurchasable === false) break
-
-          if (
-            // @ts-ignore
-            !card.cost[color] ||
-            // @ts-ignore
-            card.cost[color] <=
-              // @ts-ignore
-              this.activePlayer?.totalColorPoints[color]
-          ) {
-            isPurchasable = true
-          } else {
-            isPurchasable = false
-          }
-        }
-
-        return isPurchasable
-      })
-      .map(card => card.id)
-  }
-
   public get purchasableNoblesIds() {
     return this.nobles
       .filter(noble => {
@@ -249,10 +221,25 @@ class Game {
 
   // TODO: change to cardId, like in earnNoble?
   public buyCard = (card: CardInterface) => {
+    let cardFound = null
+
     // TODO: I want this to always exist
     if (this.activePlayer) {
-      const cardIndex = this.cards.findIndex(({ id }) => id === card.id)
-      const cardFound = this.cards.splice(cardIndex, 1)[0]
+      // Check if card is laready registered
+      const reservedCardIndex = this.activePlayer.reservedCards.findIndex(
+        ({ id }) => id === card.id
+      )
+
+      if (reservedCardIndex) {
+        cardFound = this.activePlayer.reservedCards.splice(
+          reservedCardIndex,
+          1
+        )[0]
+      } else {
+        // If not, find look for it in card stack
+        const cardIndex = this.cards.findIndex(({ id }) => id === card.id)
+        cardFound = this.cards.splice(cardIndex, 1)[0]
+      }
 
       // Pay the cost
       for (let color in card.cost) {
@@ -273,8 +260,7 @@ class Game {
   }
 
   public reserveCard = (card: CardInterface) => {
-    // TODO: limit number of reservations (3)
-    // Get gold only if available
+    // TODO
     // Allow to rreserve from stack
     // Don't show card reserved from stack
 
@@ -284,6 +270,8 @@ class Game {
       const cardFound = this.cards.splice(cardIndex, 1)[0]
 
       this.activePlayer.reservedCards.push(cardFound)
+
+      if (this.gems.gold) this.activePlayer.earnGem('gold')
     }
   }
 

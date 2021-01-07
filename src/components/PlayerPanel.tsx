@@ -7,6 +7,8 @@ import type { PlayerInterface } from 'types'
 import { gameStore } from 'store'
 import { getGemColor, sc } from 'utils'
 
+import Card from 'components/Card'
+
 type Props = {
   player: PlayerInterface
 }
@@ -51,9 +53,12 @@ export default observer(function PlayerPanel({ player }: Props) {
             <GemHolder color={color} amount={gems[color]} />
           </Div>
         ))}
-        {reservedCards.map(card => (
-          <span key={card.id}>{card.id}</span>
-        ))}
+
+        <Div listLeft>
+          {reservedCards.map(card => (
+            <Card key={card.id} card={card} />
+          ))}
+        </Div>
       </Div>
     </Wrapper>
   )

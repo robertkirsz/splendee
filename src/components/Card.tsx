@@ -15,16 +15,38 @@ type Props = {
 }
 
 export default observer(function Card({ card }: Props) {
-  const {
-    activePlayer,
-    purchasableCardsIds,
-    buyCard,
-    reserveCard,
-  } = useContext(gameStore)
-  const { id, value, cost, color } = card
+  const { activePlayer, buyCard, reserveCard } = useContext(gameStore)
 
-  const isPurchasable = purchasableCardsIds.includes(id)
+  const { value, cost, color } = card
 
+  function checkPurchasability() {
+    let isPurchasable: boolean | undefined = undefined
+
+    for (let color in cost) {
+      if (isPurchasable === false) break
+
+      if (
+        // @ts-ignore
+        !cost[color] ||
+        // @ts-ignore
+        cost[color] <=
+          // @ts-ignore
+          activePlayer?.totalColorPoints[color]
+      ) {
+        isPurchasable = true
+      } else {
+        isPurchasable = false
+      }
+    }
+
+    return isPurchasable
+  }
+
+  const isPurchasable = checkPurchasability()
+  const isNotAlreadyReserved = !activePlayer?.reservedCards.find(
+    ({ id }) => id === card.id
+  )
+  const showButtonsOverlay = isPurchasable || activePlayer?.canReserveCards
   const colorCost: string[] = []
 
   Object.entries(cost).forEach(([color, amount]) => {
@@ -40,16 +62,22 @@ export default observer(function Card({ card }: Props) {
 
   return (
     <Wrapper color={color} isPurchasable={isPurchasable}>
-      <ButtonsOverlay>
-        {isPurchasable && (
-          <BuyCardButton colorCost={colorCost} onClick={() => buyCard(card)} />
-        )}
+      {/* TODO: get rid of ?. */}
+      {showButtonsOverlay && (
+        <ButtonsOverlay>
+          {isPurchasable && (
+            <BuyCardButton
+              colorCost={colorCost}
+              onClick={() => buyCard(card)}
+            />
+          )}
 
-        {/* TODO: get rid of ?. */}
-        {activePlayer?.canReserveCards && (
-          <button onClick={() => reserveCard(card)}>RESERVE</button>
-        )}
-      </ButtonsOverlay>
+          {/* TODO: get rid of ?. */}
+          {isNotAlreadyReserved && activePlayer?.canReserveCards && (
+            <button onClick={() => reserveCard(card)}>RESERVE</button>
+          )}
+        </ButtonsOverlay>
+      )}
 
       <Div height={40} padding={8} background="rgba(255, 255, 255, 0.5)">
         {value > 0 ? value : ''}
