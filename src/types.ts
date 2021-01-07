@@ -5,6 +5,7 @@ export interface PlayerInterface {
   score: number
   gems: GemAmountInterface
   cards: CardInterface[]
+  reservedCards: CardInterface[]
   inventoryColors: CardInterface['color'][]
   cardPoints: { [key in CardInterface['color']]: number }
   cardAmount: { [key in CardInterface['color']]: number }

@@ -20,6 +20,7 @@ export default observer(function PlayerPanel({ player }: Props) {
     inventoryColors,
     cardAmount,
     gems,
+    reservedCards,
     // totalColorPoints,
   } = player
 
@@ -49,6 +50,9 @@ export default observer(function PlayerPanel({ player }: Props) {
             <CardHolder color={color} amount={cardAmount[color]} />
             <GemHolder color={color} amount={gems[color]} />
           </Div>
+        ))}
+        {reservedCards.map(card => (
+          <span key={card.id}>{card.id}</span>
         ))}
       </Div>
     </Wrapper>

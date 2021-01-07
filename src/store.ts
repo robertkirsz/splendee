@@ -249,11 +249,11 @@ class Game {
 
   // TODO: change to cardId, like in earnNoble?
   public buyCard = (card: CardInterface) => {
-    const cardIndex = this.cards.findIndex(({ id }) => id === card.id)
-    const cardFound = this.cards.splice(cardIndex, 1)[0]
-
     // TODO: I want this to always exist
     if (this.activePlayer) {
+      const cardIndex = this.cards.findIndex(({ id }) => id === card.id)
+      const cardFound = this.cards.splice(cardIndex, 1)[0]
+
       // Pay the cost
       for (let color in card.cost) {
         const remainingGemCost =
@@ -275,8 +275,16 @@ class Game {
   public reserveCard = (card: CardInterface) => {
     // TODO: limit number of reservations (3)
     // Get gold only if available
+    // Allow to rreserve from stack
     // Don't show card reserved from stack
-    console.log(card)
+
+    // TODO: I want this to always exist
+    if (this.activePlayer && this.activePlayer.canReserveCards) {
+      const cardIndex = this.cards.findIndex(({ id }) => id === card.id)
+      const cardFound = this.cards.splice(cardIndex, 1)[0]
+
+      this.activePlayer.reservedCards.push(cardFound)
+    }
   }
 
   public earnGem = (color: GemColorsType) => {
