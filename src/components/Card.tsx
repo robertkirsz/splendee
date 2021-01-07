@@ -15,7 +15,12 @@ type Props = {
 }
 
 export default observer(function Card({ card }: Props) {
-  const { activePlayer, purchasableCardsIds, buyCard } = useContext(gameStore)
+  const {
+    activePlayer,
+    purchasableCardsIds,
+    buyCard,
+    reserveCard,
+  } = useContext(gameStore)
   const { id, value, cost, color } = card
 
   const isPurchasable = purchasableCardsIds.includes(id)
@@ -39,7 +44,11 @@ export default observer(function Card({ card }: Props) {
         {isPurchasable && (
           <BuyCardButton colorCost={colorCost} onClick={() => buyCard(card)} />
         )}
-        <button>RESERVE</button>
+
+        {/* TODO: get rid of ?. */}
+        {activePlayer?.canReserveCards && (
+          <button onClick={() => reserveCard(card)}>RESERVE</button>
+        )}
       </ButtonsOverlay>
 
       <Div height={40} padding={8} background="rgba(255, 255, 255, 0.5)">

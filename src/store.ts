@@ -28,18 +28,21 @@ class Player implements PlayerInterface {
   }
   // cards: PlayerInterface['cards'] = _.shuffle(getCards()).slice(0, 30)
   cards: PlayerInterface['cards'] = []
+  reservedCards: PlayerInterface['cards'] = []
   nobles: PlayerInterface['nobles'] = []
 
   constructor({ name }: { name: PlayerInterface['name'] }) {
     makeObservable(this, {
-      nobles: observable,
       gems: observable,
       cards: observable,
+      reservedCards: observable,
+      nobles: observable,
       cardAmount: computed,
       cardPoints: computed,
       totalColorPoints: computed,
       inventoryColors: computed,
       score: computed,
+      canReserveCards: computed,
       earnGem: action,
     })
 
@@ -109,6 +112,10 @@ class Player implements PlayerInterface {
     }
   }
 
+  get canReserveCards() {
+    return this.reservedCards.length < 3
+  }
+
   public earnGem = (color: GemColorsType) => {
     this.gems[color]++
   }
@@ -142,6 +149,7 @@ class Game {
       start: action,
       stop: action,
       buyCard: action,
+      reserveCard: action,
       earnGem: action,
       earnNoble: action,
       changeActivePlayer: action,
@@ -262,6 +270,13 @@ class Game {
 
       this.activePlayer.cards.push(cardFound)
     }
+  }
+
+  public reserveCard = (card: CardInterface) => {
+    // TODO: limit number of reservations (3)
+    // Get gold only if available
+    // Don't show card reserved from stack
+    console.log(card)
   }
 
   public earnGem = (color: GemColorsType) => {

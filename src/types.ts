@@ -11,6 +11,7 @@ export interface PlayerInterface {
   totalColorPoints: { [key in CardInterface['color']]: number }
   nobles: NobleInterface[]
   earnGem(color: GemColorsType): void
+  canReserveCards: boolean
 }
 
 export type CostType = {
