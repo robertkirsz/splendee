@@ -17,10 +17,15 @@ type Props = {
 export default observer(function Card({ card }: Props) {
   const { activePlayer, buyCard, reserveCard } = useContext(gameStore)
 
-  const { value, cost, color } = card
+  const { value, cost, color, isReservedBy } = card
 
   function checkPurchasability() {
     let isPurchasable: boolean | undefined = undefined
+
+    // TODO: get rid of ?.
+    if (isReservedBy && isReservedBy !== activePlayer?.id) {
+      return false
+    }
 
     for (let color in cost) {
       if (isPurchasable === false) break
@@ -43,11 +48,10 @@ export default observer(function Card({ card }: Props) {
   }
 
   const isPurchasable = checkPurchasability()
-  const isNotAlreadyReserved = !activePlayer?.reservedCards.find(
-    ({ id }) => id === card.id
-  )
-  const showButtonsOverlay = isPurchasable || activePlayer?.canReserveCards
   const colorCost: string[] = []
+  // TODO: get rid of ?.
+  const showButtonsOverlay = isPurchasable || activePlayer?.canReserveCards
+  const cardCanBeReserved = activePlayer?.canReserveCards && !isReservedBy
 
   Object.entries(cost).forEach(([color, amount]) => {
     // @ts-ignore
@@ -72,8 +76,7 @@ export default observer(function Card({ card }: Props) {
             />
           )}
 
-          {/* TODO: get rid of ?. */}
-          {isNotAlreadyReserved && activePlayer?.canReserveCards && (
+          {cardCanBeReserved && (
             <button onClick={() => reserveCard(card)}>RESERVE</button>
           )}
         </ButtonsOverlay>

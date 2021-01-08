@@ -29,6 +29,7 @@ export interface CardInterface {
   value: number
   color: 'red' | 'green' | 'blue' | 'white' | 'black'
   cost: CostType
+  isReservedBy?: string
 }
 
 export type GemColorsType =

@@ -14,6 +14,8 @@ import {
 import getCards from 'tokens/cards'
 import getNobles from 'tokens/nobles'
 
+import { removeByIdAndReturn } from 'utils'
+
 class Player implements PlayerInterface {
   id: PlayerInterface['id'] = uuidv4()
   name: PlayerInterface['name'] = ''
@@ -225,20 +227,15 @@ class Game {
 
     // TODO: I want this to always exist
     if (this.activePlayer) {
-      // Check if card is laready registered
-      const reservedCardIndex = this.activePlayer.reservedCards.findIndex(
-        ({ id }) => id === card.id
-      )
-
-      if (reservedCardIndex) {
-        cardFound = this.activePlayer.reservedCards.splice(
-          reservedCardIndex,
-          1
-        )[0]
-      } else {
+      // Check if card is already reserved
+      if (card.isReservedBy === this.activePlayer.id) {
+        cardFound = removeByIdAndReturn(
+          this.activePlayer.reservedCards,
+          card.id
+        )!
         // If not, find look for it in card stack
-        const cardIndex = this.cards.findIndex(({ id }) => id === card.id)
-        cardFound = this.cards.splice(cardIndex, 1)[0]
+      } else {
+        cardFound = removeByIdAndReturn(this.cards, card.id)!
       }
 
       // Pay the cost
@@ -255,20 +252,21 @@ class Game {
         }
       }
 
+      delete cardFound.isReservedBy
       this.activePlayer.cards.push(cardFound)
     }
   }
 
   public reserveCard = (card: CardInterface) => {
     // TODO
-    // Allow to rreserve from stack
+    // Allow to reserve from stack
     // Don't show card reserved from stack
 
-    // TODO: I want this to always exist
+    // TODO: I want activePlayer this to always exist
     if (this.activePlayer && this.activePlayer.canReserveCards) {
-      const cardIndex = this.cards.findIndex(({ id }) => id === card.id)
-      const cardFound = this.cards.splice(cardIndex, 1)[0]
+      const cardFound = removeByIdAndReturn(this.cards, card.id)!
 
+      cardFound.isReservedBy = this.activePlayer.id
       this.activePlayer.reservedCards.push(cardFound)
 
       if (this.gems.gold) this.activePlayer.earnGem('gold')

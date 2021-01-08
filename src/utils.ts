@@ -41,3 +41,19 @@ export const sc = (propName: string) => (css: TemplateStringsArray | any) =>
   css.length
     ? (props: any) => (props[propName] ? css : undefined)
     : css[propName]
+
+export const removeByIdAndReturn = <
+  Item extends {
+    id: number
+  }
+>(
+  array: Item[],
+  id: number
+): Item | undefined => {
+  let item
+  const itemIndex = array.findIndex(item => item.id === id)
+
+  if (itemIndex !== -1) item = array.splice(itemIndex, 1)[0]
+
+  return item
+}
