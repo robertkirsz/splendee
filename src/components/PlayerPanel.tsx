@@ -31,6 +31,7 @@ export default observer(function PlayerPanel({ player }: Props) {
       key={id}
       onClick={() => changeActivePlayer(id)}
       isActive={id === activePlayerId}
+      data-player-id={id}
     >
       <Div column mRight={8}>
         <span>{name}</span>
@@ -40,7 +41,7 @@ export default observer(function PlayerPanel({ player }: Props) {
         {/* <span>totalColorPoints: {JSON.stringify(totalColorPoints)}</span> */}
       </Div>
 
-      <Div listLeft>
+      <Div listLeft itemsStart>
         {inventoryColors.map(color => (
           <Div
             key={color}

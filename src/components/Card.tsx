@@ -64,20 +64,28 @@ export default observer(function Card({ card }: Props) {
     }
   })
 
+  function handleBuyCardButtonClick() {
+    buyCard(card)
+  }
+
+  function handleReserveCardButtonClick() {
+    reserveCard(card)
+  }
+
   return (
-    <Wrapper color={color} isPurchasable={isPurchasable}>
+    <Wrapper color={color} isPurchasable={isPurchasable} data-card-id={card.id}>
       {/* TODO: get rid of ?. */}
       {showButtonsOverlay && (
         <ButtonsOverlay>
           {isPurchasable && (
             <BuyCardButton
               colorCost={colorCost}
-              onClick={() => buyCard(card)}
+              onClick={handleBuyCardButtonClick}
             />
           )}
 
           {cardCanBeReserved && (
-            <button onClick={() => reserveCard(card)}>RESERVE</button>
+            <button onClick={handleReserveCardButtonClick}>RESERVE</button>
           )}
         </ButtonsOverlay>
       )}

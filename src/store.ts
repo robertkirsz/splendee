@@ -1,5 +1,5 @@
 import { createContext } from 'react'
-import { makeObservable, observable, action, computed } from 'mobx'
+import { makeObservable, observable, action, computed, runInAction } from 'mobx'
 import { v4 as uuidv4 } from 'uuid'
 import _ from 'lodash'
 
@@ -14,7 +14,7 @@ import {
 import getCards from 'tokens/cards'
 import getNobles from 'tokens/nobles'
 
-import { removeByIdAndReturn } from 'utils'
+import { removeByIdAndReturn, fly } from 'utils'
 
 class Player implements PlayerInterface {
   id: PlayerInterface['id'] = uuidv4()
@@ -222,7 +222,8 @@ class Game {
   }
 
   // TODO: change to cardId, like in earnNoble?
-  public buyCard = (card: CardInterface) => {
+  public buyCard = async (card: CardInterface) => {
+    // @ts-ignore
     let cardFound = null
 
     // TODO: I want this to always exist
@@ -252,8 +253,17 @@ class Game {
         }
       }
 
-      delete cardFound.isReservedBy
-      this.activePlayer.cards.push(cardFound)
+      fly(
+        document.querySelector(`[data-card-id="${card.id}"]`),
+        document.querySelector(`[data-player-id="${this.activePlayer!.id}"]`)
+      ).then(() => {
+        runInAction(() => {
+          // @ts-ignore
+          delete cardFound.isReservedBy
+          // @ts-ignore
+          this.activePlayer.cards.push(cardFound)
+        })
+      })
     }
   }
 
@@ -266,10 +276,18 @@ class Game {
     if (this.activePlayer && this.activePlayer.canReserveCards) {
       const cardFound = removeByIdAndReturn(this.cards, card.id)!
 
-      cardFound.isReservedBy = this.activePlayer.id
-      this.activePlayer.reservedCards.push(cardFound)
+      fly(
+        document.querySelector(`[data-card-id="${card.id}"]`),
+        document.querySelector(`[data-player-id="${this.activePlayer!.id}"]`)
+      ).then(() => {
+        runInAction(() => {
+          // TODO: I want activePlayer this to always exist
+          cardFound.isReservedBy = this.activePlayer!.id
+          this.activePlayer!.reservedCards.push(cardFound)
 
-      if (this.gems.gold) this.activePlayer.earnGem('gold')
+          if (this.gems.gold) this.activePlayer!.earnGem('gold')
+        })
+      })
     }
   }
 
