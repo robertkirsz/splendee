@@ -11,7 +11,7 @@ export default observer(function CardsBoard() {
   const { cards, cardLevels } = useContext(gameStore)
 
   return (
-    <Div columnTop>
+    <Div columnTop id="card-board">
       {cardLevels.map(level => {
         const currentLevelCards = cards.filter(card => card.level === level)
 

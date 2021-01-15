@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import { observer } from 'mobx-react-lite'
-import styled from 'styled-components/macro'
+import styled, { css, keyframes } from 'styled-components/macro'
 import Div from 'styled-kit/Div'
 
 import type { PlayerInterface } from 'types'
@@ -92,6 +92,7 @@ function CardHolder({ color, amount = 0 }: { color: string; amount: number }) {
             border: 1px solid;
             border-radius: 4px;
           `}
+          data-card-indicator-color={color}
         />
       ))}
     </Div>
@@ -104,23 +105,37 @@ function GemHolder({ color, amount = 0 }: { color: string; amount: number }) {
   return (
     <Div listLeft={-12}>
       {[...Array(amount)].map((_, index) => (
-        <GemIndicator key={index} color={color} />
+        <GemIndicator key={index} color={color} fadeIn />
       ))}
     </Div>
   )
 }
 
-export function GemIndicator({ color }: { color: string }) {
-  return (
-    <span
-      css={`
-        display: block;
-        background: ${getGemColor({ color })};
-        width: 18px;
-        height: 18px;
-        border: 1px solid;
-        border-radius: 50%;
-      `}
-    />
-  )
-}
+const fadeIn = keyframes`
+  0% {
+    opacity: 0;
+  }
+  99% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+`
+
+export const GemIndicator = styled.span.attrs(props => ({
+  'data-gem-indicator-color': props.color,
+}))<{ color: string; fadeIn?: boolean }>`
+  display: block;
+  background: ${props => getGemColor({ color: props.color })};
+  width: 18px;
+  height: 18px;
+  border: 1px solid;
+  border-radius: 50%;
+
+  ${props =>
+    props.fadeIn &&
+    css`
+      animation: 1s ${fadeIn} linear;
+    `}
+`

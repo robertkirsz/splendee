@@ -42,6 +42,20 @@ export const sc = (propName: string) => (css: TemplateStringsArray | any) =>
     ? (props: any) => (props[propName] ? css : undefined)
     : css[propName]
 
+export const getById = <Item extends { id: number }>(
+  array: Item[],
+  id: number
+) => array.find(item => item.id === id)
+
+export const removeById = <Item extends { id: number }>(
+  array: Item[],
+  id: number
+) => {
+  const itemIndex = array.findIndex(item => item.id === id)
+
+  if (itemIndex !== -1) array.splice(itemIndex, 1)
+}
+
 export const removeByIdAndReturn = <Item extends { id: number }>(
   array: Item[],
   id: number
@@ -70,7 +84,7 @@ function calculatePosition(from: HTMLElement, to: HTMLElement, scale: number) {
   return { top: `${top}px`, left: `${left}px`, transform: `scale(${scale})` }
 }
 
-export function fly(
+export function flyCard(
   from: HTMLElement | null,
   to: HTMLElement | null,
   scale: number = 0.2
@@ -83,7 +97,11 @@ export function fly(
     const clone = from.cloneNode(true) as HTMLElement
     clone.style.top = `${fromTop}px`
     clone.style.left = `${fromLeft}px`
-    clone.className += ` clone`
+    clone.style.position = 'absolute'
+    clone.style.transitionProperty = 'top, left, transform'
+    clone.style.transitionDuration = '1s'
+    clone.style.transformOrigin = 'left top'
+    clone.style.pointerEvents = 'none'
 
     clone.addEventListener('transitionend', () => {
       clone.remove()
@@ -100,11 +118,48 @@ export function fly(
       clone.style.top = position.top
       clone.style.left = position.left
       clone.style.transform = position.transform
-      clone.style.position = 'absolute'
-      clone.style.transitionProperty = 'top, left, transform'
-      clone.style.transitionDuration = '1s'
-      clone.style.transformOrigin = 'left top'
-      clone.style.pointerEvents = 'none'
+    })
+  })
+}
+
+export function flyGem(
+  from: HTMLElement | null,
+  to: HTMLElement | null,
+  scale: number = 0.34
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (!from || !to) {
+      reject()
+      return
+    }
+
+    const { top: fromTop, left: fromLeft } = from.getBoundingClientRect()
+
+    const clone = from.cloneNode(true) as HTMLElement
+    clone.style.top = `${fromTop}px`
+    clone.style.left = `${fromLeft}px`
+    clone.style.opacity = '1'
+    clone.style.marginTop = '0'
+    clone.style.position = 'absolute'
+    clone.style.transitionProperty = 'top, left, transform'
+    clone.style.transitionDuration = '1s'
+    clone.style.transformOrigin = 'left top'
+    clone.style.pointerEvents = 'none'
+    clone.innerText = ''
+
+    clone.addEventListener('transitionend', () => {
+      clone.remove()
+      resolve()
+    })
+
+    document.body.appendChild(clone)
+
+    const position = calculatePosition(from, to, scale)
+
+    setTimeout(() => {
+      clone.style.top = position.top
+      clone.style.left = position.left
+      clone.style.transform = position.transform
     })
   })
 }

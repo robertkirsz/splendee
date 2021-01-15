@@ -109,6 +109,8 @@ declare module 'styled-kit/Div' {
     clickable?: boolean
     noPointerEvents?: boolean
     overlay?: string
+    // TODO: I don't want this here
+    id?: string
   }
 
   declare const Div: React.FunctionComponent<DivProps>

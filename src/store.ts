@@ -14,7 +14,7 @@ import {
 import getCards from 'tokens/cards'
 import getNobles from 'tokens/nobles'
 
-import { removeByIdAndReturn, fly } from 'utils'
+import { flyCard, flyGem, getById, removeById } from 'utils'
 
 class Player implements PlayerInterface {
   id: PlayerInterface['id'] = uuidv4()
@@ -223,20 +223,19 @@ class Game {
 
   // TODO: change to cardId, like in earnNoble?
   public buyCard = async (card: CardInterface) => {
-    // @ts-ignore
-    let cardFound = null
-
     // TODO: I want this to always exist
     if (this.activePlayer) {
-      // Check if card is already reserved
-      if (card.isReservedBy === this.activePlayer.id) {
-        cardFound = removeByIdAndReturn(
-          this.activePlayer.reservedCards,
-          card.id
-        )!
-        // If not, find look for it in card stack
+      let cardFound: CardInterface
+      const cardIsReservedByActivePlayer =
+        card.isReservedBy === this.activePlayer.id
+
+      // TODO: maybe instead of checking if cardIsReservedByActivePlayer three times,
+      // I should make two separate paths here?
+
+      if (cardIsReservedByActivePlayer) {
+        cardFound = getById(this.activePlayer.reservedCards, card.id)!
       } else {
-        cardFound = removeByIdAndReturn(this.cards, card.id)!
+        cardFound = getById(this.cards, card.id)!
       }
 
       // Pay the cost
@@ -253,15 +252,26 @@ class Game {
         }
       }
 
-      fly(
-        document.querySelector(`[data-card-id="${card.id}"]`),
-        document.querySelector(`[data-player-id="${this.activePlayer!.id}"]`)
-      ).then(() => {
-        runInAction(() => {
-          // @ts-ignore
-          delete cardFound.isReservedBy
-          // @ts-ignore
-          this.activePlayer.cards.push(cardFound)
+      // @ts-ignore
+      this.activePlayer.cards.push(cardFound)
+
+      setTimeout(() => {
+        flyCard(
+          // prettier-ignore
+          cardIsReservedByActivePlayer
+            ? document.querySelector(`[data-player-id="${this.activePlayer!.id}"] [data-card-id="${card.id}"]`)
+            : document.querySelector(`#card-board [data-card-id="${card.id}"]`),
+          // prettier-ignore
+          document.querySelector(`[data-player-id="${this.activePlayer!.id}"] [data-card-indicator-color="${card.color}"]:last-child`)
+        ).then(() => {
+          runInAction(() => {
+            if (cardIsReservedByActivePlayer) {
+              delete cardFound.isReservedBy
+              removeById(this.activePlayer!.reservedCards, card.id)
+            } else {
+              removeById(this.cards, card.id)
+            }
+          })
         })
       })
     }
@@ -274,18 +284,22 @@ class Game {
 
     // TODO: I want activePlayer this to always exist
     if (this.activePlayer && this.activePlayer.canReserveCards) {
-      const cardFound = removeByIdAndReturn(this.cards, card.id)!
+      const cardFound = getById(this.cards, card.id)!
 
-      fly(
-        document.querySelector(`[data-card-id="${card.id}"]`),
-        document.querySelector(`[data-player-id="${this.activePlayer!.id}"]`)
-      ).then(() => {
-        runInAction(() => {
-          // TODO: I want activePlayer this to always exist
-          cardFound.isReservedBy = this.activePlayer!.id
-          this.activePlayer!.reservedCards.push(cardFound)
+      cardFound.isReservedBy = this.activePlayer.id
+      this.activePlayer.reservedCards.push(cardFound)
+      if (this.gems.gold) this.earnGem('gold')
 
-          if (this.gems.gold) this.activePlayer!.earnGem('gold')
+      setTimeout(() => {
+        flyCard(
+          // @ts-ignore
+          document.querySelector(`#card-board [data-card-id="${card.id}"]`),
+          // prettier-ignore
+          document.querySelector(`[data-player-id="${this.activePlayer!.id}"] [data-card-id="${card.id}"]`)
+        ).then(() => {
+          runInAction(() => {
+            removeById(this.cards, card.id)
+          })
         })
       })
     }
@@ -293,8 +307,20 @@ class Game {
 
   public earnGem = (color: GemColorsType) => {
     if (!this.gems[color]) return
+
     this.gems[color]--
     this.activePlayer?.earnGem(color)
+
+    setTimeout(() => {
+      flyGem(
+        document.querySelector(`[data-gem-container-color="${color}"]`),
+        document.querySelector(
+          `[data-player-id="${
+            this.activePlayer!.id
+          }"] [data-gem-indicator-color="${color}"]:last-child`
+        )
+      )
+    })
   }
 
   public earnNoble = (nobleId: NobleInterface['id']) => {

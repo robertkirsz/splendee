@@ -21,6 +21,7 @@ export default observer(function GemsBank() {
           color={Color(getGemColor({ color }))}
           onClick={() => earnGem(color)}
           disabled={!gems[color]}
+          data-gem-container-color={color}
         >
           {gems[color]}
         </GemContainer>
