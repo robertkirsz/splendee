@@ -23,6 +23,7 @@ const getCards = () => [
   new Card({ id:  2, level: 1, color: 'black', value: 0, cost: { white: 2, blue: 2, green: 0, red: 1, black: 0 } }),
   new Card({ id:  3, level: 1, color: 'black', value: 0, cost: { white: 0, blue: 0, green: 1, red: 3, black: 1 } }),
   new Card({ id:  4, level: 1, color: 'black', value: 0, cost: { white: 0, blue: 0, green: 2, red: 1, black: 0 } }),
+  /*
   new Card({ id:  5, level: 1, color: 'black', value: 0, cost: { white: 2, blue: 0, green: 2, red: 0, black: 0 } }),
   new Card({ id:  6, level: 1, color: 'black', value: 0, cost: { white: 0, blue: 0, green: 3, red: 0, black: 0 } }),
   new Card({ id:  7, level: 1, color: 'black', value: 1, cost: { white: 0, blue: 4, green: 0, red: 0, black: 0 } }),
@@ -58,11 +59,13 @@ const getCards = () => [
   new Card({ id: 37, level: 1, color: 'red',   value: 0, cost: { white: 2, blue: 0, green: 0, red: 2, black: 0 } }),
   new Card({ id: 38, level: 1, color: 'red',   value: 0, cost: { white: 3, blue: 0, green: 0, red: 0, black: 0 } }),
   new Card({ id: 39, level: 1, color: 'red',   value: 1, cost: { white: 4, blue: 0, green: 0, red: 0, black: 0 } }),
+  */
   new Card({ id: 40, level: 2, color: 'black', value: 1, cost: { white: 3, blue: 2, green: 2, red: 0, black: 0 } }),
   new Card({ id: 41, level: 2, color: 'black', value: 1, cost: { white: 3, blue: 0, green: 3, red: 0, black: 2 } }),
   new Card({ id: 42, level: 2, color: 'black', value: 2, cost: { white: 0, blue: 1, green: 4, red: 2, black: 0 } }),
   new Card({ id: 43, level: 2, color: 'black', value: 2, cost: { white: 0, blue: 0, green: 5, red: 3, black: 0 } }),
   new Card({ id: 44, level: 2, color: 'black', value: 2, cost: { white: 5, blue: 0, green: 0, red: 0, black: 0 } }),
+  /*
   new Card({ id: 45, level: 2, color: 'black', value: 3, cost: { white: 0, blue: 0, green: 0, red: 0, black: 6 } }),
   new Card({ id: 46, level: 2, color: 'blue',  value: 1, cost: { white: 0, blue: 2, green: 2, red: 3, black: 0 } }),
   new Card({ id: 47, level: 2, color: 'blue',  value: 1, cost: { white: 0, blue: 2, green: 3, red: 0, black: 3 } }),
@@ -88,11 +91,13 @@ const getCards = () => [
   new Card({ id: 67, level: 2, color: 'red',   value: 2, cost: { white: 3, blue: 0, green: 0, red: 0, black: 5 } }),
   new Card({ id: 68, level: 2, color: 'red',   value: 2, cost: { white: 0, blue: 0, green: 0, red: 0, black: 5 } }),
   new Card({ id: 69, level: 2, color: 'red',   value: 3, cost: { white: 0, blue: 0, green: 0, red: 6, black: 0 } }),
+  */
   new Card({ id: 70, level: 3, color: 'black', value: 3, cost: { white: 3, blue: 3, green: 5, red: 3, black: 0 } }),
   new Card({ id: 71, level: 3, color: 'black', value: 4, cost: { white: 0, blue: 0, green: 0, red: 7, black: 0 } }),
   new Card({ id: 72, level: 3, color: 'black', value: 4, cost: { white: 0, blue: 0, green: 3, red: 6, black: 3 } }),
   new Card({ id: 73, level: 3, color: 'black', value: 5, cost: { white: 0, blue: 0, green: 0, red: 7, black: 3 } }),
   new Card({ id: 74, level: 3, color: 'blue',  value: 3, cost: { white: 3, blue: 0, green: 3, red: 3, black: 5 } }),
+  /*
   new Card({ id: 75, level: 3, color: 'blue',  value: 4, cost: { white: 7, blue: 0, green: 0, red: 0, black: 0 } }),
   new Card({ id: 76, level: 3, color: 'blue',  value: 4, cost: { white: 6, blue: 3, green: 0, red: 0, black: 3 } }),
   new Card({ id: 77, level: 3, color: 'blue',  value: 5, cost: { white: 7, blue: 3, green: 0, red: 0, black: 0 } }),
@@ -108,6 +113,7 @@ const getCards = () => [
   new Card({ id: 87, level: 3, color: 'red',   value: 4, cost: { white: 0, blue: 0, green: 7, red: 0, black: 0 } }),
   new Card({ id: 88, level: 3, color: 'red',   value: 4, cost: { white: 0, blue: 3, green: 6, red: 3, black: 0 } }),
   new Card({ id: 89, level: 3, color: 'red',   value: 5, cost: { white: 0, blue: 0, green: 7, red: 3, black: 0 } })
+  */
 ]
 
 export default getCards

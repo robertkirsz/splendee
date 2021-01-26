@@ -12,9 +12,10 @@ import { GemIndicator } from 'components/PlayerPanel'
 
 type Props = {
   card: CardInterface
+  onTakeCard?: Function
 }
 
-export default observer(function Card({ card }: Props) {
+export default observer(function Card({ card, onTakeCard }: Props) {
   const { activePlayer, buyCard, reserveCard } = useContext(gameStore)
 
   const { value, cost, color, isReservedBy } = card
@@ -66,10 +67,12 @@ export default observer(function Card({ card }: Props) {
 
   function handleBuyCardButtonClick() {
     buyCard(card)
+    onTakeCard?.(card.id)
   }
 
   function handleReserveCardButtonClick() {
     reserveCard(card)
+    onTakeCard?.(card.id)
   }
 
   return (

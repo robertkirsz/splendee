@@ -54,7 +54,7 @@ const GemContainer = styled.div<{ color: any; disabled: boolean }>`
   cursor: pointer;
 
   ${sc('disabled')`
-    opacity: 0.5;
+    opacity: 0;
     pointer-events: none;
   `}
 

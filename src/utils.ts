@@ -103,9 +103,11 @@ export function flyCard(
     clone.style.transformOrigin = 'left top'
     clone.style.pointerEvents = 'none'
 
+    const currentDisplay = from.style.display
+
     clone.addEventListener('transitionend', () => {
       clone.remove()
-      resolve()
+      from.style.display = currentDisplay
     })
 
     document.body.appendChild(clone)
@@ -113,11 +115,11 @@ export function flyCard(
     const position = calculatePosition(from, to, scale)
 
     setTimeout(() => {
-      from.style.opacity = '0'
-
+      from.style.display = 'none'
       clone.style.top = position.top
       clone.style.left = position.left
       clone.style.transform = position.transform
+      resolve()
     })
   })
 }

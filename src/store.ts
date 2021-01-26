@@ -20,12 +20,20 @@ class Player implements PlayerInterface {
   id: PlayerInterface['id'] = uuidv4()
   name: PlayerInterface['name'] = ''
   currentRound: PlayerInterface['currentRound'] = 0
+  // gems: PlayerInterface['gems'] = {
+  //   red: 0,
+  //   green: 0,
+  //   blue: 0,
+  //   white: 0,
+  //   black: 0,
+  //   gold: 0,
+  // }
   gems: PlayerInterface['gems'] = {
-    red: 0,
-    green: 0,
-    blue: 0,
-    white: 0,
-    black: 0,
+    red: 7,
+    green: 7,
+    blue: 7,
+    white: 7,
+    black: 7,
     gold: 0,
   }
   // cards: PlayerInterface['cards'] = _.shuffle(getCards()).slice(0, 30)
@@ -132,7 +140,6 @@ class Game {
   cards: CardInterface[]
   gems: GemAmountInterface
   players: PlayerInterface[]
-  cardLevels: CardInterface['level'][]
 
   constructor() {
     makeObservable(this, {
@@ -174,12 +181,6 @@ class Game {
       black: 7,
       gold: 5,
     }
-
-    this.cardLevels = this.cards
-      .map(({ level }) => level)
-      .filter((level, index, array) => array.indexOf(level) === index)
-      .sort()
-      .reverse()
   }
 
   public get numberOfPlayers() {
