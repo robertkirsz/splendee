@@ -287,39 +287,31 @@ class Game {
   }
 
   public reserveCard = (card: CardInterface, animate = true) => {
-    // TODO
-    // Allow to reserve from stack
-    // Don't show card reserved from stack
-
+    // TODO: Don't show card reserved from stack
     // TODO: I want activePlayer this to always exist
-    if (this.activePlayer && this.activePlayer.canReserveCards) {
-      const cardFound = getById(this.cards, card.id)!
+    if (!this.activePlayer?.canReserveCards) return Promise.resolve()
 
+    if (this.gems.gold) this.earnGem('gold')
+
+    const doLogic = () => {
+      // TODO: I want activePlayer this to always exist
+      if (typeof this.activePlayer === 'undefined') return
+      const cardFound = removeByIdAndReturn(this.cards, card.id)!
       cardFound.isReservedBy = this.activePlayer.id
       this.activePlayer.reservedCards.push(cardFound)
-      if (this.gems.gold) this.earnGem('gold')
-
-      if (!animate) {
-        // setTimeout(() => {
-        removeById(this.cards, card.id)
-        // }, flyDuration)
-
-        return
-      }
-
-      setTimeout(() => {
-        flyCard(
-          // @ts-ignore
-          document.querySelector(`#card-board [data-card-id="${card.id}"]`),
-          // prettier-ignore
-          document.querySelector(`[data-player-id="${this.activePlayer!.id}"] [data-card-id="${card.id}"]`)
-        ).then(() => {
-          runInAction(() => {
-            removeById(this.cards, card.id)
-          })
-        })
-      })
     }
+
+    if (!animate) {
+      doLogic()
+      return Promise.resolve()
+    }
+
+    return flyCard(
+      document.querySelector(`#card-board [data-card-id="${card.id}"]`),
+      document.querySelector(`[data-player-id="${this.activePlayer!.id}"]`)
+    ).then(() => {
+      runInAction(doLogic)
+    })
   }
 
   public earnGem = (color: GemColorsType) => {

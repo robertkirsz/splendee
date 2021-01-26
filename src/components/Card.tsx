@@ -73,8 +73,7 @@ export default observer(function Card({ card, onTakeCard }: Props) {
   }
 
   function handleReserveCardButtonClick() {
-    reserveCard(card)
-    // onTakeCard?.(card.id)
+    reserveCard(card).then(() => onTakeCard?.(card.id))
   }
 
   return (
