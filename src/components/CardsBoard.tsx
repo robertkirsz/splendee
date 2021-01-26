@@ -35,18 +35,18 @@ const CardsRow = observer(function CardsRow({
   const [currentCardIndex, setCurrentCardIndex] = useState(3)
 
   function handleTakeCard(id: CardInterface['id']) {
-    setTimeout(() => {
-      setCardsToDisplay(state => {
-        const nextCard = currentLevelCards[currentCardIndex + 1]
-        return state.map(card => (card?.id === id ? nextCard : card))
-      })
-
-      setCurrentCardIndex(state => state + 1)
+    setCardsToDisplay(state => {
+      const nextCard = currentLevelCards[currentCardIndex + 1]
+      return state.map(card => (card?.id === id ? nextCard : card))
     })
+
+    setCurrentCardIndex(state => state + 1)
   }
 
   function handleReserveCardFromStack() {
+    // setTimeout(() => {
     setCurrentCardIndex(state => state + 1)
+    // }, flyDuration)
   }
 
   const numberOfCards =

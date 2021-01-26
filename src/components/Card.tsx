@@ -16,7 +16,9 @@ type Props = {
 }
 
 export default observer(function Card({ card, onTakeCard }: Props) {
-  const { activePlayer, buyCard, reserveCard } = useContext(gameStore)
+  const { activePlayer, buyCard, reserveCard, actionInProgress } = useContext(
+    gameStore
+  )
 
   const { value, cost, color, isReservedBy } = card
 
@@ -51,7 +53,8 @@ export default observer(function Card({ card, onTakeCard }: Props) {
   const isPurchasable = checkPurchasability()
   const colorCost: string[] = []
   // TODO: get rid of ?.
-  const showButtonsOverlay = isPurchasable || activePlayer?.canReserveCards
+  const showButtonsOverlay =
+    !actionInProgress && (isPurchasable || activePlayer?.canReserveCards)
   const cardCanBeReserved = activePlayer?.canReserveCards && !isReservedBy
 
   Object.entries(cost).forEach(([color, amount]) => {
@@ -66,18 +69,16 @@ export default observer(function Card({ card, onTakeCard }: Props) {
   })
 
   function handleBuyCardButtonClick() {
-    buyCard(card)
-    onTakeCard?.(card.id)
+    buyCard(card).then(() => onTakeCard?.(card.id))
   }
 
   function handleReserveCardButtonClick() {
     reserveCard(card)
-    onTakeCard?.(card.id)
+    // onTakeCard?.(card.id)
   }
 
   return (
     <Wrapper color={color} isPurchasable={isPurchasable} data-card-id={card.id}>
-      {/* TODO: get rid of ?. */}
       {showButtonsOverlay && (
         <ButtonsOverlay>
           {isPurchasable && (
@@ -171,9 +172,10 @@ const Wrapper = styled.div<{
 
   overflow: hidden;
 
+  transition: box-shadow 0.3s;
+
   ${sc('isPurchasable')`
     box-shadow: 0 0 15px 5px green;
-    cursor: pointer;
   `}
 
   &:hover {

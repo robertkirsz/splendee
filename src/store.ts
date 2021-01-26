@@ -14,7 +14,13 @@ import {
 import getCards from 'tokens/cards'
 import getNobles from 'tokens/nobles'
 
-import { flyCard, flyGem, getById, removeById } from 'utils'
+import {
+  flyCard,
+  flyGem,
+  getById,
+  removeById,
+  removeByIdAndReturn,
+} from 'utils'
 
 class Player implements PlayerInterface {
   id: PlayerInterface['id'] = uuidv4()
@@ -134,6 +140,7 @@ class Player implements PlayerInterface {
 class Game {
   id: string = uuidv4()
   isRunning: boolean = false
+  actionInProgress: boolean = false
   currentRound: number = 1
   activePlayerId: string
   nobles: NobleInterface[]
@@ -145,6 +152,7 @@ class Game {
     makeObservable(this, {
       id: observable,
       isRunning: observable,
+      actionInProgress: observable,
       currentRound: observable,
       activePlayerId: observable,
       nobles: observable,
@@ -222,60 +230,60 @@ class Game {
     this.isRunning = false
   }
 
-  // TODO: change to cardId, like in earnNoble?
-  public buyCard = async (card: CardInterface) => {
-    // TODO: I want this to always exist
-    if (this.activePlayer) {
-      let cardFound: CardInterface
-      const cardIsReservedByActivePlayer =
-        card.isReservedBy === this.activePlayer.id
+  private payCardCost(card: CardInterface) {
+    for (let color in card.cost) {
+      const remainingGemCost =
+        // @ts-ignore
+        card.cost[color] - this.activePlayer.cardAmount[color]
 
-      // TODO: maybe instead of checking if cardIsReservedByActivePlayer three times,
-      // I should make two separate paths here?
-
-      if (cardIsReservedByActivePlayer) {
-        cardFound = getById(this.activePlayer.reservedCards, card.id)!
-      } else {
-        cardFound = getById(this.cards, card.id)!
+      if (remainingGemCost > 0) {
+        // @ts-ignore
+        this.activePlayer.gems[color] -= remainingGemCost
+        // @ts-ignore
+        this.gems[color] += remainingGemCost
       }
-
-      // Pay the cost
-      for (let color in card.cost) {
-        const remainingGemCost =
-          // @ts-ignore
-          card.cost[color] - this.activePlayer.cardAmount[color]
-
-        if (remainingGemCost > 0) {
-          // @ts-ignore
-          this.activePlayer.gems[color] -= remainingGemCost
-          // @ts-ignore
-          this.gems[color] += remainingGemCost
-        }
-      }
-
-      // @ts-ignore
-      this.activePlayer.cards.push(cardFound)
-
-      setTimeout(() => {
-        flyCard(
-          // prettier-ignore
-          cardIsReservedByActivePlayer
-            ? document.querySelector(`[data-player-id="${this.activePlayer!.id}"] [data-card-id="${card.id}"]`)
-            : document.querySelector(`#card-board [data-card-id="${card.id}"]`),
-          // prettier-ignore
-          document.querySelector(`[data-player-id="${this.activePlayer!.id}"] [data-card-indicator-color="${card.color}"]:last-child`)
-        ).then(() => {
-          runInAction(() => {
-            if (cardIsReservedByActivePlayer) {
-              delete cardFound.isReservedBy
-              removeById(this.activePlayer!.reservedCards, card.id)
-            } else {
-              removeById(this.cards, card.id)
-            }
-          })
-        })
-      })
     }
+  }
+
+  // TODO: change to cardId, like in earnNoble?
+  public buyCard = (card: CardInterface) => {
+    // TODO: I want this to always exist
+    if (typeof this.activePlayer === 'undefined') return Promise.resolve()
+
+    this.actionInProgress = true
+
+    const cardIsReservedByActivePlayer =
+      card.isReservedBy === this.activePlayer.id
+
+    return flyCard(
+      // prettier-ignore
+      cardIsReservedByActivePlayer
+        ? document.querySelector(`[data-player-id="${this.activePlayer!.id}"] [data-card-id="${card.id}"]`)
+        : document.querySelector(`#card-board [data-card-id="${card.id}"]`),
+      document.querySelector(`[data-player-id="${this.activePlayer!.id}"]`)
+    ).then(() => {
+      runInAction(() => {
+        // TODO: I want this to always exist
+        if (typeof this.activePlayer === 'undefined') return
+
+        let cardFound: CardInterface
+
+        this.payCardCost(card)
+
+        if (cardIsReservedByActivePlayer) {
+          cardFound = removeByIdAndReturn(
+            this.activePlayer.reservedCards,
+            card.id
+          )!
+          delete cardFound.isReservedBy
+        } else {
+          cardFound = removeByIdAndReturn(this.cards, card.id)!
+        }
+
+        this.activePlayer.cards.push(cardFound)
+        this.actionInProgress = false
+      })
+    })
   }
 
   public reserveCard = (card: CardInterface, animate = true) => {
@@ -292,7 +300,10 @@ class Game {
       if (this.gems.gold) this.earnGem('gold')
 
       if (!animate) {
+        // setTimeout(() => {
         removeById(this.cards, card.id)
+        // }, flyDuration)
+
         return
       }
 

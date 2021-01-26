@@ -93,6 +93,7 @@ export function flyCard(
     if (!from || !to) return reject()
 
     const { top: fromTop, left: fromLeft } = from.getBoundingClientRect()
+    const endPosition = calculatePosition(from, to, scale)
 
     const clone = from.cloneNode(true) as HTMLElement
     clone.style.top = `${fromTop}px`
@@ -103,23 +104,19 @@ export function flyCard(
     clone.style.transformOrigin = 'left top'
     clone.style.pointerEvents = 'none'
 
-    const currentDisplay = from.style.display
-
     clone.addEventListener('transitionend', () => {
       clone.remove()
-      from.style.display = currentDisplay
+      from.style.removeProperty('visibility')
+      resolve()
     })
 
     document.body.appendChild(clone)
 
-    const position = calculatePosition(from, to, scale)
-
     setTimeout(() => {
-      from.style.display = 'none'
-      clone.style.top = position.top
-      clone.style.left = position.left
-      clone.style.transform = position.transform
-      resolve()
+      from.style.visibility = 'hidden'
+      clone.style.top = endPosition.top
+      clone.style.left = endPosition.left
+      clone.style.transform = endPosition.transform
     })
   })
 }
