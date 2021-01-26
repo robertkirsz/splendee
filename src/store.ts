@@ -278,7 +278,7 @@ class Game {
     }
   }
 
-  public reserveCard = (card: CardInterface) => {
+  public reserveCard = (card: CardInterface, animate = true) => {
     // TODO
     // Allow to reserve from stack
     // Don't show card reserved from stack
@@ -290,6 +290,11 @@ class Game {
       cardFound.isReservedBy = this.activePlayer.id
       this.activePlayer.reservedCards.push(cardFound)
       if (this.gems.gold) this.earnGem('gold')
+
+      if (!animate) {
+        removeById(this.cards, card.id)
+        return
+      }
 
       setTimeout(() => {
         flyCard(

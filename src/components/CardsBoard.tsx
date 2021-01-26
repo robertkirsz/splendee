@@ -28,8 +28,6 @@ const CardsRow = observer(function CardsRow({
 
   const currentLevelCards = cards.filter(card => card.level === level)
 
-  const numberOfCards = currentLevelCards.length
-
   const [cardsToDisplay, setCardsToDisplay] = useState(
     currentLevelCards.slice(0, 4)
   )
@@ -47,11 +45,23 @@ const CardsRow = observer(function CardsRow({
     })
   }
 
+  function handleReserveCardFromStack() {
+    setCurrentCardIndex(state => state + 1)
+  }
+
+  const numberOfCards =
+    currentLevelCards.length - cardsToDisplay.filter(card => card).length
+
   return (
     <Div key={level} itemsCenter listLeft>
       <CardHolder>
         {numberOfCards > 0 && (
-          <CardsStack level={level} numberOfCards={currentLevelCards.length} />
+          <CardsStack
+            level={level}
+            numberOfCards={numberOfCards}
+            topCard={currentLevelCards[currentCardIndex + 1]}
+            onTakeCard={handleReserveCardFromStack}
+          />
         )}
       </CardHolder>
 

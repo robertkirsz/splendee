@@ -131,7 +131,7 @@ function BuyCardButton({
   )
 }
 
-const ButtonsOverlay = styled.div`
+export const ButtonsOverlay = styled.div`
   display: none;
   flex-direction: column;
   justify-content: center;
