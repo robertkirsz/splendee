@@ -14,13 +14,7 @@ import {
 import getCards from 'tokens/cards'
 import getNobles from 'tokens/nobles'
 
-import {
-  flyCard,
-  flyGem,
-  getById,
-  removeById,
-  removeByIdAndReturn,
-} from 'utils'
+import { flyCard, flyGem, removeByIdAndReturn } from 'utils'
 
 class Player implements PlayerInterface {
   id: PlayerInterface['id'] = uuidv4()
