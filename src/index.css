@@ -3,26 +3,8 @@
 @tailwind utilities;
 
 body {
-  margin: 0;
-  padding: 8px;
-
-  font-family: -apple-system, sans-serif;
+  background: #eee;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  box-sizing: border-box;
   user-select: none;
-
-  background: #eee;
-}
-
-*,
-*::before,
-*::after {
-  box-sizing: inherit;
-}
-
-#root {
-  display: flex;
-  flex-direction: column;
 }
