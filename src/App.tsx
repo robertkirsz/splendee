@@ -1,5 +1,4 @@
 import React from 'react'
-import Div from 'styled-kit/Div'
 
 import GemsBank from 'components/GemsBank'
 import NoblesRow from 'components/NoblesRow'
@@ -9,20 +8,20 @@ import PlayersSection from 'components/PlayersSection'
 
 export default function App() {
   return (
-    <Div justifyBetween>
+    <div className="flex justify-between">
       <PlayersSection />
 
-      <Div columnTop itemsCenter>
+      <div className="flex flex-col space-y-4">
         <NoblesRow />
 
-        <Div itemsCenter listLeft>
+        <div className="flex items-center space-x-4">
           <CardsBoard />
           <GemsBank />
-        </Div>
+        </div>
 
         <GameControls />
-      </Div>
-    </Div>
+      </div>
+    </div>
   )
 }
 
