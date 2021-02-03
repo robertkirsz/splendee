@@ -1,5 +1,7 @@
 import React from 'react'
 
+import GameCreationScreen from 'screens/GameCreationScreen'
+
 import GemsBank from 'components/GemsBank'
 import NoblesRow from 'components/NoblesRow'
 import CardsBoard from 'components/CardsBoard'
@@ -7,22 +9,28 @@ import GameControls from 'components/GameControls'
 import PlayersSection from 'components/PlayersSection'
 
 export default function App() {
-  return (
-    <div className="flex justify-between">
-      <PlayersSection />
+  const gameExists = false
 
-      <div className="flex flex-col space-y-4">
-        <NoblesRow />
+  if (gameExists) {
+    return (
+      <div className="flex justify-between">
+        <PlayersSection />
 
-        <div className="flex items-center space-x-4">
-          <CardsBoard />
-          <GemsBank />
+        <div className="flex flex-col space-y-4">
+          <NoblesRow />
+
+          <div className="flex items-center space-x-4">
+            <CardsBoard />
+            <GemsBank />
+          </div>
+
+          <GameControls />
         </div>
-
-        <GameControls />
       </div>
-    </div>
-  )
+    )
+  }
+
+  return <GameCreationScreen />
 }
 
 /* TODO */
