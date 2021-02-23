@@ -16,7 +16,8 @@ import getNobles from 'tokens/nobles'
 
 import { flyCard, flyGem, removeByIdAndReturn } from 'utils'
 
-class Player implements PlayerInterface {
+// TODO: check if we need export here
+export class Player implements PlayerInterface {
   id: PlayerInterface['id'] = uuidv4()
   name: PlayerInterface['name'] = ''
   currentRound: PlayerInterface['currentRound'] = 0

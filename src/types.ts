@@ -54,3 +54,20 @@ export interface NobleInterface {
   value: 3
   cost: CostType
 }
+
+export interface RoomInterface {
+  id: string
+  number: number
+  players: PlayerInterface[]
+}
+
+export interface ConnectedPlayerMetadataInterface {
+  socketId: string
+  roomId: string
+  playerId: PlayerInterface['id']
+}
+
+export interface DataInterface {
+  rooms: RoomInterface[]
+  players: ConnectedPlayerMetadataInterface[]
+}
