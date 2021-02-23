@@ -3,8 +3,9 @@ import { io } from 'socket.io-client'
 
 import type { DataInterface } from 'types'
 
+import IntroScreen from 'screens/IntroScreen'
 import GameScreen from 'screens/GameScreen'
-import GameCreationScreen from 'screens/GameCreationScreen'
+import LobbyScreen from 'screens/LobbyScreen'
 
 const socket = io('ws://localhost:1987')
 
@@ -13,6 +14,7 @@ export default function App() {
   const [data, setData] = useState<DataInterface>()
 
   const gameExists = false
+  const playerJoinedRoom = true
 
   useEffect(() => {
     if (alreadyConnected) return
@@ -28,9 +30,11 @@ export default function App() {
 
   if (typeof data === 'undefined') return null
 
+  if (playerJoinedRoom) return <LobbyScreen />
+
   if (gameExists) return <GameScreen />
 
-  return <GameCreationScreen socket={socket} data={data} />
+  return <IntroScreen socket={socket} data={data} />
 }
 
 /* TODO */
