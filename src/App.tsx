@@ -1,36 +1,36 @@
-import React from 'react'
+import { useEffect, useState } from 'react'
+import { io } from 'socket.io-client'
 
+import type { DataInterface } from 'types'
+
+import GameScreen from 'screens/GameScreen'
 import GameCreationScreen from 'screens/GameCreationScreen'
 
-import GemsBank from 'components/GemsBank'
-import NoblesRow from 'components/NoblesRow'
-import CardsBoard from 'components/CardsBoard'
-import GameControls from 'components/GameControls'
-import PlayersSection from 'components/PlayersSection'
+const socket = io('ws://localhost:1987')
 
 export default function App() {
+  const [alreadyConnected, setAlreadyConnected] = useState(false)
+  const [data, setData] = useState<DataInterface>()
+
   const gameExists = false
 
-  if (gameExists) {
-    return (
-      <div className="flex justify-between">
-        <PlayersSection />
+  useEffect(() => {
+    if (alreadyConnected) return
 
-        <div className="flex flex-col space-y-4">
-          <NoblesRow />
+    socket.on('receive data', setData)
 
-          <div className="flex items-center space-x-4">
-            <CardsBoard />
-            <GemsBank />
-          </div>
+    socket.on('connect', () => {
+      console.log(`${socket.id}: -- connected --`)
+    })
 
-          <GameControls />
-        </div>
-      </div>
-    )
-  }
+    setAlreadyConnected(true)
+  }, [alreadyConnected])
 
-  return <GameCreationScreen />
+  if (typeof data === 'undefined') return null
+
+  if (gameExists) return <GameScreen />
+
+  return <GameCreationScreen socket={socket} data={data} />
 }
 
 /* TODO */
