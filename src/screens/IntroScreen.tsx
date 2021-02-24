@@ -7,7 +7,7 @@ type Props = {
 
 export default function GameCreationScreen({ rooms = [], onJoinRoom }: Props) {
   return (
-    <div className="flex flex-col items-center m-auto space-y-10">
+    <div className="flex flex-col items-center mt-20 m-x-auto space-y-10">
       <h1 className="text-6xl">Splendee</h1>
 
       <div id="rooms-grid">

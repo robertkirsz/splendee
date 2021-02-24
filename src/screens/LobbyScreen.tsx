@@ -1,4 +1,4 @@
-import { useState, useContext, FormEvent } from 'react'
+import { useState, useContext, FormEvent, useEffect } from 'react'
 import { observer } from 'mobx-react-lite'
 
 import type { RoomInterface } from 'types'
@@ -29,9 +29,19 @@ export default observer(function LobbyScreen({
   const otherPlayersNames = otherPlayers.map(player => player.name)
   const nameIsValid = name !== '' && !otherPlayersNames.includes(name)
 
+  useEffect(() => {
+    if (
+      room.players.length >= 2 &&
+      room.players.length <= 4 &&
+      !room.players.find(player => player.name === '')
+    ) {
+      console.log('All players ready!')
+    }
+  }, [room.players])
+
   return (
-    <div className="flex flex-col items-center m-auto space-y-10">
-      <span>{room.id}</span>
+    <div className="flex flex-col items-center mt-20 m-x-auto space-y-10">
+      <h1 className="text-5xl">{room.id}</h1>
 
       <form className="flex space-x-3" onSubmit={handleSubmit}>
         <input
@@ -50,9 +60,11 @@ export default observer(function LobbyScreen({
       </form>
 
       <div className="flex flex-col space-y-4">
-        {room.players.map(player => (
-          <div key={player.id}>
-            {player.name ? `${player.name} is ready!` : `Player is joining...`}
+        {room.players.map(({ id, name }) => (
+          <div key={id}>
+            {name
+              ? `${name} is ready!`
+              : `${id === player.id ? 'You are' : 'Someone is'} joining...`}
           </div>
         ))}
       </div>

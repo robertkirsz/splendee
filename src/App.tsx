@@ -23,13 +23,13 @@ export default observer(function App() {
 
   function handleJoinRoom(roomId: string) {
     setCurrentRoomId(roomId)
-    socket.emit('join game', roomId, player)
+    socket.emit('join room', roomId, player)
   }
 
   function handleLeaveRoom() {
     player.setName('')
     setCurrentRoomId('')
-    socket.emit('leave game', currentRoomId, player.id)
+    socket.emit('leave room', currentRoomId, player.id)
   }
 
   function handlePlayerReady(roomId: string, playerName: string) {
@@ -63,12 +63,13 @@ export default observer(function App() {
         <IntroScreen rooms={data.rooms} onJoinRoom={handleJoinRoom} />
       )}
 
-      <pre id="data-preview">{JSON.stringify(data, null, 2)}</pre>
+      <pre id="data-preview">{JSON.stringify(data, null, 1)}</pre>
     </>
   )
 })
 
 /* TODO */
+// Add separate Join and Ready buttons on LobbyScreen
 // Allow to reserve a card from CardStack
 // Allow to spend gold
 
@@ -76,3 +77,4 @@ export default observer(function App() {
 // Limit to three different gems or two same if there are four remaining
 // Limit gem amount to 10
 // When card row ends, it should stay in place (should have min height)
+// Different rules for two and three players

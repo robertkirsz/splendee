@@ -31,7 +31,7 @@ const data: DataInterface = {
   players: [],
 }
 
-const getIndexes = (data: DataInterface, roomId: string, playerId: string) => {
+const getIndexes = (data: DataInterface, roomId: string, playerId?: string) => {
   const roomIndex = data.rooms.findIndex(room => room.id === roomId)
   const playerIndex = data.rooms[roomIndex].players.findIndex(
     player => player.id === playerId
@@ -44,26 +44,29 @@ io.on('connection', (socket: Socket) => {
   console.log(`${socket.id}: -- connected --`)
   socket.emit('receive data', data)
 
-  socket.on('join game', (roomId: string, player: PlayerInterface) => {
-    const roomIndex = data.rooms.findIndex(room => room.id === roomId)
+  socket.on('join room', (roomId: string, player: PlayerInterface) => {
+    const { roomIndex } = getIndexes(data, roomId)
+
     data.rooms[roomIndex].players.push(player)
     data.players.push({ socketId: socket.id, roomId, playerId: player.id })
+
     io.emit('receive data', data)
   })
 
-  socket.on('leave game', (roomId: string, playerId: string) => {
-    const roomIndex = data.rooms.findIndex(room => room.id === roomId)
-    const playerIndex = data.rooms[roomIndex].players.findIndex(
-      player => player.id === playerId
-    )
+  socket.on('leave room', (roomId: string, playerId: string) => {
+    const { roomIndex, playerIndex } = getIndexes(data, roomId, playerId)
 
     data.rooms[roomIndex].players.splice(playerIndex, 1)
+    data.players.splice(playerIndex, 1)
+
     io.emit('receive data', data)
   })
 
   socket.on('player ready', (roomId: string, player: PlayerInterface) => {
     const { roomIndex, playerIndex } = getIndexes(data, roomId, player.id)
+
     data.rooms[roomIndex].players[playerIndex].name = player.name
+
     io.emit('receive data', data)
   })
 
@@ -76,17 +79,15 @@ io.on('connection', (socket: Socket) => {
 
     if (!playerToDisconnect) return
 
-    const roomIndex = data.rooms.findIndex(
-      room => room.id === playerToDisconnect.roomId
-    )
-
-    const playerIndex = data.rooms[roomIndex].players.findIndex(
-      player => player.id === playerToDisconnect.playerId
+    const { roomIndex, playerIndex } = getIndexes(
+      data,
+      playerToDisconnect.roomId,
+      playerToDisconnect.playerId
     )
 
     data.rooms[roomIndex].players.splice(playerIndex, 1)
     data.players.splice(playerIndex, 1)
 
-    socket.broadcast.emit('receive data', data)
+    io.emit('receive data', data)
   })
 })
