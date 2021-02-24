@@ -1,6 +1,7 @@
 export interface PlayerInterface {
   id: string
   name: string
+  isReady: boolean
   currentRound: number
   score: number
   gems: GemAmountInterface

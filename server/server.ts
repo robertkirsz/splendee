@@ -62,10 +62,18 @@ io.on('connection', (socket: Socket) => {
     io.emit('receive data', data)
   })
 
-  socket.on('player ready', (roomId: string, player: PlayerInterface) => {
+  // socket.on('player ready', (roomId: string, player: PlayerInterface) => {
+  //   const { roomIndex, playerIndex } = getIndexes(data, roomId, player.id)
+
+  //   data.rooms[roomIndex].players[playerIndex].name = player.name
+
+  //   io.emit('receive data', data)
+  // })
+
+  socket.on('update player', (roomId: string, player: PlayerInterface) => {
     const { roomIndex, playerIndex } = getIndexes(data, roomId, player.id)
 
-    data.rooms[roomIndex].players[playerIndex].name = player.name
+    data.rooms[roomIndex].players[playerIndex] = player
 
     io.emit('receive data', data)
   })

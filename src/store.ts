@@ -20,6 +20,7 @@ import { flyCard, flyGem, removeByIdAndReturn } from 'utils'
 export class Player implements PlayerInterface {
   id: PlayerInterface['id'] = uuidv4()
   name: PlayerInterface['name'] = ''
+  isReady: PlayerInterface['isReady'] = false
   currentRound: PlayerInterface['currentRound'] = 0
   gems: PlayerInterface['gems'] = {
     red: 7,
@@ -37,6 +38,7 @@ export class Player implements PlayerInterface {
   constructor({ name }: { name: PlayerInterface['name'] }) {
     makeObservable(this, {
       name: observable,
+      isReady: observable,
       gems: observable,
       cards: observable,
       reservedCards: observable,
@@ -49,6 +51,7 @@ export class Player implements PlayerInterface {
       canReserveCards: computed,
       setName: action,
       earnGem: action,
+      setIsReady: action,
     })
 
     this.name = name
@@ -128,6 +131,10 @@ export class Player implements PlayerInterface {
 
   public earnGem = (color: GemColorsType) => {
     this.gems[color]++
+  }
+
+  public setIsReady = (value: boolean) => {
+    this.isReady = value
   }
 }
 

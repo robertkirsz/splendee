@@ -28,13 +28,9 @@ export default observer(function App() {
 
   function handleLeaveRoom() {
     player.setName('')
+    player.setIsReady(false)
     setCurrentRoomId('')
     socket.emit('leave room', currentRoomId, player.id)
-  }
-
-  function handlePlayerReady(roomId: string, playerName: string) {
-    player.setName(playerName)
-    socket.emit('player ready', roomId, player)
   }
 
   useEffect(() => {
@@ -53,9 +49,9 @@ export default observer(function App() {
     <>
       {chosenRoom ? (
         <LobbyScreen
+          socket={socket}
           room={chosenRoom}
           onLeaveRoom={handleLeaveRoom}
-          onPlayerReady={handlePlayerReady}
         />
       ) : gameExists ? (
         <GameScreen />
@@ -69,7 +65,6 @@ export default observer(function App() {
 })
 
 /* TODO */
-// Add separate Join and Ready buttons on LobbyScreen
 // Allow to reserve a card from CardStack
 // Allow to spend gold
 
