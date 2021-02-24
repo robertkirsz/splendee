@@ -33,6 +33,13 @@ export default observer(function LobbyScreen({
     socket.emit('update player', room.id, player)
   }
 
+  function handleLeaveRoom() {
+    player.setName('')
+    player.setIsReady(false)
+    socket.emit('leave room', room.id, player.id)
+    onLeaveRoom()
+  }
+
   useEffect(() => {
     if (
       debouncedPlayerName !== player.name &&
@@ -86,7 +93,7 @@ export default observer(function LobbyScreen({
         ))}
       </div>
 
-      <button className="text-sm underline" onClick={onLeaveRoom}>
+      <button className="text-sm underline" onClick={handleLeaveRoom}>
         Leave room
       </button>
     </div>

@@ -1,11 +1,28 @@
-import { RoomInterface } from 'types'
+import { useContext } from 'react'
+
+import type { Socket } from 'socket.io-client'
+import type { RoomInterface } from 'types'
+
+import { playerStore } from 'store'
 
 type Props = {
+  socket: Socket
   rooms: RoomInterface[]
   onJoinRoom: (id: string) => void
 }
 
-export default function GameCreationScreen({ rooms = [], onJoinRoom }: Props) {
+export default function GameCreationScreen({
+  socket,
+  rooms = [],
+  onJoinRoom,
+}: Props) {
+  const player = useContext(playerStore)
+
+  function handleJoinRoom(roomId: string) {
+    onJoinRoom(roomId)
+    socket.emit('join room', roomId, player)
+  }
+
   return (
     <div className="flex flex-col items-center mt-20 m-x-auto space-y-10">
       <h1 className="text-6xl">Splendee</h1>
@@ -16,7 +33,7 @@ export default function GameCreationScreen({ rooms = [], onJoinRoom }: Props) {
             key={room.id}
             disabled={room.gameInProgress || room.players.length === 4}
             className="inline-block px-6 py-2 text-xs font-medium leading-6 text-center text-white uppercase transition bg-blue-700 rounded shadow ripple hover:shadow-lg hover:bg-blue-800 focus:outline-none disabled:opacity-50 disabled:pointer-events-none"
-            onClick={() => onJoinRoom(room.id)}
+            onClick={() => handleJoinRoom(room.id)}
           >
             {room.id}
             <br />

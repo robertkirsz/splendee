@@ -1,10 +1,8 @@
-import { useEffect, useState, useContext } from 'react'
+import { useEffect, useState } from 'react'
 import { observer } from 'mobx-react-lite'
 import { io } from 'socket.io-client'
 
 import type { DataInterface } from 'types'
-
-import { playerStore } from 'store'
 
 import IntroScreen from 'screens/IntroScreen'
 import GameScreen from 'screens/GameScreen'
@@ -13,8 +11,6 @@ import LobbyScreen from 'screens/LobbyScreen'
 const socket = io('ws://localhost:1987')
 
 export default observer(function App() {
-  const player = useContext(playerStore)
-
   const [data, setData] = useState<DataInterface>()
   const [alreadyConnected, setAlreadyConnected] = useState(false)
   const [currentRoomId, setCurrentRoomId] = useState('')
@@ -23,14 +19,10 @@ export default observer(function App() {
 
   function handleJoinRoom(roomId: string) {
     setCurrentRoomId(roomId)
-    socket.emit('join room', roomId, player)
   }
 
   function handleLeaveRoom() {
-    player.setName('')
-    player.setIsReady(false)
     setCurrentRoomId('')
-    socket.emit('leave room', currentRoomId, player.id)
   }
 
   useEffect(() => {
@@ -56,7 +48,11 @@ export default observer(function App() {
       ) : gameExists ? (
         <GameScreen />
       ) : (
-        <IntroScreen rooms={data.rooms} onJoinRoom={handleJoinRoom} />
+        <IntroScreen
+          socket={socket}
+          rooms={data.rooms}
+          onJoinRoom={handleJoinRoom}
+        />
       )}
 
       <pre id="data-preview">{JSON.stringify(data, null, 1)}</pre>
