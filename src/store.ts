@@ -21,14 +21,6 @@ export class Player implements PlayerInterface {
   id: PlayerInterface['id'] = uuidv4()
   name: PlayerInterface['name'] = ''
   currentRound: PlayerInterface['currentRound'] = 0
-  // gems: PlayerInterface['gems'] = {
-  //   red: 0,
-  //   green: 0,
-  //   blue: 0,
-  //   white: 0,
-  //   black: 0,
-  //   gold: 0,
-  // }
   gems: PlayerInterface['gems'] = {
     red: 7,
     green: 7,
@@ -44,6 +36,7 @@ export class Player implements PlayerInterface {
 
   constructor({ name }: { name: PlayerInterface['name'] }) {
     makeObservable(this, {
+      name: observable,
       gems: observable,
       cards: observable,
       reservedCards: observable,
@@ -54,6 +47,7 @@ export class Player implements PlayerInterface {
       inventoryColors: computed,
       score: computed,
       canReserveCards: computed,
+      setName: action,
       earnGem: action,
     })
 
@@ -126,6 +120,10 @@ export class Player implements PlayerInterface {
 
   get canReserveCards() {
     return this.reservedCards.length < 3
+  }
+
+  public setName = (name: string) => {
+    this.name = name
   }
 
   public earnGem = (color: GemColorsType) => {
@@ -348,3 +346,5 @@ class Game {
 }
 
 export const gameStore = createContext(new Game())
+
+export const playerStore = createContext(new Player({ name: '' }))

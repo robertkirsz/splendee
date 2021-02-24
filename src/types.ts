@@ -57,8 +57,8 @@ export interface NobleInterface {
 
 export interface RoomInterface {
   id: string
-  number: number
   players: PlayerInterface[]
+  gameInProgress: boolean
 }
 
 export interface ConnectedPlayerMetadataInterface {
