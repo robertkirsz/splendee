@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { observer } from 'mobx-react-lite'
 import { io } from 'socket.io-client'
 
@@ -7,15 +7,16 @@ import type { DataInterface } from 'types'
 import IntroScreen from 'screens/IntroScreen'
 import GameScreen from 'screens/GameScreen'
 import LobbyScreen from 'screens/LobbyScreen'
+import { gameStore } from 'store'
 
 const socket = io('ws://localhost:1987')
 
 export default observer(function App() {
+  const game = useContext(gameStore)
+
   const [data, setData] = useState<DataInterface>()
   const [alreadyConnected, setAlreadyConnected] = useState(false)
   const [currentRoomId, setCurrentRoomId] = useState('')
-
-  const gameExists = false
 
   function handleJoinRoom(roomId: string) {
     setCurrentRoomId(roomId)
@@ -39,14 +40,14 @@ export default observer(function App() {
 
   return (
     <>
-      {chosenRoom ? (
+      {game.isRunning ? (
+        <GameScreen />
+      ) : chosenRoom ? (
         <LobbyScreen
           socket={socket}
           room={chosenRoom}
           onLeaveRoom={handleLeaveRoom}
         />
-      ) : gameExists ? (
-        <GameScreen />
       ) : (
         <IntroScreen
           socket={socket}

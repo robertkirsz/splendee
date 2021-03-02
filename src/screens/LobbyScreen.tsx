@@ -1,10 +1,10 @@
-import { useState, useContext, useEffect } from 'react'
+import { useState, useContext, useEffect, useRef } from 'react'
 import { observer } from 'mobx-react-lite'
 
 import type { Socket } from 'socket.io-client'
 import type { RoomInterface } from 'types'
 
-import { playerStore } from 'store'
+import { gameStore, Player, playerStore } from 'store'
 import useDebounce from 'hooks/useDebounce'
 
 type Props = {
@@ -18,6 +18,7 @@ export default observer(function LobbyScreen({
   room,
   onLeaveRoom,
 }: Props) {
+  const game = useContext(gameStore)
   const player = useContext(playerStore)
 
   const [playerName, setPlayerName] = useState('')
@@ -50,21 +51,41 @@ export default observer(function LobbyScreen({
     }
   }, [debouncedPlayerName, player, room.id, socket, otherPlayersNames])
 
+  const [countdownValue, setCountdownValue] = useState<number | undefined>()
+  const timerRef = useRef<NodeJS.Timeout | undefined>()
+
+  useEffect(() => {
+    if (countdownValue === 0 && typeof timerRef.current !== 'undefined') {
+      clearInterval(timerRef.current)
+      game.start(room.players.map(player => new Player(player)))
+    }
+  }, [countdownValue, game, room.players])
+
   useEffect(() => {
     if (
       room.players.length >= 2 &&
       room.players.length <= 4 &&
       !room.players.find(player => !player.isReady)
     ) {
-      console.log('All players ready!')
+      timerRef.current = setInterval(() => {
+        setCountdownValue(state =>
+          typeof state === 'undefined' ? 5 : state - 1
+        )
+      }, 1000)
+    } else {
+      if (typeof timerRef.current !== 'undefined') {
+        clearInterval(timerRef.current)
+        timerRef.current = undefined
+        setCountdownValue(undefined)
+      }
     }
   }, [room.players])
 
   return (
-    <div className="flex flex-col items-center mt-20 m-x-auto space-y-10">
+    <div className="flex flex-col items-center mt-20 m-x-auto">
       <h1 className="text-5xl">{room.id}</h1>
 
-      <div className="flex flex-col space-y-3">
+      <div className="flex flex-col space-y-3 mt-10">
         <input
           className="py-2 px-3 shadow appearance-none border rounded text-grey-darker"
           placeholder="Your name"
@@ -79,9 +100,15 @@ export default observer(function LobbyScreen({
         >
           {player.isReady ? 'Not ready' : 'Ready'}
         </button>
+
+        <span className="text-center">
+          {typeof countdownValue !== 'undefined'
+            ? `Game launching in ${countdownValue}...`
+            : 'Waiting for players'}
+        </span>
       </div>
 
-      <div className="flex flex-col space-y-4 text-center">
+      <div className="flex flex-col space-y-4 text-center mt-10">
         {room.players.map(({ id, name, isReady }) => (
           <div key={id}>
             {isReady
@@ -93,7 +120,7 @@ export default observer(function LobbyScreen({
         ))}
       </div>
 
-      <button className="text-sm underline" onClick={handleLeaveRoom}>
+      <button className="text-sm underline mt-10" onClick={handleLeaveRoom}>
         Leave room
       </button>
     </div>

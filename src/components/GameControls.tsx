@@ -5,14 +5,10 @@ import Div from 'styled-kit/Div'
 import { gameStore } from 'store'
 
 export default observer(function GameControls() {
-  const { id, isRunning, stop, start } = useContext(gameStore)
+  const { id } = useContext(gameStore)
 
   return (
     <Div listLeft>
-      <button onClick={isRunning ? stop : start}>
-        {isRunning ? 'Stop' : 'Start'} game
-      </button>
-
       <span>Game ID: {id}</span>
     </Div>
   )

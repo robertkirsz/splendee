@@ -16,7 +16,9 @@ type Props = {
 const colors = ['red', 'green', 'blue', 'white', 'black', 'gold']
 
 export default observer(function PlayerPanel({ player }: Props) {
+  console.log('🚀 ~ PlayerPanel ~ player', player)
   const { activePlayerId, changeActivePlayer } = useContext(gameStore)
+
   const {
     id,
     name,

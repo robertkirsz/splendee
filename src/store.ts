@@ -18,9 +18,9 @@ import { flyCard, flyGem, removeByIdAndReturn } from 'utils'
 
 // TODO: check if we need export here
 export class Player implements PlayerInterface {
-  id: PlayerInterface['id'] = uuidv4()
-  name: PlayerInterface['name'] = ''
-  isReady: PlayerInterface['isReady'] = false
+  id: PlayerInterface['id']
+  name: PlayerInterface['name']
+  isReady: PlayerInterface['isReady']
   currentRound: PlayerInterface['currentRound'] = 0
   gems: PlayerInterface['gems'] = {
     red: 7,
@@ -35,7 +35,15 @@ export class Player implements PlayerInterface {
   reservedCards: PlayerInterface['cards'] = []
   nobles: PlayerInterface['nobles'] = []
 
-  constructor({ name }: { name: PlayerInterface['name'] }) {
+  constructor({
+    id,
+    name = '',
+    isReady = false,
+  }: {
+    id?: PlayerInterface['id']
+    name?: PlayerInterface['name']
+    isReady?: PlayerInterface['isReady']
+  } = {}) {
     makeObservable(this, {
       name: observable,
       isReady: observable,
@@ -54,7 +62,9 @@ export class Player implements PlayerInterface {
       setIsReady: action,
     })
 
+    this.id = id || uuidv4()
     this.name = name
+    this.isReady = isReady
   }
 
   get score(): PlayerInterface['score'] {
@@ -143,11 +153,11 @@ class Game {
   isRunning: boolean = false
   actionInProgress: boolean = false
   currentRound: number = 1
-  activePlayerId: string
+  activePlayerId: string = ''
   nobles: NobleInterface[]
   cards: CardInterface[]
   gems: GemAmountInterface
-  players: PlayerInterface[]
+  players: PlayerInterface[] = []
 
   constructor() {
     makeObservable(this, {
@@ -172,13 +182,6 @@ class Game {
       changeActivePlayer: action,
     })
 
-    this.players = [
-      new Player({ name: 'Robert' }),
-      new Player({ name: 'Marzenka' }),
-      new Player({ name: 'Kasia' }),
-    ]
-
-    this.activePlayerId = this.players[0].id
     this.cards = _.shuffle(getCards())
     this.nobles = _.shuffle(getNobles()).slice(0, this.numberOfPlayers + 1)
 
@@ -223,7 +226,9 @@ class Game {
       .map(noble => noble.id)
   }
 
-  public start = () => {
+  public start = (players: PlayerInterface[]) => {
+    this.players = players
+    this.activePlayerId = players[0].id
     this.isRunning = true
   }
 
@@ -354,4 +359,4 @@ class Game {
 
 export const gameStore = createContext(new Game())
 
-export const playerStore = createContext(new Player({ name: '' }))
+export const playerStore = createContext(new Player())
