@@ -34,10 +34,10 @@ class Player implements PlayerInterface {
     blue: 7,
     white: 7,
     black: 7,
-    gold: 0,
+    gold: 1,
   }
-  // cards: PlayerInterface['cards'] = _.shuffle(getCards()).slice(0, 30)
-  cards: PlayerInterface['cards'] = []
+  cards: PlayerInterface['cards'] = _.shuffle(getCards()).slice(0, 30)
+  // cards: PlayerInterface['cards'] = []
   reservedCards: PlayerInterface['cards'] = []
   nobles: PlayerInterface['nobles'] = []
 
@@ -66,6 +66,7 @@ class Player implements PlayerInterface {
     )
   }
 
+  // TODO: not sure I need this anymore
   get inventoryColors(): CardInterface['color'][] {
     const result = {
       red: false,
@@ -254,7 +255,11 @@ class Game {
       cardIsReservedByActivePlayer
         ? document.querySelector(`[data-player-id="${this.activePlayer!.id}"] [data-card-id="${card.id}"]`)
         : document.querySelector(`#card-board [data-card-id="${card.id}"]`),
-      document.querySelector(`[data-player-id="${this.activePlayer!.id}"]`)
+      document.querySelector(
+        `[data-player-id="${this.activePlayer!.id}"] [data-indicator-color="${
+          card.color
+        }"]`
+      )
     ).then(() => {
       runInAction(() => {
         // TODO: I want this to always exist
@@ -312,17 +317,21 @@ class Game {
     if (!this.gems[color]) return
 
     this.gems[color]--
-    this.activePlayer?.earnGem(color)
 
-    setTimeout(() => {
-      flyGem(
-        document.querySelector(`[data-gem-container-color="${color}"]`),
-        document.querySelector(
-          `[data-player-id="${
-            this.activePlayer!.id
-          }"] [data-gem-indicator-color="${color}"]:last-child`
-        )
+    const doLogic = () => {
+      // TODO: I want activePlayer this to always exist
+      this.activePlayer?.earnGem(color)
+    }
+
+    flyGem(
+      document.querySelector(`[data-gem-container-color="${color}"]`),
+      document.querySelector(
+        `[data-player-id="${
+          this.activePlayer!.id
+        }"] [data-indicator-color="${color}"]`
       )
+    ).then(() => {
+      runInAction(doLogic)
     })
   }
 
