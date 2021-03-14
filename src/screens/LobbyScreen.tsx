@@ -1,31 +1,21 @@
 import { useState, useContext, useEffect, useRef } from 'react'
 import { observer } from 'mobx-react-lite'
 
-import type { Socket } from 'socket.io-client'
-import type {
-  RoomInterface,
-  CardInterface,
-  NobleInterface,
-  PlayerDataForRoomInterface,
-} from 'types'
+import type { RoomInterface } from 'types'
 
 import { log } from 'utils'
+import socket from 'socket'
 import { gameStore, Player, playerStore } from 'store'
 import useDebounce from 'hooks/useDebounce'
 
 const gameStartTimeout = 2
 
 type Props = {
-  socket: Socket
   room: RoomInterface
   onLeaveRoom: () => void
 }
 
-export default observer(function LobbyScreen({
-  socket,
-  room,
-  onLeaveRoom,
-}: Props) {
+export default observer(function LobbyScreen({ room, onLeaveRoom }: Props) {
   const game = useContext(gameStore)
   const player = useContext(playerStore)
 
@@ -39,13 +29,13 @@ export default observer(function LobbyScreen({
 
   function handlePlayerReady() {
     player.setIsReady(!player.isReady)
-    socket.emit('update player', room.id, player.dataForRoom)
+    socket.emitUpdatePlayer(room.id, player.dataForRoom)
   }
 
   function handleLeaveRoom() {
     player.setName('')
     player.setIsReady(false)
-    socket.emit('leave room', room.id, player.id)
+    socket.emitLeaveRoom(room.id, player.id)
     onLeaveRoom()
   }
 
@@ -55,9 +45,9 @@ export default observer(function LobbyScreen({
       !otherPlayersNames.includes(debouncedPlayerName)
     ) {
       player.setName(debouncedPlayerName)
-      socket.emit('update player', room.id, player.dataForRoom)
+      socket.emitUpdatePlayer(room.id, player.dataForRoom)
     }
-  }, [debouncedPlayerName, player, room.id, socket, otherPlayersNames])
+  }, [debouncedPlayerName, player, room.id, otherPlayersNames])
 
   const [countdownValue, setCountdownValue] = useState<number | undefined>()
   const timerRef = useRef<NodeJS.Timeout | undefined>()
@@ -69,10 +59,10 @@ export default observer(function LobbyScreen({
       if (room.players[0].id === player.id) {
         log('Sending initial game data!')
         const { cardIds, noblesIds } = game.drawCards(room.players.length)
-        socket.emit('send initial game data', room.id, cardIds, noblesIds)
+        socket.emitSendInitialGameData(room.id, cardIds, noblesIds)
       }
     }
-  }, [countdownValue, game, player.id, room.id, room.players, socket])
+  }, [countdownValue, game, player.id, room.id, room.players])
 
   useEffect(() => {
     if (
@@ -95,26 +85,19 @@ export default observer(function LobbyScreen({
   }, [room.players])
 
   useEffect(() => {
-    socket.on(
-      'initial game data',
-      (
-        players: PlayerDataForRoomInterface[],
-        cardIds: CardInterface['id'][],
-        noblesIds: NobleInterface['id'][]
-      ) => {
-        log('Joining game!')
-        game.join(
-          players.map(player => new Player(player)),
-          cardIds,
-          noblesIds
-        )
-      }
-    )
+    socket.onInitialGameData((players, cardIds, noblesIds) => {
+      log('Joining game!')
+      game.join(
+        players.map(player => new Player(player)),
+        cardIds,
+        noblesIds
+      )
+    })
 
     return () => {
-      socket.off('initial game data')
+      socket.offInitialGameData()
     }
-  }, [game, socket])
+  }, [game])
 
   return (
     <div className="flex flex-col items-center mt-20 m-x-auto">

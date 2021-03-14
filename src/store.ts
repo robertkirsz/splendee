@@ -3,8 +3,9 @@ import { makeObservable, observable, action, computed, runInAction } from 'mobx'
 import { v4 as uuidv4 } from 'uuid'
 import _ from 'lodash'
 
-import {
+import type {
   PlayerInterface,
+  PlayerDataForRoomInterface,
   CardInterface,
   NobleInterface,
   GemAmountInterface,
@@ -135,7 +136,7 @@ export class Player implements PlayerInterface {
     return this.reservedCards.length < 3
   }
 
-  get dataForRoom() {
+  get dataForRoom(): PlayerDataForRoomInterface {
     return {
       id: this.id,
       name: this.name,

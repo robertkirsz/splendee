@@ -1,15 +1,14 @@
 import { useContext, useEffect, useState } from 'react'
 import { observer } from 'mobx-react-lite'
-import { io } from 'socket.io-client'
 
 import type { DataInterface } from 'types'
+
+import socket from 'socket'
+import { gameStore } from 'store'
 
 import IntroScreen from 'screens/IntroScreen'
 import GameScreen from 'screens/GameScreen'
 import LobbyScreen from 'screens/LobbyScreen'
-import { gameStore } from 'store'
-
-const socket = io('ws://localhost:1987')
 
 export default observer(function App() {
   const game = useContext(gameStore)
@@ -29,7 +28,7 @@ export default observer(function App() {
   useEffect(() => {
     if (alreadyConnected) return
 
-    socket.on('receive data', setData)
+    socket.onReceiveData(setData)
 
     setAlreadyConnected(true)
   }, [alreadyConnected])
@@ -43,17 +42,9 @@ export default observer(function App() {
       {game.isRunning ? (
         <GameScreen />
       ) : chosenRoom ? (
-        <LobbyScreen
-          socket={socket}
-          room={chosenRoom}
-          onLeaveRoom={handleLeaveRoom}
-        />
+        <LobbyScreen room={chosenRoom} onLeaveRoom={handleLeaveRoom} />
       ) : (
-        <IntroScreen
-          socket={socket}
-          rooms={data.rooms}
-          onJoinRoom={handleJoinRoom}
-        />
+        <IntroScreen rooms={data.rooms} onJoinRoom={handleJoinRoom} />
       )}
 
       <pre id="data-preview">{JSON.stringify(data, null, 1)}</pre>

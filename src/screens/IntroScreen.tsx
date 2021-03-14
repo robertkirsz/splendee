@@ -1,26 +1,21 @@
 import { useContext } from 'react'
 
-import type { Socket } from 'socket.io-client'
 import type { RoomInterface } from 'types'
 
+import socket from 'socket'
 import { playerStore } from 'store'
 
 type Props = {
-  socket: Socket
   rooms: RoomInterface[]
   onJoinRoom: (id: string) => void
 }
 
-export default function GameCreationScreen({
-  socket,
-  rooms = [],
-  onJoinRoom,
-}: Props) {
+export default function GameCreationScreen({ rooms = [], onJoinRoom }: Props) {
   const player = useContext(playerStore)
 
   function handleJoinRoom(roomId: string) {
     onJoinRoom(roomId)
-    socket.emit('join room', roomId, player.dataForRoom)
+    socket.emitJoinRoom(roomId, player.dataForRoom)
   }
 
   return (

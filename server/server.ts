@@ -1,6 +1,7 @@
 import type { Server, Socket } from 'socket.io'
 
 import type {
+  RoomInterface,
   CardInterface,
   DataInterface,
   NobleInterface,
@@ -37,7 +38,11 @@ const data: DataInterface = {
   players: [],
 }
 
-const getIndexes = (data: DataInterface, roomId: string, playerId?: string) => {
+const getIndexes = (
+  data: DataInterface,
+  roomId: RoomInterface['id'],
+  playerId?: PlayerDataForRoomInterface['id']
+) => {
   const roomIndex = data.rooms.findIndex(room => room.id === roomId)
   const playerIndex = data.rooms[roomIndex].players.findIndex(
     player => player.id === playerId
@@ -52,7 +57,7 @@ io.on('connection', (socket: Socket) => {
 
   socket.on(
     'join room',
-    (roomId: string, player: PlayerDataForRoomInterface) => {
+    (roomId: RoomInterface['id'], player: PlayerDataForRoomInterface) => {
       socket.join(roomId)
 
       const { roomIndex } = getIndexes(data, roomId)
@@ -64,19 +69,25 @@ io.on('connection', (socket: Socket) => {
     }
   )
 
-  socket.on('leave room', (roomId: string, playerId: string) => {
-    const { roomIndex, playerIndex } = getIndexes(data, roomId, playerId)
+  socket.on(
+    'leave room',
+    (
+      roomId: RoomInterface['id'],
+      playerId: PlayerDataForRoomInterface['id']
+    ) => {
+      const { roomIndex, playerIndex } = getIndexes(data, roomId, playerId)
 
-    data.rooms[roomIndex].players.splice(playerIndex, 1)
-    data.players.splice(playerIndex, 1)
+      data.rooms[roomIndex].players.splice(playerIndex, 1)
+      data.players.splice(playerIndex, 1)
 
-    io.emit('receive data', data)
-    socket.leave(roomId)
-  })
+      io.emit('receive data', data)
+      socket.leave(roomId)
+    }
+  )
 
   socket.on(
     'update player',
-    (roomId: string, player: PlayerDataForRoomInterface) => {
+    (roomId: RoomInterface['id'], player: PlayerDataForRoomInterface) => {
       const { roomIndex, playerIndex } = getIndexes(data, roomId, player.id)
 
       data.rooms[roomIndex].players[playerIndex] = player
@@ -88,7 +99,7 @@ io.on('connection', (socket: Socket) => {
   socket.on(
     'send initial game data',
     (
-      roomId: string,
+      roomId: RoomInterface['id'],
       cardIds: CardInterface['id'][],
       noblesIds: NobleInterface['id'][]
     ) => {
