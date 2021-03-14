@@ -13,7 +13,7 @@ import { log } from 'utils'
 import { gameStore, Player, playerStore } from 'store'
 import useDebounce from 'hooks/useDebounce'
 
-const gameStartTimeout = 5
+const gameStartTimeout = 2
 
 type Props = {
   socket: Socket
@@ -110,6 +110,10 @@ export default observer(function LobbyScreen({
         )
       }
     )
+
+    return () => {
+      socket.off('initial game data')
+    }
   }, [game, socket])
 
   return (

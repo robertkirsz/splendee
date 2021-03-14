@@ -4,7 +4,6 @@ import type {
   CardInterface,
   DataInterface,
   NobleInterface,
-  PlayerInterface,
   PlayerDataForRoomInterface,
 } from '../src/types'
 
@@ -54,6 +53,8 @@ io.on('connection', (socket: Socket) => {
   socket.on(
     'join room',
     (roomId: string, player: PlayerDataForRoomInterface) => {
+      socket.join(roomId)
+
       const { roomIndex } = getIndexes(data, roomId)
 
       data.rooms[roomIndex].players.push(player)
@@ -70,15 +71,19 @@ io.on('connection', (socket: Socket) => {
     data.players.splice(playerIndex, 1)
 
     io.emit('receive data', data)
+    socket.leave(roomId)
   })
 
-  socket.on('update player', (roomId: string, player: PlayerInterface) => {
-    const { roomIndex, playerIndex } = getIndexes(data, roomId, player.id)
+  socket.on(
+    'update player',
+    (roomId: string, player: PlayerDataForRoomInterface) => {
+      const { roomIndex, playerIndex } = getIndexes(data, roomId, player.id)
 
-    data.rooms[roomIndex].players[playerIndex] = player
+      data.rooms[roomIndex].players[playerIndex] = player
 
-    io.emit('receive data', data)
-  })
+      io.to(roomId).emit('receive data', data)
+    }
+  )
 
   socket.on(
     'send initial game data',
@@ -88,7 +93,8 @@ io.on('connection', (socket: Socket) => {
       noblesIds: NobleInterface['id'][]
     ) => {
       const { roomIndex } = getIndexes(data, roomId)
-      io.emit(
+
+      io.to(roomId).emit(
         'initial game data',
         data.rooms[roomIndex].players,
         cardIds,
