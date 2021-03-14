@@ -1,5 +1,12 @@
 import type { Server, Socket } from 'socket.io'
-import type { DataInterface, PlayerInterface } from '../src/types'
+
+import type {
+  CardInterface,
+  DataInterface,
+  NobleInterface,
+  PlayerInterface,
+  PlayerDataForRoomInterface,
+} from '../src/types'
 
 console.log('Hello from server')
 
@@ -44,14 +51,17 @@ io.on('connection', (socket: Socket) => {
   console.log(`${socket.id}: -- connected --`)
   socket.emit('receive data', data)
 
-  socket.on('join room', (roomId: string, player: PlayerInterface) => {
-    const { roomIndex } = getIndexes(data, roomId)
+  socket.on(
+    'join room',
+    (roomId: string, player: PlayerDataForRoomInterface) => {
+      const { roomIndex } = getIndexes(data, roomId)
 
-    data.rooms[roomIndex].players.push(player)
-    data.players.push({ socketId: socket.id, roomId, playerId: player.id })
+      data.rooms[roomIndex].players.push(player)
+      data.players.push({ socketId: socket.id, roomId, playerId: player.id })
 
-    io.emit('receive data', data)
-  })
+      io.emit('receive data', data)
+    }
+  )
 
   socket.on('leave room', (roomId: string, playerId: string) => {
     const { roomIndex, playerIndex } = getIndexes(data, roomId, playerId)
@@ -62,14 +72,6 @@ io.on('connection', (socket: Socket) => {
     io.emit('receive data', data)
   })
 
-  // socket.on('player ready', (roomId: string, player: PlayerInterface) => {
-  //   const { roomIndex, playerIndex } = getIndexes(data, roomId, player.id)
-
-  //   data.rooms[roomIndex].players[playerIndex].name = player.name
-
-  //   io.emit('receive data', data)
-  // })
-
   socket.on('update player', (roomId: string, player: PlayerInterface) => {
     const { roomIndex, playerIndex } = getIndexes(data, roomId, player.id)
 
@@ -77,6 +79,23 @@ io.on('connection', (socket: Socket) => {
 
     io.emit('receive data', data)
   })
+
+  socket.on(
+    'send initial game data',
+    (
+      roomId: string,
+      cardIds: CardInterface['id'][],
+      noblesIds: NobleInterface['id'][]
+    ) => {
+      const { roomIndex } = getIndexes(data, roomId)
+      io.emit(
+        'initial game data',
+        data.rooms[roomIndex].players,
+        cardIds,
+        noblesIds
+      )
+    }
+  )
 
   socket.on('disconnect', () => {
     console.log(`${socket.id}: -- disconnected --`)

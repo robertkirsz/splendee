@@ -30,8 +30,8 @@ export class Player implements PlayerInterface {
     black: 7,
     gold: 1,
   }
-  cards: PlayerInterface['cards'] = _.shuffle(getCards()).slice(0, 30)
-  // cards: PlayerInterface['cards'] = []
+  // cards: PlayerInterface['cards'] = _.shuffle(getCards()).slice(0, 30)
+  cards: PlayerInterface['cards'] = []
   reservedCards: PlayerInterface['cards'] = []
   nobles: PlayerInterface['nobles'] = []
 
@@ -135,6 +135,14 @@ export class Player implements PlayerInterface {
     return this.reservedCards.length < 3
   }
 
+  get dataForRoom() {
+    return {
+      id: this.id,
+      name: this.name,
+      isReady: this.isReady,
+    }
+  }
+
   public setName = (name: string) => {
     this.name = name
   }
@@ -152,12 +160,19 @@ class Game {
   id: string = uuidv4()
   isRunning: boolean = false
   actionInProgress: boolean = false
-  currentRound: number = 1
-  activePlayerId: string = ''
-  nobles: NobleInterface[]
-  cards: CardInterface[]
-  gems: GemAmountInterface
+  currentRound: number = 0
   players: PlayerInterface[] = []
+  activePlayerId: string = ''
+  nobles: NobleInterface[] = []
+  cards: CardInterface[] = []
+  gems: GemAmountInterface = {
+    red: 0,
+    green: 0,
+    blue: 0,
+    white: 0,
+    black: 0,
+    gold: 0,
+  }
 
   constructor() {
     makeObservable(this, {
@@ -173,7 +188,8 @@ class Game {
       numberOfPlayers: computed,
       activePlayer: computed,
       purchasableNoblesIds: computed,
-      start: action,
+      create: action,
+      join: action,
       stop: action,
       buyCard: action,
       reserveCard: action,
@@ -181,18 +197,6 @@ class Game {
       earnNoble: action,
       changeActivePlayer: action,
     })
-
-    this.cards = _.shuffle(getCards())
-    this.nobles = _.shuffle(getNobles()).slice(0, this.numberOfPlayers + 1)
-
-    this.gems = {
-      red: 7,
-      green: 7,
-      blue: 7,
-      white: 7,
-      black: 7,
-      gold: 5,
-    }
   }
 
   public get numberOfPlayers() {
@@ -226,14 +230,63 @@ class Game {
       .map(noble => noble.id)
   }
 
-  public start = (players: PlayerInterface[]) => {
+  public create = (players: PlayerInterface[]) => {
     this.players = players
     this.activePlayerId = players[0].id
+    this.cards = _.shuffle(getCards())
+    this.nobles = _.shuffle(getNobles()).slice(0, this.numberOfPlayers + 1)
+    this.prepareGems()
+    this.isRunning = true
+
+    return {
+      cardIds: this.cards.map(card => card.id),
+      noblesIds: this.nobles.map(card => card.id),
+    }
+  }
+
+  public drawCards = (numberOfPlayers: number) => ({
+    cardIds: _.shuffle(getCards()).map(card => card.id),
+    noblesIds: _.shuffle(getNobles())
+      .slice(0, numberOfPlayers + 1)
+      .map(card => card.id),
+  })
+
+  public join = (
+    players: PlayerInterface[],
+    cardIds: CardInterface['id'][],
+    noblesIds: NobleInterface['id'][]
+  ) => {
+    this.players = players
+    this.activePlayerId = players[0].id
+    const allCards = getCards()
+    this.cards = cardIds.map(
+      cardId => allCards.find(card => card.id === cardId)!
+    )
+    const allNobles = getNobles()
+    this.nobles = noblesIds.map(
+      nobleId => allNobles.find(noble => noble.id === nobleId)!
+    )
+    this.prepareGems()
     this.isRunning = true
   }
 
   public stop = () => {
     this.isRunning = false
+  }
+
+  private prepareGems() {
+    let numberOfGems = 7
+    if (this.numberOfPlayers === 2) numberOfGems = 4
+    if (this.numberOfPlayers === 3) numberOfGems = 5
+
+    this.gems = {
+      red: numberOfGems,
+      green: numberOfGems,
+      blue: numberOfGems,
+      white: numberOfGems,
+      black: numberOfGems,
+      gold: 5,
+    }
   }
 
   private payCardCost(card: CardInterface) {

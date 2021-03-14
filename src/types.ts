@@ -16,6 +16,12 @@ export interface PlayerInterface {
   canReserveCards: boolean
 }
 
+export interface PlayerDataForRoomInterface {
+  id: string
+  name: string
+  isReady: boolean
+}
+
 export type CostType = {
   red: number
   green: number
@@ -58,7 +64,7 @@ export interface NobleInterface {
 
 export interface RoomInterface {
   id: string
-  players: PlayerInterface[]
+  players: PlayerDataForRoomInterface[]
   gameInProgress: boolean
 }
 

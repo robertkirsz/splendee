@@ -20,7 +20,7 @@ export default function GameCreationScreen({
 
   function handleJoinRoom(roomId: string) {
     onJoinRoom(roomId)
-    socket.emit('join room', roomId, player)
+    socket.emit('join room', roomId, player.dataForRoom)
   }
 
   return (

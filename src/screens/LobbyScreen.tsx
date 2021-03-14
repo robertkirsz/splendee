@@ -2,10 +2,18 @@ import { useState, useContext, useEffect, useRef } from 'react'
 import { observer } from 'mobx-react-lite'
 
 import type { Socket } from 'socket.io-client'
-import type { RoomInterface } from 'types'
+import type {
+  RoomInterface,
+  CardInterface,
+  NobleInterface,
+  PlayerDataForRoomInterface,
+} from 'types'
 
+import { log } from 'utils'
 import { gameStore, Player, playerStore } from 'store'
 import useDebounce from 'hooks/useDebounce'
+
+const gameStartTimeout = 5
 
 type Props = {
   socket: Socket
@@ -31,7 +39,7 @@ export default observer(function LobbyScreen({
 
   function handlePlayerReady() {
     player.setIsReady(!player.isReady)
-    socket.emit('update player', room.id, player)
+    socket.emit('update player', room.id, player.dataForRoom)
   }
 
   function handleLeaveRoom() {
@@ -47,7 +55,7 @@ export default observer(function LobbyScreen({
       !otherPlayersNames.includes(debouncedPlayerName)
     ) {
       player.setName(debouncedPlayerName)
-      socket.emit('update player', room.id, player)
+      socket.emit('update player', room.id, player.dataForRoom)
     }
   }, [debouncedPlayerName, player, room.id, socket, otherPlayersNames])
 
@@ -57,9 +65,14 @@ export default observer(function LobbyScreen({
   useEffect(() => {
     if (countdownValue === 0 && typeof timerRef.current !== 'undefined') {
       clearInterval(timerRef.current)
-      game.start(room.players.map(player => new Player(player)))
+
+      if (room.players[0].id === player.id) {
+        log('Sending initial game data!')
+        const { cardIds, noblesIds } = game.drawCards(room.players.length)
+        socket.emit('send initial game data', room.id, cardIds, noblesIds)
+      }
     }
-  }, [countdownValue, game, room.players])
+  }, [countdownValue, game, player.id, room.id, room.players, socket])
 
   useEffect(() => {
     if (
@@ -69,7 +82,7 @@ export default observer(function LobbyScreen({
     ) {
       timerRef.current = setInterval(() => {
         setCountdownValue(state =>
-          typeof state === 'undefined' ? 5 : state - 1
+          typeof state === 'undefined' ? gameStartTimeout : state - 1
         )
       }, 1000)
     } else {
@@ -80,6 +93,24 @@ export default observer(function LobbyScreen({
       }
     }
   }, [room.players])
+
+  useEffect(() => {
+    socket.on(
+      'initial game data',
+      (
+        players: PlayerDataForRoomInterface[],
+        cardIds: CardInterface['id'][],
+        noblesIds: NobleInterface['id'][]
+      ) => {
+        log('Joining game!')
+        game.join(
+          players.map(player => new Player(player)),
+          cardIds,
+          noblesIds
+        )
+      }
+    )
+  }, [game, socket])
 
   return (
     <div className="flex flex-col items-center mt-20 m-x-auto">

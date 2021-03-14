@@ -8,7 +8,6 @@ import PlayerPanel from 'components/PlayerPanel'
 
 export default observer(function PlayersSection() {
   const { players } = useContext(gameStore)
-  console.log('🚀 ~ PlayersSection ~ players', players)
 
   return (
     <Div columnTop>
