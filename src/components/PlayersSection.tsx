@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import { observer } from 'mobx-react-lite'
 import Div from 'styled-kit/Div'
 
@@ -10,7 +10,7 @@ export default observer(function PlayersSection() {
   const { players } = useContext(gameStore)
 
   return (
-    <Div columnTop>
+    <Div listLeft>
       {players.map(player => (
         <PlayerPanel key={player.id} player={player} />
       ))}

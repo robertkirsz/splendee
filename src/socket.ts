@@ -19,6 +19,7 @@ const socket = {
   },
   onInitialGameData(
     callback: (
+      id: string,
       players: PlayerDataForRoomInterface[],
       cardIds: CardInterface['id'][],
       noblesIds: NobleInterface['id'][]

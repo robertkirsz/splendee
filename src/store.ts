@@ -158,12 +158,12 @@ export class Player implements PlayerInterface {
 }
 
 class Game {
-  id: string = uuidv4()
-  isRunning: boolean = false
-  actionInProgress: boolean = false
-  currentRound: number = 0
+  id = ''
+  isRunning = false
+  actionInProgress = false
+  currentRound = 0
+  activePlayerId = ''
   players: PlayerInterface[] = []
-  activePlayerId: string = ''
   nobles: NobleInterface[] = []
   cards: CardInterface[] = []
   gems: GemAmountInterface = {
@@ -232,6 +232,7 @@ class Game {
   }
 
   public create = (players: PlayerInterface[]) => {
+    this.id = uuidv4()
     this.players = players
     this.activePlayerId = players[0].id
     this.cards = _.shuffle(getCards())
@@ -240,6 +241,7 @@ class Game {
     this.isRunning = true
 
     return {
+      gameId: this.id,
       cardIds: this.cards.map(card => card.id),
       noblesIds: this.nobles.map(card => card.id),
     }
@@ -253,10 +255,12 @@ class Game {
   })
 
   public join = (
+    gameId: string,
     players: PlayerInterface[],
     cardIds: CardInterface['id'][],
     noblesIds: NobleInterface['id'][]
   ) => {
+    this.id = gameId
     this.players = players
     this.activePlayerId = players[0].id
     const allCards = getCards()

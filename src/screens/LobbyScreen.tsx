@@ -85,9 +85,10 @@ export default observer(function LobbyScreen({ room, onLeaveRoom }: Props) {
   }, [room.players])
 
   useEffect(() => {
-    socket.onInitialGameData((players, cardIds, noblesIds) => {
+    socket.onInitialGameData((gameId, players, cardIds, noblesIds) => {
       log('Joining game!')
       game.join(
+        gameId,
         players.map(player => new Player(player)),
         cardIds,
         noblesIds

@@ -1,4 +1,5 @@
 import type { Server, Socket } from 'socket.io'
+import { v4 as uuidv4 } from 'uuid'
 
 import type {
   RoomInterface,
@@ -107,6 +108,7 @@ io.on('connection', (socket: Socket) => {
 
       io.to(roomId).emit(
         'initial game data',
+        uuidv4(),
         data.rooms[roomIndex].players,
         cardIds,
         noblesIds

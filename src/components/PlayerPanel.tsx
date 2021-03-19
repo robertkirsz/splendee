@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import { observer } from 'mobx-react-lite'
 import styled from 'styled-components/macro'
 import Div from 'styled-kit/Div'
@@ -35,12 +35,12 @@ export default observer(function PlayerPanel({ player }: Props) {
       isActive={id === activePlayerId}
       data-player-id={id}
     >
-      <Div listLeft={4} border="1px solid black">
+      <Div listLeft={4}>
         <span>{name}</span>
         <span>({score}/15)</span>
       </Div>
 
-      <Div listLeft mTop={4} border="1px solid black">
+      <Div columnTop mTop={4} border="1px solid black">
         {colors.map(color => (
           <Div
             key={color}

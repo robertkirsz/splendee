@@ -16,7 +16,7 @@ export default observer(function GameScreen() {
   const notYouTurn = game.activePlayerId !== player.id
 
   return (
-    <div className="flex justify-between">
+    <div className="flex justify-between items-start">
       <PlayersSection />
 
       <div
