@@ -106,6 +106,10 @@ io.on('connection', (socket: Socket) => {
     ) => {
       const { roomIndex } = getIndexes(data, roomId)
 
+      data.rooms[roomIndex].gameInProgress = true
+
+      io.emit('receive data', data)
+
       io.to(roomId).emit(
         'initial game data',
         uuidv4(),
@@ -133,6 +137,10 @@ io.on('connection', (socket: Socket) => {
 
     data.rooms[roomIndex].players.splice(playerIndex, 1)
     data.players.splice(playerIndex, 1)
+
+    if (data.rooms[roomIndex].players.length === 0) {
+      data.rooms[roomIndex].gameInProgress = false
+    }
 
     io.emit('receive data', data)
   })
