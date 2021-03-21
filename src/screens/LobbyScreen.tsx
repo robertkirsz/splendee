@@ -106,7 +106,9 @@ export default observer(function LobbyScreen({ room }: Props) {
         </Div>
 
         <span className="text-center">
-          {gameCanBeStarted
+          {!properNumberOfPlayers
+            ? 'Waiting for more players'
+            : allPlayersReady
             ? isHost
               ? 'You can start the game now'
               : 'Waiting for host to start the game'

@@ -39,7 +39,7 @@ export default function GameCreationScreen({ rooms = [] }: Props) {
         className="text-sm underline"
         href="https://017aae6e-7d2b-4a50-9dfc-d78eced3774e.filesusr.com/ugd/59baa2_17984c1d5d0b45a6ae3cdc695c0a864e.pdf"
       >
-        Game rules
+        Game rules (PDF)
       </a>
     </div>
   )
