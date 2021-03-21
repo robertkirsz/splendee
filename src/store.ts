@@ -1,5 +1,5 @@
 import { createContext } from 'react'
-import { makeObservable, observable, action, computed, runInAction } from 'mobx'
+import { makeAutoObservable, runInAction } from 'mobx'
 import { v4 as uuidv4 } from 'uuid'
 import _ from 'lodash'
 
@@ -10,27 +10,30 @@ import type {
   NobleInterface,
   GemAmountInterface,
   GemColorsType,
+  RoomInterface,
+  GameInterface,
 } from 'types'
 
 import getCards from 'tokens/cards'
 import getNobles from 'tokens/nobles'
 
-import { flyCard, flyGem, removeByIdAndReturn } from 'utils'
+import { flyCard, flyGem, removeByIdAndReturn, log } from 'utils'
+import socket from 'socket'
 
 // TODO: check if we need export here
 export class Player implements PlayerInterface {
   id: PlayerInterface['id']
   name: PlayerInterface['name']
   isReady: PlayerInterface['isReady']
-  currentRound: PlayerInterface['currentRound'] = 0
   gems: PlayerInterface['gems'] = {
-    red: 7,
-    green: 7,
-    blue: 7,
-    white: 7,
-    black: 7,
-    gold: 1,
+    red: 0,
+    green: 0,
+    blue: 0,
+    white: 0,
+    black: 0,
+    gold: 0,
   }
+  chosenGems: GemColorsType[] = []
   // cards: PlayerInterface['cards'] = _.shuffle(getCards()).slice(0, 30)
   cards: PlayerInterface['cards'] = []
   reservedCards: PlayerInterface['cards'] = []
@@ -45,23 +48,7 @@ export class Player implements PlayerInterface {
     name?: PlayerInterface['name']
     isReady?: PlayerInterface['isReady']
   } = {}) {
-    makeObservable(this, {
-      name: observable,
-      isReady: observable,
-      gems: observable,
-      cards: observable,
-      reservedCards: observable,
-      nobles: observable,
-      cardAmount: computed,
-      cardPoints: computed,
-      totalColorPoints: computed,
-      inventoryColors: computed,
-      score: computed,
-      canReserveCards: computed,
-      setName: action,
-      earnGem: action,
-      setIsReady: action,
-    })
+    makeAutoObservable(this)
 
     this.id = id || uuidv4()
     this.name = name
@@ -72,32 +59,6 @@ export class Player implements PlayerInterface {
     return (
       this.cards.reduce((score, card) => score + card.value, 0) +
       this.nobles.reduce((score, noble) => score + noble.value, 0)
-    )
-  }
-
-  // TODO: not sure I need this anymore
-  get inventoryColors(): CardInterface['color'][] {
-    const result = {
-      red: false,
-      green: false,
-      blue: false,
-      white: false,
-      black: false,
-    }
-
-    this.cards.forEach(card => (result[card.color] = true))
-
-    Object.entries(this.gems).forEach(([color, amount]) => {
-      // @ts-ignore
-      if (amount > 0) result[color] = true
-    })
-
-    // @ts-ignore
-    return (
-      Object.entries(result)
-        .filter(([color, exists]) => exists)
-        .map(([color]) => color)
-        .sort() || []
     )
   }
 
@@ -144,6 +105,14 @@ export class Player implements PlayerInterface {
     }
   }
 
+  public chooseGem = (gem: GemColorsType) => {
+    this.chosenGems.push(gem)
+  }
+
+  public clearChoosenGems = () => {
+    this.chosenGems = []
+  }
+
   public setName = (name: string) => {
     this.name = name
   }
@@ -159,6 +128,7 @@ export class Player implements PlayerInterface {
 
 class Game {
   id = ''
+  roomId = ''
   isRunning = false
   actionInProgress = false
   currentRound = 0
@@ -176,28 +146,29 @@ class Game {
   }
 
   constructor() {
-    makeObservable(this, {
-      id: observable,
-      isRunning: observable,
-      actionInProgress: observable,
-      currentRound: observable,
-      activePlayerId: observable,
-      nobles: observable,
-      cards: observable,
-      players: observable,
-      gems: observable,
-      numberOfPlayers: computed,
-      activePlayer: computed,
-      purchasableNoblesIds: computed,
-      create: action,
-      join: action,
-      stop: action,
-      buyCard: action,
-      reserveCard: action,
-      earnGem: action,
-      earnNoble: action,
-      changeActivePlayer: action,
+    makeAutoObservable(this)
+
+    socket.onInitialGameData((gameId, roomId, players, cardIds, noblesIds) => {
+      log('Starting game!')
+
+      this.start(
+        gameId,
+        roomId,
+        players.map(player => new Player(player)),
+        cardIds,
+        noblesIds
+      )
+
+      socket.offInitialGameData()
     })
+
+    socket.onChangeActivePlayer((activePlayerId, currentRound) => {
+      log('Change active player to', activePlayerId)
+      this.changeActivePlayer(activePlayerId)
+      this.changeCurrentRound(currentRound)
+    })
+
+    socket.onSyncGems(this.syncGems)
   }
 
   public get numberOfPlayers() {
@@ -231,20 +202,29 @@ class Game {
       .map(noble => noble.id)
   }
 
-  public create = (players: PlayerInterface[]) => {
-    this.id = uuidv4()
+  public start = (
+    gameId: string,
+    roomId: RoomInterface['id'],
+    players: PlayerInterface[],
+    cardIds: CardInterface['id'][],
+    noblesIds: NobleInterface['id'][]
+  ) => {
+    this.id = gameId
+    this.roomId = roomId
+    this.currentRound = 1
     this.players = players
     this.activePlayerId = players[0].id
-    this.cards = _.shuffle(getCards())
-    this.nobles = _.shuffle(getNobles()).slice(0, this.numberOfPlayers + 1)
+    const allCards = getCards()
+    this.cards = cardIds.map(cardId => allCards.find(card => card.id === cardId)!)
+    const allNobles = getNobles()
+    this.nobles = noblesIds.map(nobleId => allNobles.find(noble => noble.id === nobleId)!)
     this.prepareGems()
     this.isRunning = true
+  }
 
-    return {
-      gameId: this.id,
-      cardIds: this.cards.map(card => card.id),
-      noblesIds: this.nobles.map(card => card.id),
-    }
+  // TODO: check if used
+  public stop = () => {
+    this.isRunning = false
   }
 
   public drawCards = (numberOfPlayers: number) => ({
@@ -253,31 +233,6 @@ class Game {
       .slice(0, numberOfPlayers + 1)
       .map(card => card.id),
   })
-
-  public join = (
-    gameId: string,
-    players: PlayerInterface[],
-    cardIds: CardInterface['id'][],
-    noblesIds: NobleInterface['id'][]
-  ) => {
-    this.id = gameId
-    this.players = players
-    this.activePlayerId = players[0].id
-    const allCards = getCards()
-    this.cards = cardIds.map(
-      cardId => allCards.find(card => card.id === cardId)!
-    )
-    const allNobles = getNobles()
-    this.nobles = noblesIds.map(
-      nobleId => allNobles.find(noble => noble.id === nobleId)!
-    )
-    this.prepareGems()
-    this.isRunning = true
-  }
-
-  public stop = () => {
-    this.isRunning = false
-  }
 
   private prepareGems() {
     let numberOfGems = 7
@@ -316,8 +271,7 @@ class Game {
 
     this.actionInProgress = true
 
-    const cardIsReservedByActivePlayer =
-      card.isReservedBy === this.activePlayer.id
+    const cardIsReservedByActivePlayer = card.isReservedBy === this.activePlayer.id
 
     return flyCard(
       // prettier-ignore
@@ -325,9 +279,7 @@ class Game {
         ? document.querySelector(`[data-player-id="${this.activePlayer!.id}"] [data-card-id="${card.id}"]`)
         : document.querySelector(`#card-board [data-card-id="${card.id}"]`),
       document.querySelector(
-        `[data-player-id="${this.activePlayer!.id}"] [data-indicator-color="${
-          card.color
-        }"]`
+        `[data-player-id="${this.activePlayer!.id}"] [data-indicator-color="${card.color}"]`
       )
     ).then(() => {
       runInAction(() => {
@@ -339,10 +291,7 @@ class Game {
         this.payCardCost(card)
 
         if (cardIsReservedByActivePlayer) {
-          cardFound = removeByIdAndReturn(
-            this.activePlayer.reservedCards,
-            card.id
-          )!
+          cardFound = removeByIdAndReturn(this.activePlayer.reservedCards, card.id)!
           delete cardFound.isReservedBy
         } else {
           cardFound = removeByIdAndReturn(this.cards, card.id)!
@@ -395,9 +344,7 @@ class Game {
     flyGem(
       document.querySelector(`[data-gem-container-color="${color}"]`),
       document.querySelector(
-        `[data-player-id="${
-          this.activePlayer!.id
-        }"] [data-indicator-color="${color}"]`
+        `[data-player-id="${this.activePlayer!.id}"] [data-indicator-color="${color}"]`
       )
     ).then(() => {
       runInAction(doLogic)
@@ -410,8 +357,34 @@ class Game {
     this.activePlayer?.nobles.push(nobleFound)
   }
 
-  public changeActivePlayer = (id: PlayerInterface['id']) => {
-    this.activePlayerId = id
+  public giveTurnToNextPlayer = () => {
+    const activePlayerIndex = this.players.findIndex(player => player.id === this.activePlayerId)
+    let currentRound = this.currentRound
+    let nextActivePlayerId = this.players[activePlayerIndex + 1]?.id
+
+    if (!nextActivePlayerId) {
+      nextActivePlayerId = this.players[0].id
+      currentRound++
+    }
+
+    socket.emitChangeActivePlayer(this.roomId, nextActivePlayerId, currentRound)
+  }
+
+  private changeActivePlayer = (activePlayerId: PlayerInterface['id']) => {
+    this.activePlayerId = activePlayerId
+  }
+
+  private changeCurrentRound = (currentRound: GameInterface['currentRound']) => {
+    this.currentRound = currentRound
+  }
+
+  private syncGems = (playerId: PlayerInterface['id'], gems: GemColorsType[]) => {
+    const player = this.players.find(player => player.id === playerId)
+    console.log('🚀 ~ syncGems', gems)
+    gems.forEach(gem => {
+      player?.earnGem(gem)
+      this.gems[gem]--
+    })
   }
 }
 

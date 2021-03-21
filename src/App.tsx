@@ -55,6 +55,8 @@ export default observer(function App() {
 /* TODO */
 // Allow to reserve a card from CardStack
 // Allow to spend gold
+// Break game when someone leaves
+// Don't allow joining game that already started
 
 /* LATER */
 // Limit to three different gems or two same if there are four remaining

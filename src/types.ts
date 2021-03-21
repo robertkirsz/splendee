@@ -1,13 +1,16 @@
+export interface GameInterface {
+  id: string
+  currentRound: number
+}
+
 export interface PlayerInterface {
   id: string
   name: string
   isReady: boolean
-  currentRound: number
   score: number
   gems: GemAmountInterface
   cards: CardInterface[]
   reservedCards: CardInterface[]
-  inventoryColors: CardInterface['color'][]
   cardPoints: { [key in CardInterface['color']]: number }
   cardAmount: { [key in CardInterface['color']]: number }
   totalColorPoints: { [key in CardInterface['color']]: number }
@@ -39,13 +42,7 @@ export interface CardInterface {
   isReservedBy?: string
 }
 
-export type GemColorsType =
-  | 'red'
-  | 'green'
-  | 'blue'
-  | 'white'
-  | 'black'
-  | 'gold'
+export type GemColorsType = 'red' | 'green' | 'blue' | 'white' | 'black' | 'gold'
 
 export interface GemAmountInterface {
   red: number

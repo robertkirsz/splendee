@@ -1,11 +1,14 @@
 import { io } from 'socket.io-client'
 
 import type {
+  GameInterface,
   RoomInterface,
   CardInterface,
   DataInterface,
   NobleInterface,
   PlayerDataForRoomInterface,
+  PlayerInterface,
+  GemColorsType,
 } from 'types'
 
 const socketIo = io('ws://localhost:1987')
@@ -19,7 +22,8 @@ const socket = {
   },
   onInitialGameData(
     callback: (
-      id: string,
+      gameId: string,
+      roomId: RoomInterface['id'],
       players: PlayerDataForRoomInterface[],
       cardIds: CardInterface['id'][],
       noblesIds: NobleInterface['id'][]
@@ -30,22 +34,13 @@ const socket = {
   offInitialGameData() {
     socketIo.off('initial game data')
   },
-  emitJoinRoom(
-    roomId: RoomInterface['id'],
-    playerDataForRoom: PlayerDataForRoomInterface
-  ) {
+  emitJoinRoom(roomId: RoomInterface['id'], playerDataForRoom: PlayerDataForRoomInterface) {
     socketIo.emit('join room', roomId, playerDataForRoom)
   },
-  emitUpdatePlayer(
-    roomId: RoomInterface['id'],
-    playerDataForRoom: PlayerDataForRoomInterface
-  ) {
+  emitUpdatePlayer(roomId: RoomInterface['id'], playerDataForRoom: PlayerDataForRoomInterface) {
     socketIo.emit('update player', roomId, playerDataForRoom)
   },
-  emitLeaveRoom(
-    roomId: RoomInterface['id'],
-    playerId: PlayerDataForRoomInterface['id']
-  ) {
+  emitLeaveRoom(roomId: RoomInterface['id'], playerId: PlayerDataForRoomInterface['id']) {
     socketIo.emit('leave room', roomId, playerId)
   },
   emitSendInitialGameData(
@@ -54,6 +49,37 @@ const socket = {
     noblesIds: NobleInterface['id'][]
   ) {
     socketIo.emit('send initial game data', roomId, cardIds, noblesIds)
+  },
+  emitChangeActivePlayer(
+    roomId: RoomInterface['id'],
+    activePlayerId: PlayerInterface['id'],
+    currentRound: GameInterface['currentRound']
+  ) {
+    socketIo.emit('change active player', roomId, activePlayerId, currentRound)
+  },
+  onChangeActivePlayer(
+    callback: (
+      activePlayerId: PlayerInterface['id'],
+      currentRound: GameInterface['currentRound']
+    ) => void
+  ) {
+    socketIo.on('change active player', callback)
+  },
+  offChangeActivePlayer() {
+    socketIo.off('change active player')
+  },
+  emitSyncGems(
+    roomId: RoomInterface['id'],
+    playerId: PlayerInterface['id'],
+    gems: GemColorsType[]
+  ) {
+    socketIo.emit('sync gems', roomId, playerId, gems)
+  },
+  onSyncGems(callback: (playerId: PlayerInterface['id'], gems: GemColorsType[]) => void) {
+    socketIo.on('sync gems', callback)
+  },
+  offSyncGems() {
+    socketIo.off('sync gems')
   },
 }
 

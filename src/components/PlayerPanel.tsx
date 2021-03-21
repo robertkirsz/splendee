@@ -4,50 +4,33 @@ import styled from 'styled-components/macro'
 import Div from 'styled-kit/Div'
 
 import type { PlayerInterface } from 'types'
-import { gameStore } from 'store'
+import { gameStore, playerStore } from 'store'
 import { getGemColor, sc } from 'utils'
 
 import Card from 'components/Card'
+
+const colors = ['red', 'green', 'blue', 'white', 'black', 'gold']
 
 type Props = {
   player: PlayerInterface
 }
 
-const colors = ['red', 'green', 'blue', 'white', 'black', 'gold']
-
 export default observer(function PlayerPanel({ player }: Props) {
-  const { activePlayerId, changeActivePlayer } = useContext(gameStore)
-
-  const {
-    id,
-    name,
-    score,
-    cardAmount,
-    gems,
-    reservedCards,
-    totalColorPoints,
-  } = player
+  const { name: playerName } = useContext(playerStore)
+  const { activePlayerId } = useContext(gameStore)
+  const { id, name, score, cardAmount, gems, reservedCards, totalColorPoints } = player
 
   return (
-    <Wrapper
-      key={id}
-      onClick={() => changeActivePlayer(id)}
-      isActive={id === activePlayerId}
-      data-player-id={id}
-    >
+    <Wrapper key={id} isActive={id === activePlayerId} data-player-id={id}>
       <Div listLeft={4}>
         <span>{name}</span>
+        {playerName === name && <span>(you)</span>}
         <span>({score}/15)</span>
       </Div>
 
       <Div columnTop mTop={4} border="1px solid black">
         {colors.map(color => (
-          <Div
-            key={color}
-            listLeft={4}
-            itemsCenter
-            data-indicator-color={color}
-          >
+          <Div key={color} listLeft={4} itemsCenter data-indicator-color={color}>
             <Div relative itemsCenter justifyCenter>
               <span
                 css={`
