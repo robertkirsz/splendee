@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite'
 import type { DataInterface } from 'types'
 
 import socket from 'socket'
-import { gameStore } from 'store'
+import { gameStore, playerStore } from 'store'
 
 import IntroScreen from 'screens/IntroScreen'
 import GameScreen from 'screens/GameScreen'
@@ -12,18 +12,10 @@ import LobbyScreen from 'screens/LobbyScreen'
 
 export default observer(function App() {
   const game = useContext(gameStore)
+  const player = useContext(playerStore)
 
   const [data, setData] = useState<DataInterface>()
   const [alreadyConnected, setAlreadyConnected] = useState(false)
-  const [currentRoomId, setCurrentRoomId] = useState('')
-
-  function handleJoinRoom(roomId: string) {
-    setCurrentRoomId(roomId)
-  }
-
-  function handleLeaveRoom() {
-    setCurrentRoomId('')
-  }
 
   useEffect(() => {
     if (alreadyConnected) return
@@ -35,16 +27,17 @@ export default observer(function App() {
 
   if (typeof data === 'undefined') return null
 
-  const chosenRoom = data.rooms.find(room => room.id === currentRoomId)
+  const playerRoomData = data.players.find(({ playerId }) => playerId === player.id)
+  const chosenRoom = data.rooms.find(room => room.id === playerRoomData?.roomId)
 
   return (
     <>
       {game.isRunning ? (
         <GameScreen />
       ) : chosenRoom ? (
-        <LobbyScreen room={chosenRoom} onLeaveRoom={handleLeaveRoom} />
+        <LobbyScreen room={chosenRoom} />
       ) : (
-        <IntroScreen rooms={data.rooms} onJoinRoom={handleJoinRoom} />
+        <IntroScreen rooms={data.rooms} />
       )}
 
       <pre id="data-preview">{JSON.stringify(data, null, 1)}</pre>

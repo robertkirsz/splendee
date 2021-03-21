@@ -12,10 +12,9 @@ import Div from 'components/Div'
 
 type Props = {
   room: RoomInterface
-  onLeaveRoom: () => void
 }
 
-export default observer(function LobbyScreen({ room, onLeaveRoom }: Props) {
+export default observer(function LobbyScreen({ room }: Props) {
   const game = useContext(gameStore)
   const player = useContext(playerStore)
 
@@ -23,7 +22,7 @@ export default observer(function LobbyScreen({ room, onLeaveRoom }: Props) {
   const debouncedPlayerName = useDebounce(playerName)
 
   const host = room.players[0]
-  const isHost = host?.id === player.id
+  const isHost = host.id === player.id
   const otherPlayers = room.players.filter(({ id }) => id !== player.id)
   const otherPlayersNames = otherPlayers.map(player => player.name)
   const nameIsValid = playerName !== '' && !otherPlayersNames.includes(playerName)
@@ -41,7 +40,6 @@ export default observer(function LobbyScreen({ room, onLeaveRoom }: Props) {
     player.setName('')
     player.setIsReady(false)
     socket.emitLeaveRoom(room.id, player.id)
-    onLeaveRoom()
   }
 
   function initializeGame() {
@@ -95,7 +93,7 @@ export default observer(function LobbyScreen({ room, onLeaveRoom }: Props) {
             const isYou = id === player.id
             const personName = isYou ? 'You' : name || 'Someone'
             const toBe = isYou ? 'are' : 'is'
-            const isHost = host?.id === id ? ' (host)' : ''
+            const isHost = host.id === id ? ' (host)' : ''
             const status = isReady ? 'ready!' : 'joining...'
 
             return (

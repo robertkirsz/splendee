@@ -7,14 +7,12 @@ import { playerStore } from 'store'
 
 type Props = {
   rooms: RoomInterface[]
-  onJoinRoom: (id: string) => void
 }
 
-export default function GameCreationScreen({ rooms = [], onJoinRoom }: Props) {
+export default function GameCreationScreen({ rooms = [] }: Props) {
   const player = useContext(playerStore)
 
   function handleJoinRoom(roomId: string) {
-    onJoinRoom(roomId)
     socket.emitJoinRoom(roomId, player.dataForRoom)
   }
 
@@ -32,9 +30,7 @@ export default function GameCreationScreen({ rooms = [], onJoinRoom }: Props) {
           >
             {room.id}
             <br />
-            {room.gameInProgress
-              ? 'Game in progress'
-              : `(${room.players.length}/4)`}
+            {room.gameInProgress ? 'Game in progress' : `(${room.players.length}/4)`}
           </button>
         ))}
       </div>

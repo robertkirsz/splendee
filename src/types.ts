@@ -67,7 +67,7 @@ export interface RoomInterface {
 
 export interface ConnectedPlayerMetadataInterface {
   socketId: string
-  roomId: string
+  roomId: RoomInterface['id']
   playerId: PlayerInterface['id']
 }
 
