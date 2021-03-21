@@ -49,10 +49,7 @@ export default observer(function App() {
 // Allow to reserve a card from CardStack
 // Allow to spend gold
 // Break game when someone leaves
-// Don't allow joining game that already started
 
 /* LATER */
-// Limit to three different gems or two same if there are four remaining
 // Limit gem amount to 10
 // When card row ends, it should stay in place (should have min height)
-// Different rules for two and three players
