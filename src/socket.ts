@@ -11,6 +11,8 @@ import type {
   GemColorsType,
 } from 'types'
 
+import { Message } from 'types'
+
 const socketIo = io('ws://localhost:1987')
 
 const socket = {
@@ -80,6 +82,15 @@ const socket = {
   },
   offSyncGems() {
     socketIo.off('sync gems')
+  },
+  emitSendMessage(roomId: RoomInterface['id'], message: Message) {
+    socketIo.emit('send message', roomId, message)
+  },
+  onSendMessage(callback: (message: Message) => void) {
+    socketIo.on('send message', callback)
+  },
+  offSendMessage() {
+    socketIo.off('send message')
   },
 }
 

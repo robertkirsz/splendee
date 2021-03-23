@@ -9,6 +9,7 @@ import { gameStore, playerStore } from 'store'
 import IntroScreen from 'screens/IntroScreen'
 import GameScreen from 'screens/GameScreen'
 import LobbyScreen from 'screens/LobbyScreen'
+import SendMessages from 'components/SendMessages'
 
 export default observer(function App() {
   const game = useContext(gameStore)
@@ -41,6 +42,7 @@ export default observer(function App() {
       )}
 
       <pre id="data-preview">{JSON.stringify(data, null, 1)}</pre>
+      <SendMessages />
     </>
   )
 })

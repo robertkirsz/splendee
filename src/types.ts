@@ -75,3 +75,18 @@ export interface DataInterface {
   rooms: RoomInterface[]
   players: ConnectedPlayerMetadataInterface[]
 }
+
+export enum MessageTypes {
+  Gems = 'Gems',
+  Card = 'Card',
+  ReserveTable = 'ReserveTable',
+  ReserveStack = 'ReserveStack',
+  Noble = 'Noble',
+}
+
+export type Message =
+  | { type: MessageTypes.Gems; payload: any }
+  | { type: MessageTypes.Card; payload: any }
+  | { type: MessageTypes.ReserveTable; payload: any }
+  | { type: MessageTypes.ReserveStack; payload: any }
+  | { type: MessageTypes.Noble; payload: any }

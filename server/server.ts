@@ -10,6 +10,7 @@ import type {
   PlayerInterface,
   GameInterface,
   GemColorsType,
+  Message,
 } from '../src/types'
 
 console.log('Hello from server')
@@ -130,6 +131,10 @@ io.on('connection', (socket: Socket) => {
       socket.to(roomId).emit('sync gems', playerId, gems)
     }
   )
+
+  socket.on('send message', (roomId: RoomInterface['id'], message: Message) => {
+    socket.to(roomId).emit('send message', message)
+  })
 
   socket.on('disconnect', () => {
     console.log(`${socket.id}: -- disconnected --`)
