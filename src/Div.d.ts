@@ -1,6 +1,4 @@
 declare module 'styled-kit/Div' {
-  import React from 'react'
-
   interface DivProps {
     // flex-direction
     row?: boolean

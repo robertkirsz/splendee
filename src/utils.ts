@@ -38,28 +38,18 @@ export const getGemColor = ({ color }: { color: string }) => {
 }
 
 export const sc = (propName: string) => (css: TemplateStringsArray | any) =>
-  css.length
-    ? (props: any) => (props[propName] ? css : undefined)
-    : css[propName]
+  css.length ? (props: any) => (props[propName] ? css : undefined) : css[propName]
 
-export const getById = <Item extends { id: number }>(
-  array: Item[],
-  id: number
-) => array.find(item => item.id === id)
+export const getById = <Item extends { id: number }>(array: Item[], id: number) =>
+  array.find(item => item.id === id)
 
-export const removeById = <Item extends { id: number }>(
-  array: Item[],
-  id: number
-) => {
+export const removeById = <Item extends { id: number }>(array: Item[], id: number) => {
   const itemIndex = array.findIndex(item => item.id === id)
 
   if (itemIndex !== -1) array.splice(itemIndex, 1)
 }
 
-export const removeByIdAndReturn = <Item extends { id: number }>(
-  array: Item[],
-  id: number
-) => {
+export const removeByIdAndReturn = <Item extends { id: number }>(array: Item[], id: number) => {
   let item
   const itemIndex = array.findIndex(item => item.id === id)
 
@@ -71,12 +61,7 @@ export const removeByIdAndReturn = <Item extends { id: number }>(
 function calculatePosition(from: HTMLElement, to: HTMLElement, scale: number) {
   const { width: fromWidth, height: fromHeight } = from.getBoundingClientRect()
 
-  const {
-    width: toWidth,
-    height: toHeight,
-    top: toTop,
-    left: toLeft,
-  } = to.getBoundingClientRect()
+  const { width: toWidth, height: toHeight, top: toTop, left: toLeft } = to.getBoundingClientRect()
 
   const left = toLeft + toWidth / 2 - (fromWidth * scale) / 2
   const top = toTop + toHeight / 2 - (fromHeight * scale) / 2
