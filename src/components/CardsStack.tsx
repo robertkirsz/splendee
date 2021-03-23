@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import { observer } from 'mobx-react-lite'
 import Div from 'styled-kit/Div'
 import styled from 'styled-components'
@@ -11,24 +11,20 @@ import { ButtonsOverlay } from 'components/Card'
 
 type Props = {
   level: CardInterface['level']
-  numberOfCards: number
-  topCard: CardInterface
-  onTakeCard: Function
+  numberOfCards?: number
+  topCard?: CardInterface
+  onTakeCard?: () => void
 }
 
-export default observer(function CardsStack({
-  level,
-  numberOfCards,
-  topCard,
-  onTakeCard,
-}: Props) {
+export default observer(function CardsStack({ level, numberOfCards, topCard, onTakeCard }: Props) {
   const { activePlayer, reserveCard } = useContext(gameStore)
 
-  const showButtonsOverlay = activePlayer?.canReserveCards
+  const showButtonsOverlay = typeof topCard !== 'undefined' && activePlayer?.canReserveCards
 
   function handleReserveCardButtonClick() {
+    if (typeof topCard === 'undefined') return
     reserveCard(topCard, false)
-    onTakeCard()
+    onTakeCard?.()
   }
 
   return (
@@ -39,9 +35,11 @@ export default observer(function CardsStack({
         </ButtonsOverlay>
       )}
 
-      <Div margin="auto" pTop={8}>
-        {numberOfCards}
-      </Div>
+      {numberOfCards && (
+        <Div margin="auto" pTop={8}>
+          {numberOfCards}
+        </Div>
+      )}
 
       <Div listLeft>
         {[...Array(level)].map((_, index) => (

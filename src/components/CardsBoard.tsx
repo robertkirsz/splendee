@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import { useContext, useState } from 'react'
 import styled from 'styled-components'
 import { observer } from 'mobx-react-lite'
 import Div from 'styled-kit/Div'
@@ -19,18 +19,12 @@ export default observer(function CardsBoard() {
   )
 })
 
-const CardsRow = observer(function CardsRow({
-  level,
-}: {
-  level: CardInterface['level']
-}) {
+const CardsRow = observer(function CardsRow({ level }: { level: CardInterface['level'] }) {
   const { cards } = useContext(gameStore)
 
   const currentLevelCards = cards.filter(card => card.level === level)
 
-  const [cardsToDisplay, setCardsToDisplay] = useState(
-    currentLevelCards.slice(0, 4)
-  )
+  const [cardsToDisplay, setCardsToDisplay] = useState(currentLevelCards.slice(0, 4))
 
   const [currentCardIndex, setCurrentCardIndex] = useState(3)
 
@@ -49,8 +43,7 @@ const CardsRow = observer(function CardsRow({
     // }, flyDuration)
   }
 
-  const numberOfCards =
-    currentLevelCards.length - cardsToDisplay.filter(card => card).length
+  const numberOfCards = currentLevelCards.length - cardsToDisplay.filter(card => card).length
 
   return (
     <Div key={level} itemsCenter listLeft>
@@ -66,27 +59,19 @@ const CardsRow = observer(function CardsRow({
       </CardHolder>
 
       <CardHolder>
-        {cardsToDisplay[0] && (
-          <Card card={cardsToDisplay[0]} onTakeCard={handleTakeCard} />
-        )}
+        {cardsToDisplay[0] && <Card card={cardsToDisplay[0]} onTakeCard={handleTakeCard} />}
       </CardHolder>
 
       <CardHolder>
-        {cardsToDisplay[1] && (
-          <Card card={cardsToDisplay[1]} onTakeCard={handleTakeCard} />
-        )}
+        {cardsToDisplay[1] && <Card card={cardsToDisplay[1]} onTakeCard={handleTakeCard} />}
       </CardHolder>
 
       <CardHolder>
-        {cardsToDisplay[2] && (
-          <Card card={cardsToDisplay[2]} onTakeCard={handleTakeCard} />
-        )}
+        {cardsToDisplay[2] && <Card card={cardsToDisplay[2]} onTakeCard={handleTakeCard} />}
       </CardHolder>
 
       <CardHolder>
-        {cardsToDisplay[3] && (
-          <Card card={cardsToDisplay[3]} onTakeCard={handleTakeCard} />
-        )}
+        {cardsToDisplay[3] && <Card card={cardsToDisplay[3]} onTakeCard={handleTakeCard} />}
       </CardHolder>
     </Div>
   )

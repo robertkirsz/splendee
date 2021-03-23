@@ -85,8 +85,13 @@ export enum MessageTypes {
 }
 
 export type Message =
-  | { type: MessageTypes.Gems; payload: any }
-  | { type: MessageTypes.Card; payload: any }
-  | { type: MessageTypes.ReserveTable; payload: any }
-  | { type: MessageTypes.ReserveStack; payload: any }
-  | { type: MessageTypes.Noble; payload: any }
+  | { type: MessageTypes.Gems; text: string; gems: GemColorsType[] }
+  | { type: MessageTypes.Card; text: string; cardId: CardInterface['id'] }
+  | { type: MessageTypes.ReserveTable; text: string; cardId: CardInterface['id'] }
+  | {
+      type: MessageTypes.ReserveStack
+      text: string
+      level: CardInterface['level']
+      gotGold: boolean
+    }
+  | { type: MessageTypes.Noble; text: string; nobleId: NobleInterface['id'] }

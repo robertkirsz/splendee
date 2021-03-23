@@ -1,4 +1,3 @@
-import React from 'react'
 import styled from 'styled-components'
 import Div from 'styled-kit/Div'
 
@@ -6,22 +5,16 @@ import { CardInterface, NobleInterface } from 'types'
 import { sc } from 'utils'
 
 type Props = {
-  value: NobleInterface['value']
-  cost: NobleInterface['cost']
-  isPurchasable: boolean
-  onClick(): void
+  noble: NobleInterface
+  isPurchasable?: boolean
+  isStatic?: boolean
+  onClick?: () => void
 }
 
-export default function Noble({ value, cost, isPurchasable, onClick }: Props) {
+export default function Noble({ noble: { value, cost }, isPurchasable, onClick }: Props) {
   return (
     <Wrapper isPurchasable={isPurchasable} onClick={onClick}>
-      <Div
-        column
-        itemsCenter
-        justifyBetween
-        padding={8}
-        background="rgba(255, 255, 255, 0.5)"
-      >
+      <Div column itemsCenter justifyBetween padding={8} background="rgba(255, 255, 255, 0.5)">
         <span>{value}</span>
 
         <Div columnTop={4}>
@@ -36,7 +29,7 @@ export default function Noble({ value, cost, isPurchasable, onClick }: Props) {
   )
 }
 
-const Wrapper = styled.div<{ isPurchasable: boolean }>`
+const Wrapper = styled.div<{ isPurchasable?: boolean; isStatic?: boolean }>`
   flex: none;
   display: flex;
 
@@ -49,6 +42,8 @@ const Wrapper = styled.div<{ isPurchasable: boolean }>`
   border-radius: 8px;
 
   overflow: hidden;
+
+  ${sc('isStatic')`pointer-events: none;`}
 
   ${sc('isPurchasable')`
     box-shadow: 0 0 15px 5px green;

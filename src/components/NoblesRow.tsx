@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import { observer } from 'mobx-react-lite'
 import Div from 'styled-kit/Div'
 
@@ -13,14 +13,12 @@ export default observer(function NoblesRow() {
       {nobles.map(noble => {
         const isPurchasable = purchasableNoblesIds.includes(noble.id)
 
+        function handleClick() {
+          isPurchasable && earnNoble(noble.id)
+        }
+
         return (
-          <Noble
-            key={noble.id}
-            value={noble.value}
-            cost={noble.cost}
-            isPurchasable={isPurchasable}
-            onClick={() => isPurchasable && earnNoble(noble.id)}
-          />
+          <Noble key={noble.id} noble={noble} isPurchasable={isPurchasable} onClick={handleClick} />
         )
       })}
     </Div>

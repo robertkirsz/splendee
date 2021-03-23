@@ -1,7 +1,7 @@
 import { useContext, useEffect } from 'react'
 import { toJS } from 'mobx'
 import { observer } from 'mobx-react-lite'
-import styled, { css } from 'styled-components'
+import styled, { css } from 'styled-components/macro'
 import Div from 'styled-kit/Div'
 import Color from 'color'
 
@@ -38,11 +38,17 @@ export default observer(function GemsBank() {
       {gemColors.map(color => (
         <GemContainer
           key={color}
-          color={Color(getGemColor({ color }))}
+          color={color}
           onClick={handleClick(color)}
           hidden={!gems[color]}
           disabled={_gems.includes(color) && (_gems.length > 1 || gems[color] <= 2)}
           data-gem-container-color={color}
+          css={`
+            &:last-child {
+              margin-top: 80px;
+              pointer-events: none;
+            }
+          `}
         >
           {gems[color]}
         </GemContainer>
@@ -51,7 +57,12 @@ export default observer(function GemsBank() {
   )
 })
 
-const GemContainer = styled.div<{ color: any; disabled: boolean; hidden: boolean }>`
+export const GemContainer = styled.div<{
+  color: GemColorsType
+  disabled?: boolean
+  hidden?: boolean
+  isStatic?: boolean
+}>`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -59,11 +70,15 @@ const GemContainer = styled.div<{ color: any; disabled: boolean; hidden: boolean
   width: 50px;
   height: 50px;
 
-  ${({ color }) => css`
-    background: ${color};
-    border: 8px solid ${color.darken(0.2)};
-    box-shadow: 0 5px 0 0 ${color.darken(0.5)};
-  `}
+  ${props => {
+    const color = Color(getGemColor({ color: props.color }))
+
+    return css`
+      background: ${color.hex()};
+      border: 8px solid ${color.darken(0.2).hex()};
+      box-shadow: 0 5px 0 0 ${color.darken(0.5).hex()};
+    `
+  }}
 
   border-radius: 50%;
 
@@ -74,6 +89,8 @@ const GemContainer = styled.div<{ color: any; disabled: boolean; hidden: boolean
 
   cursor: pointer;
 
+  ${sc('isStatic')`pointer-events: none;`}
+
   ${sc('disabled')`
     opacity: 0.5;
     pointer-events: none;
@@ -83,9 +100,4 @@ const GemContainer = styled.div<{ color: any; disabled: boolean; hidden: boolean
     opacity: 0;
     pointer-events: none;
   `}
-
-  &:last-child {
-    margin-top: 80px;
-    pointer-events: none;
-  }
 `

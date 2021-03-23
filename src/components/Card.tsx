@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import { observer } from 'mobx-react-lite'
 import styled from 'styled-components'
 import Div from 'styled-kit/Div'
@@ -12,13 +12,12 @@ import { GemIndicator } from 'components/PlayerPanel'
 
 type Props = {
   card: CardInterface
+  isStatic?: boolean
   onTakeCard?: Function
 }
 
-export default observer(function Card({ card, onTakeCard }: Props) {
-  const { activePlayer, buyCard, reserveCard, actionInProgress } = useContext(
-    gameStore
-  )
+export default observer(function Card({ card, isStatic, onTakeCard }: Props) {
+  const { activePlayer, buyCard, reserveCard, actionInProgress } = useContext(gameStore)
 
   const { value, cost, color, isReservedBy } = card
 
@@ -53,8 +52,7 @@ export default observer(function Card({ card, onTakeCard }: Props) {
   const isPurchasable = checkPurchasability()
   const colorCost: string[] = []
   // TODO: get rid of ?.
-  const showButtonsOverlay =
-    !actionInProgress && (isPurchasable || activePlayer?.canReserveCards)
+  const showButtonsOverlay = !actionInProgress && (isPurchasable || activePlayer?.canReserveCards)
   const cardCanBeReserved = activePlayer?.canReserveCards && !isReservedBy
 
   Object.entries(cost).forEach(([color, amount]) => {
@@ -77,19 +75,14 @@ export default observer(function Card({ card, onTakeCard }: Props) {
   }
 
   return (
-    <Wrapper color={color} isPurchasable={isPurchasable} data-card-id={card.id}>
+    <Wrapper color={color} isPurchasable={isPurchasable} isStatic={isStatic} data-card-id={card.id}>
       {showButtonsOverlay && (
         <ButtonsOverlay>
           {isPurchasable && (
-            <BuyCardButton
-              colorCost={colorCost}
-              onClick={handleBuyCardButtonClick}
-            />
+            <BuyCardButton colorCost={colorCost} onClick={handleBuyCardButtonClick} />
           )}
 
-          {cardCanBeReserved && (
-            <button onClick={handleReserveCardButtonClick}>RESERVE</button>
-          )}
+          {cardCanBeReserved && <button onClick={handleReserveCardButtonClick}>RESERVE</button>}
         </ButtonsOverlay>
       )}
 
@@ -108,13 +101,7 @@ export default observer(function Card({ card, onTakeCard }: Props) {
   )
 })
 
-function BuyCardButton({
-  colorCost,
-  onClick,
-}: {
-  colorCost: string[]
-  onClick: () => void
-}) {
+function BuyCardButton({ colorCost, onClick }: { colorCost: string[]; onClick: () => void }) {
   return (
     <button onClick={onClick}>
       GET FOR{' '}
@@ -153,6 +140,7 @@ export const ButtonsOverlay = styled.div`
 const Wrapper = styled.div<{
   color: CardInterface['color']
   isPurchasable?: boolean
+  isStatic?: boolean
 }>`
   display: flex;
   flex-direction: column;
@@ -172,6 +160,8 @@ const Wrapper = styled.div<{
   overflow: hidden;
 
   transition: box-shadow 0.3s;
+
+  ${sc('isStatic')`pointer-events: none;`}
 
   ${sc('isPurchasable')`
     box-shadow: 0 0 15px 5px green;
