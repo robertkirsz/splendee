@@ -1,7 +1,8 @@
 import styled from 'styled-components'
 import Div from 'styled-kit/Div'
 
-import { CardInterface, NobleInterface } from 'types'
+import type { CardInterface, NobleInterface } from 'types'
+
 import { sc } from 'utils'
 
 type Props = {

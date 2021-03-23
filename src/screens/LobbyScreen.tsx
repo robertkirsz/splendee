@@ -59,7 +59,7 @@ export default observer(function LobbyScreen({ room }: Props) {
     <div className="flex flex-col items-center mt-20 m-x-auto space-y-10">
       <h1 className="text-5xl">{room.id}</h1>
 
-      <Div columnTop width={260}>
+      <Div columnTop width={280}>
         <input
           className="py-2 px-3 shadow appearance-none border rounded text-grey-darker"
           placeholder="Your name"
@@ -87,7 +87,7 @@ export default observer(function LobbyScreen({ room }: Props) {
         </Div>
       </Div>
 
-      <Div columnTop width={260}>
+      <Div columnTop width={280}>
         <Div columnTop height={130} padding="4px 8px" radius={8} border="1px solid">
           {room.players.map(({ id, name, isReady }) => {
             const isYou = id === player.id

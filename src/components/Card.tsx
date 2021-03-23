@@ -5,8 +5,8 @@ import Div from 'styled-kit/Div'
 
 import type { CardInterface } from 'types'
 
-import { gameStore } from 'store'
 import { getCardColor, sc } from 'utils'
+import { gameStore, playerStore } from 'store'
 
 import { GemIndicator } from 'components/PlayerPanel'
 
@@ -17,15 +17,14 @@ type Props = {
 }
 
 export default observer(function Card({ card, isStatic, onTakeCard }: Props) {
-  const { activePlayer, buyCard, reserveCard, actionInProgress } = useContext(gameStore)
-
   const { value, cost, color, isReservedBy } = card
+  const player = useContext(playerStore)
+  const { buyCard, reserveCard, actionInProgress } = useContext(gameStore)
 
   function checkPurchasability() {
     let isPurchasable: boolean | undefined = undefined
 
-    // TODO: get rid of ?.
-    if (isReservedBy && isReservedBy !== activePlayer?.id) {
+    if (isReservedBy && isReservedBy !== player.id) {
       return false
     }
 
@@ -38,7 +37,7 @@ export default observer(function Card({ card, isStatic, onTakeCard }: Props) {
         // @ts-ignore
         cost[color] <=
           // @ts-ignore
-          activePlayer?.totalColorPoints[color]
+          player.totalColorPoints[color]
       ) {
         isPurchasable = true
       } else {
@@ -51,13 +50,12 @@ export default observer(function Card({ card, isStatic, onTakeCard }: Props) {
 
   const isPurchasable = checkPurchasability()
   const colorCost: string[] = []
-  // TODO: get rid of ?.
-  const showButtonsOverlay = !actionInProgress && (isPurchasable || activePlayer?.canReserveCards)
-  const cardCanBeReserved = activePlayer?.canReserveCards && !isReservedBy
+  const showButtonsOverlay = !actionInProgress && (isPurchasable || player.canReserveCards)
+  const cardCanBeReserved = player.canReserveCards && !isReservedBy
 
   Object.entries(cost).forEach(([color, amount]) => {
     // @ts-ignore
-    const remaining = amount - activePlayer.cardAmount[color]
+    const remaining = amount - player.cardAmount[color]
 
     if (remaining > 0) {
       for (let i = 0; i < remaining; i++) {
@@ -67,15 +65,20 @@ export default observer(function Card({ card, isStatic, onTakeCard }: Props) {
   })
 
   function handleBuyCardButtonClick() {
-    buyCard(card).then(() => onTakeCard?.(card.id))
+    buyCard(card, player).then(() => onTakeCard?.(card.id))
   }
 
   function handleReserveCardButtonClick() {
-    reserveCard(card).then(() => onTakeCard?.(card.id))
+    reserveCard(card, player).then(() => onTakeCard?.(card.id))
   }
 
   return (
-    <Wrapper color={color} isPurchasable={isPurchasable} isStatic={isStatic} data-card-id={card.id}>
+    <Wrapper
+      color={color}
+      isPurchasable={!isStatic && isPurchasable}
+      isStatic={isStatic}
+      data-card-id={card.id}
+    >
       {showButtonsOverlay && (
         <ButtonsOverlay>
           {isPurchasable && (

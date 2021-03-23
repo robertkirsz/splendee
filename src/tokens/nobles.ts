@@ -1,4 +1,4 @@
-import { NobleInterface } from 'types'
+import type { NobleInterface } from 'types'
 
 class Noble implements NobleInterface {
   id

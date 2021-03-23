@@ -79,6 +79,7 @@ export interface DataInterface {
 export enum MessageTypes {
   Gems = 'Gems',
   Card = 'Card',
+  ReservedCard = 'ReservedCard',
   ReserveTable = 'ReserveTable',
   ReserveStack = 'ReserveStack',
   Noble = 'Noble',
@@ -87,6 +88,7 @@ export enum MessageTypes {
 export type Message =
   | { type: MessageTypes.Gems; text: string; gems: GemColorsType[] }
   | { type: MessageTypes.Card; text: string; cardId: CardInterface['id'] }
+  | { type: MessageTypes.ReservedCard; text: string; cardId: CardInterface['id'] }
   | { type: MessageTypes.ReserveTable; text: string; cardId: CardInterface['id'] }
   | {
       type: MessageTypes.ReserveStack

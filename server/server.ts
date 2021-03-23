@@ -132,6 +132,13 @@ io.on('connection', (socket: Socket) => {
     }
   )
 
+  socket.on(
+    'sync cards',
+    (roomId: RoomInterface['id'], playerId: PlayerInterface['id'], card: CardInterface) => {
+      socket.to(roomId).emit('sync cards', playerId, card)
+    }
+  )
+
   socket.on('send message', (roomId: RoomInterface['id'], message: Message) => {
     socket.to(roomId).emit('send message', message)
   })

@@ -25,7 +25,6 @@ const CardsRow = observer(function CardsRow({ level }: { level: CardInterface['l
   const currentLevelCards = cards.filter(card => card.level === level)
 
   const [cardsToDisplay, setCardsToDisplay] = useState(currentLevelCards.slice(0, 4))
-
   const [currentCardIndex, setCurrentCardIndex] = useState(3)
 
   function handleTakeCard(id: CardInterface['id']) {
@@ -38,9 +37,7 @@ const CardsRow = observer(function CardsRow({ level }: { level: CardInterface['l
   }
 
   function handleReserveCardFromStack() {
-    // setTimeout(() => {
     setCurrentCardIndex(state => state + 1)
-    // }, flyDuration)
   }
 
   const numberOfCards = currentLevelCards.length - cardsToDisplay.filter(card => card).length

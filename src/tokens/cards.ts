@@ -1,4 +1,4 @@
-import { CardInterface } from 'types'
+import type { CardInterface } from 'types'
 
 class Card {
   id: CardInterface['id']

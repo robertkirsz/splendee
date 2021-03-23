@@ -29,6 +29,7 @@ export default function Modal({ show, onClose, children, ...props }: Props) {
         <Div
           columnTop
           maxHeight="100%"
+          minWidth={280}
           maxWidth="100%"
           padding="24px 16px"
           background="var(--near-white)"

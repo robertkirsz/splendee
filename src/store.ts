@@ -14,10 +14,12 @@ import type {
   GameInterface,
 } from 'types'
 
+import { MessageTypes } from 'types'
+
 import getCards from 'tokens/cards'
 import getNobles from 'tokens/nobles'
 
-import { flyCard, flyGem, removeByIdAndReturn, log } from 'utils'
+import { flyCard, flyGem, getById, removeByIdAndReturn, log } from 'utils'
 import socket from 'socket'
 
 // TODO: check if we need export here
@@ -26,11 +28,17 @@ export class Player implements PlayerInterface {
   name: PlayerInterface['name']
   isReady: PlayerInterface['isReady']
   gems: PlayerInterface['gems'] = {
-    red: 0,
-    green: 0,
-    blue: 0,
-    white: 0,
-    black: 0,
+    // red: 0,
+    // green: 0,
+    // blue: 0,
+    // white: 0,
+    // black: 0,
+    // gold: 0,
+    red: 5,
+    green: 5,
+    blue: 5,
+    white: 5,
+    black: 5,
     gold: 0,
   }
   chosenGems: GemColorsType[] = []
@@ -169,6 +177,7 @@ class Game {
     })
 
     socket.onSyncGems(this.syncGems)
+    socket.onSyncCards(this.syncCards)
   }
 
   public get numberOfPlayers() {
@@ -176,7 +185,7 @@ class Game {
   }
 
   public get activePlayer() {
-    return this.players.find(({ id }) => id === this.activePlayerId)
+    return getById(this.players, this.activePlayerId)!
   }
 
   public get purchasableNoblesIds() {
@@ -189,7 +198,7 @@ class Game {
 
           if (
             // @ts-ignore
-            noble.cost[color] <= this.activePlayer?.cardAmount[color]
+            noble.cost[color] <= this.activePlayer.cardAmount[color]
           ) {
             isPurchasable = true
           } else {
@@ -215,9 +224,9 @@ class Game {
     this.players = players
     this.activePlayerId = players[0].id
     const allCards = getCards()
-    this.cards = cardIds.map(cardId => allCards.find(card => card.id === cardId)!)
+    this.cards = cardIds.map(cardId => getById(allCards, cardId)!)
     const allNobles = getNobles()
-    this.nobles = noblesIds.map(nobleId => allNobles.find(noble => noble.id === nobleId)!)
+    this.nobles = noblesIds.map(nobleId => getById(allNobles, nobleId)!)
     this.prepareGems()
     this.isRunning = true
   }
@@ -249,15 +258,15 @@ class Game {
     }
   }
 
-  private payCardCost(card: CardInterface) {
+  private payCardCost(card: CardInterface, player: PlayerInterface) {
     for (let color in card.cost) {
       const remainingGemCost =
         // @ts-ignore
-        card.cost[color] - this.activePlayer.cardAmount[color]
+        card.cost[color] - player.cardAmount[color]
 
       if (remainingGemCost > 0) {
         // @ts-ignore
-        this.activePlayer.gems[color] -= remainingGemCost
+        player.gems[color] -= remainingGemCost
         // @ts-ignore
         this.gems[color] += remainingGemCost
       }
@@ -265,59 +274,73 @@ class Game {
   }
 
   // TODO: change to cardId, like in earnNoble?
-  public buyCard = (card: CardInterface) => {
-    // TODO: I want this to always exist
-    if (typeof this.activePlayer === 'undefined') return Promise.resolve()
-
+  public buyCard = (card: CardInterface, player: PlayerInterface, animate = true) => {
     this.actionInProgress = true
 
-    const cardIsReservedByActivePlayer = card.isReservedBy === this.activePlayer.id
+    const cardIsReservedByPlayer = card.isReservedBy === player.id
 
-    return flyCard(
-      // prettier-ignore
-      cardIsReservedByActivePlayer
-        ? document.querySelector(`[data-player-id="${this.activePlayer!.id}"] [data-card-id="${card.id}"]`)
+    const animation = animate
+      ? flyCard(
+          // prettier-ignore
+          cardIsReservedByPlayer
+        ? document.querySelector(`[data-player-id="${player.id}"] [data-card-id="${card.id}"]`)
         : document.querySelector(`#card-board [data-card-id="${card.id}"]`),
-      document.querySelector(
-        `[data-player-id="${this.activePlayer!.id}"] [data-indicator-color="${card.color}"]`
-      )
-    ).then(() => {
-      runInAction(() => {
-        // TODO: I want this to always exist
-        if (typeof this.activePlayer === 'undefined') return
+          document.querySelector(
+            `[data-player-id="${player.id}"] [data-indicator-color="${card.color}"]`
+          )
+        )
+      : Promise.resolve()
 
+    return animation.then(() => {
+      runInAction(() => {
         let cardFound: CardInterface
 
-        this.payCardCost(card)
+        this.payCardCost(card, player)
 
-        if (cardIsReservedByActivePlayer) {
-          cardFound = removeByIdAndReturn(this.activePlayer.reservedCards, card.id)!
+        if (cardIsReservedByPlayer) {
+          cardFound = removeByIdAndReturn(player.reservedCards, card.id)!
           delete cardFound.isReservedBy
         } else {
           cardFound = removeByIdAndReturn(this.cards, card.id)!
         }
 
-        this.activePlayer.cards.push(cardFound)
+        player.cards.push(cardFound)
         this.actionInProgress = false
+
+        // socket.emitSyncCards(this.roomId, player.id, cardFound)
+        this.giveTurnToNextPlayer()
+
+        console.log('🚀 ~ Game ~ runInAction ~ player.id', player.id)
+        if (cardIsReservedByPlayer) {
+          socket.emitSendMessage(this.roomId, {
+            type: MessageTypes.ReservedCard,
+            text: `${player.name} bought this previously reserved card`,
+            cardId: cardFound.id,
+          })
+        } else {
+          socket.emitSendMessage(this.roomId, {
+            type: MessageTypes.Card,
+            text: `${player.name} bought this card`,
+            cardId: cardFound.id,
+          })
+        }
       })
     })
   }
 
-  public reserveCard = (card: CardInterface, animate = true) => {
+  public reserveCard = (card: CardInterface, player: PlayerInterface, animate = true) => {
     // TODO: Don't show card reserved from stack
-    // TODO: I want activePlayer this to always exist
-    if (!this.activePlayer?.canReserveCards) return Promise.resolve()
+    if (!player.canReserveCards) return Promise.resolve()
 
-    if (this.gems.gold) this.earnGem('gold')
+    if (this.gems.gold) this.earnGem('gold', player)
 
     const doLogic = () => {
-      // TODO: I want activePlayer this to always exist
-      if (typeof this.activePlayer === 'undefined') return
       const cardFound = removeByIdAndReturn(this.cards, card.id)!
-      cardFound.isReservedBy = this.activePlayer.id
-      this.activePlayer.reservedCards.push(cardFound)
+      cardFound.isReservedBy = player.id
+      player.reservedCards.push(cardFound)
     }
 
+    // TODO: maybe do it like in this.buyCard?
     if (!animate) {
       doLogic()
       return Promise.resolve()
@@ -325,27 +348,24 @@ class Game {
 
     return flyCard(
       document.querySelector(`#card-board [data-card-id="${card.id}"]`),
-      document.querySelector(`[data-player-id="${this.activePlayer!.id}"]`)
+      document.querySelector(`[data-player-id="${player.id}"]`)
     ).then(() => {
       runInAction(doLogic)
     })
   }
 
-  public earnGem = (color: GemColorsType) => {
+  public earnGem = (color: GemColorsType, player: PlayerInterface) => {
     if (!this.gems[color]) return
 
     this.gems[color]--
 
     const doLogic = () => {
-      // TODO: I want activePlayer this to always exist
-      this.activePlayer?.earnGem(color)
+      player.earnGem(color)
     }
 
     flyGem(
       document.querySelector(`[data-gem-container-color="${color}"]`),
-      document.querySelector(
-        `[data-player-id="${this.activePlayer!.id}"] [data-indicator-color="${color}"]`
-      )
+      document.querySelector(`[data-player-id="${player.id}"] [data-indicator-color="${color}"]`)
     ).then(() => {
       runInAction(doLogic)
     })
@@ -354,7 +374,7 @@ class Game {
   public earnNoble = (nobleId: NobleInterface['id']) => {
     const nobleIndex = this.nobles.findIndex(({ id }) => id === nobleId)
     const nobleFound = this.nobles.splice(nobleIndex, 1)[0]
-    this.activePlayer?.nobles.push(nobleFound)
+    this.activePlayer.nobles.push(nobleFound)
   }
 
   public giveTurnToNextPlayer = () => {
@@ -379,12 +399,21 @@ class Game {
   }
 
   private syncGems = (playerId: PlayerInterface['id'], gems: GemColorsType[]) => {
-    const player = this.players.find(player => player.id === playerId)
-    console.log('🚀 ~ syncGems', gems)
+    console.log('🚀 ~ Game ~ syncGems')
+    const player = getById(this.players, playerId)
+
     gems.forEach(gem => {
+      // TODO: maybe do this.earnGem like in this.syncCards?
       player?.earnGem(gem)
       this.gems[gem]--
     })
+  }
+
+  private syncCards = (playerId: PlayerInterface['id'], card: CardInterface) => {
+    console.log('🚀 ~ Game ~ syncCards')
+    const player = getById(this.players, playerId)!
+
+    this.buyCard(card, player, false)
   }
 }
 

@@ -1,22 +1,30 @@
 import { useEffect, useContext, useState } from 'react'
+import { observer } from 'mobx-react-lite'
 
-import socket from 'socket'
-import { gameStore, playerStore } from 'store'
+import type { Message } from 'types'
 import { MessageTypes } from 'types'
 
-import { Message } from 'types'
+import getCards from 'tokens/cards'
+
 import { getById } from 'utils'
+import socket from 'socket'
+import { gameStore, playerStore } from 'store'
+
 import Div from 'components/Div'
 import Modal from 'components/Modal'
 import { GemContainer } from 'components/GemsBank'
 import Card from 'components/Card'
 import Noble from 'components/Noble'
-import CardsStack from './CardsStack'
+import CardsStack from 'components/CardsStack'
 
-export default function SendMessages() {
-  const { name } = useContext(playerStore)
-  const { roomId, cards, nobles } = useContext(gameStore)
+const cards = getCards()
+
+export default observer(function SendMessages() {
+  const player = useContext(playerStore)
+  const { roomId, nobles, activePlayerId } = useContext(gameStore)
   const [messageToShow, setMessageToShow] = useState<Message | null>(null)
+
+  const yourTurn = activePlayerId === player.id
 
   useEffect(() => {
     socket.onSendMessage(setMessageToShow)
@@ -28,34 +36,26 @@ export default function SendMessages() {
   }
 
   function sendMessage(type: MessageTypes) {
-    if (type === MessageTypes.Gems) {
+    if (type === MessageTypes.ReservedCard) {
       socket.emitSendMessage(roomId, {
-        type: MessageTypes.Gems,
-        text: `${name} took these gems`,
-        gems: ['red', 'black', 'green'],
-      })
-    }
-
-    if (type === MessageTypes.Card) {
-      socket.emitSendMessage(roomId, {
-        type: MessageTypes.Card,
-        text: `${name} bought this card`,
-        cardId: 3,
+        type: MessageTypes.ReservedCard,
+        text: `${player.name} bought this previously reserved card`,
+        cardId: cards[2].id,
       })
     }
 
     if (type === MessageTypes.ReserveTable) {
       socket.emitSendMessage(roomId, {
         type: MessageTypes.ReserveTable,
-        text: `${name} reserved this card`,
-        cardId: 3,
+        text: `${player.name} reserved this card`,
+        cardId: cards[1].id,
       })
     }
 
     if (type === MessageTypes.ReserveStack) {
       socket.emitSendMessage(roomId, {
         type: MessageTypes.ReserveStack,
-        text: `${name} reserved a card from the stack`,
+        text: `${player.name} reserved a card from the stack`,
         level: 2,
         gotGold: true,
       })
@@ -64,8 +64,8 @@ export default function SendMessages() {
     if (type === MessageTypes.Noble) {
       socket.emitSendMessage(roomId, {
         type: MessageTypes.Noble,
-        text: `${name} got this noble`,
-        nobleId: 3,
+        text: `${player.name} got this noble`,
+        nobleId: nobles[0].id,
       })
     }
   }
@@ -73,8 +73,7 @@ export default function SendMessages() {
   return (
     <>
       <Div listLeft padding={4} absolute bottom={10} right={10}>
-        <button onClick={() => sendMessage(MessageTypes.Gems)}>Gems</button>
-        <button onClick={() => sendMessage(MessageTypes.Card)}>Card</button>
+        <button onClick={() => sendMessage(MessageTypes.ReservedCard)}>ReservedCard</button>
         <button onClick={() => sendMessage(MessageTypes.ReserveTable)}>ReserveTable</button>
         <button onClick={() => sendMessage(MessageTypes.ReserveStack)}>ReserveStack</button>
         <button onClick={() => sendMessage(MessageTypes.Noble)}>Noble</button>
@@ -85,7 +84,7 @@ export default function SendMessages() {
           <span className="text-center">{messageToShow?.text}</span>
 
           {messageToShow?.type === MessageTypes.Gems && (
-            <Div listLeft>
+            <Div selfCenter listLeft>
               {messageToShow.gems.map((color, index) => (
                 <GemContainer key={index} color={color} isStatic />
               ))}
@@ -93,6 +92,7 @@ export default function SendMessages() {
           )}
 
           {(messageToShow?.type === MessageTypes.Card ||
+            messageToShow?.type === MessageTypes.ReservedCard ||
             messageToShow?.type === MessageTypes.ReserveTable) && (
             <Div selfCenter>
               <Card card={cards[messageToShow.cardId]} isStatic />
@@ -112,14 +112,18 @@ export default function SendMessages() {
             </Div>
           )}
 
-          <button
-            className="inline-block self-center px-6 py-2 text-xs font-medium leading-6 text-center text-white uppercase transition bg-blue-700 rounded shadow ripple hover:shadow-lg hover:bg-blue-800 focus:outline-none disabled:opacity-50 disabled:pointer-events-none"
-            onClick={clearMessage}
-          >
-            Okay
-          </button>
+          <Div columnTop itemsCenter selfCenter>
+            {yourTurn && <span className="text-center">Now it's your turn</span>}
+
+            <button
+              className="inline-block px-6 py-2 text-xs font-medium leading-6 text-center text-white uppercase transition bg-blue-700 rounded shadow ripple hover:shadow-lg hover:bg-blue-800 focus:outline-none disabled:opacity-50 disabled:pointer-events-none"
+              onClick={clearMessage}
+            >
+              Okay
+            </button>
+          </Div>
         </Div>
       </Modal>
     </>
   )
-}
+})

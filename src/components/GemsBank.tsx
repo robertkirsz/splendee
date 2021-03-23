@@ -5,7 +5,9 @@ import styled, { css } from 'styled-components/macro'
 import Div from 'styled-kit/Div'
 import Color from 'color'
 
-import { GemColorsType } from 'types'
+import type { GemColorsType } from 'types'
+import { MessageTypes } from 'types'
+
 import { playerStore, gameStore } from 'store'
 import { getGemColor, sc } from 'utils'
 import socket from 'socket'
@@ -19,17 +21,22 @@ export default observer(function GemsBank() {
   function handleClick(color: GemColorsType) {
     return () => {
       chooseGem(color)
-      earnGem(color)
+      earnGem(color, player)
     }
   }
 
   useEffect(() => {
     if (_gems.length === 3 || (_gems.length === 2 && _gems[0] === _gems[1])) {
-      clearChoosenGems()
       socket.emitSyncGems(roomId, player.id, _gems)
+      socket.emitSendMessage(roomId, {
+        type: MessageTypes.Gems,
+        text: `${player.name} took these gems`,
+        gems: chosenGems,
+      })
+      clearChoosenGems()
       giveTurnToNextPlayer()
     }
-  }, [_gems, clearChoosenGems, giveTurnToNextPlayer, player.id, roomId])
+  }, [_gems, chosenGems, clearChoosenGems, giveTurnToNextPlayer, player.id, player.name, roomId])
 
   const gemColors = Object.keys(gems) as GemColorsType[]
 

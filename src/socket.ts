@@ -83,6 +83,15 @@ const socket = {
   offSyncGems() {
     socketIo.off('sync gems')
   },
+  emitSyncCards(roomId: RoomInterface['id'], playerId: PlayerInterface['id'], card: CardInterface) {
+    socketIo.emit('sync cards', roomId, playerId, card)
+  },
+  onSyncCards(callback: (playerId: PlayerInterface['id'], card: CardInterface) => void) {
+    socketIo.on('sync cards', callback)
+  },
+  offSyncCards() {
+    socketIo.off('sync cards')
+  },
   emitSendMessage(roomId: RoomInterface['id'], message: Message) {
     socketIo.emit('send message', roomId, message)
   },

@@ -51,6 +51,8 @@ export default observer(function App() {
 // Allow to reserve a card from CardStack
 // Allow to spend gold
 // Break game when someone leaves
+// Allow to take fewer gems when not enough left
+// Hide card button overlays when choosing gems (maybe disable whole board)
 
 /* LATER */
 // Limit gem amount to 10

@@ -13,7 +13,7 @@ export default observer(function GameScreen() {
   const player = useContext(playerStore)
   const game = useContext(gameStore)
 
-  const notYouTurn = game.activePlayerId !== player.id
+  const notYourTurn = game.activePlayerId !== player.id
 
   return (
     <Div justifyBetween itemsStart>
@@ -22,10 +22,10 @@ export default observer(function GameScreen() {
       <Div
         columnTop
         itemsCenter
-        style={notYouTurn ? { opacity: 0.5, pointerEvents: 'none' } : undefined}
+        style={notYourTurn ? { opacity: 0.5, pointerEvents: 'none' } : undefined}
       >
         <Div listLeft>
-          <span>ID: {game.id}</span>
+          <span>ID: {game.id.split('-')[0]}</span>
           <span>ROUND: {game.currentRound}</span>
         </Div>
 

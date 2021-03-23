@@ -3,8 +3,9 @@ import { observer } from 'mobx-react-lite'
 import Div from 'styled-kit/Div'
 import styled from 'styled-components'
 
-import { CardInterface } from 'types'
-import { gameStore } from 'store'
+import type { CardInterface } from 'types'
+
+import { gameStore, playerStore } from 'store'
 import { getCardStackColor } from 'utils'
 
 import { ButtonsOverlay } from 'components/Card'
@@ -17,13 +18,14 @@ type Props = {
 }
 
 export default observer(function CardsStack({ level, numberOfCards, topCard, onTakeCard }: Props) {
+  const player = useContext(playerStore)
   const { activePlayer, reserveCard } = useContext(gameStore)
 
-  const showButtonsOverlay = typeof topCard !== 'undefined' && activePlayer?.canReserveCards
+  const showButtonsOverlay = typeof topCard !== 'undefined' && activePlayer.canReserveCards
 
   function handleReserveCardButtonClick() {
     if (typeof topCard === 'undefined') return
-    reserveCard(topCard, false)
+    reserveCard(topCard, player, false)
     onTakeCard?.()
   }
 

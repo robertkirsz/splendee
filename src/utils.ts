@@ -40,7 +40,7 @@ export const getGemColor = ({ color }: { color: string }) => {
 export const sc = (propName: string) => (css: TemplateStringsArray | any) =>
   css.length ? (props: any) => (props[propName] ? css : undefined) : css[propName]
 
-export const getById = <Item extends { id: number }>(array: Item[], id: number) =>
+export const getById = <Item extends { id: number | string }>(array: Item[], id: number | string) =>
   array.find(item => item.id === id)
 
 export const removeById = <Item extends { id: number }>(array: Item[], id: number) => {

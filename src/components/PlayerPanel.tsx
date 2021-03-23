@@ -28,23 +28,27 @@ export default observer(function PlayerPanel({ player }: Props) {
         <span>({score}/15)</span>
       </Div>
 
-      <Div columnTop mTop={4} border="1px solid black">
+      <p>{player.id.split('-')[0]}</p>
+
+      <Div columnTop mTop={4}>
         {colors.map(color => (
           <Div key={color} listLeft={4} itemsCenter data-indicator-color={color}>
-            <Div relative itemsCenter justifyCenter>
-              <span
-                css={`
-                  color: white;
-                  font-weight: bold;
-                  text-shadow: 1px 1px 0 black;
-                  position: absolute;
-                `}
-              >
-                {/* @ts-ignore */}
-                {cardAmount[color]}
-              </span>
-              {color !== 'gold' && <CardIndicator color={color} />}
-            </Div>
+            {color !== 'gold' && (
+              <Div relative itemsCenter justifyCenter>
+                <span
+                  css={`
+                    color: white;
+                    font-weight: bold;
+                    text-shadow: 1px 1px 0 black;
+                    position: absolute;
+                  `}
+                >
+                  {/* @ts-ignore */}
+                  {cardAmount[color]}
+                </span>
+                <CardIndicator color={color} />
+              </Div>
+            )}
 
             <Div relative itemsCenter justifyCenter>
               <span
