@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { observer } from 'mobx-react-lite'
 import Div from 'styled-kit/Div'
@@ -8,6 +8,7 @@ import { gameStore } from 'store'
 
 import CardsStack from 'components/CardsStack'
 import Card from 'components/Card'
+import { getById } from 'utils'
 
 export default observer(function CardsBoard() {
   return (
@@ -20,21 +21,27 @@ export default observer(function CardsBoard() {
 })
 
 const CardsRow = observer(function CardsRow({ level }: { level: CardInterface['level'] }) {
-  const { cards } = useContext(gameStore)
+  const { cards, lastCardTakenId } = useContext(gameStore)
 
   const currentLevelCards = cards.filter(card => card.level === level)
 
   const [cardsToDisplay, setCardsToDisplay] = useState(currentLevelCards.slice(0, 4))
   const [currentCardIndex, setCurrentCardIndex] = useState(3)
 
-  function handleTakeCard(id: CardInterface['id']) {
-    setCardsToDisplay(state => {
-      const nextCard = currentLevelCards[currentCardIndex + 1]
-      return state.map(card => (card?.id === id ? nextCard : card))
-    })
+  useEffect(() => {
+    if (lastCardTakenId === null) return
 
-    setCurrentCardIndex(state => state + 1)
-  }
+    const card = getById(cards, lastCardTakenId)
+
+    if (card && card.level === level) {
+      setCardsToDisplay(state => {
+        const nextCard = currentLevelCards[currentCardIndex + 1]
+        return state.map(card => (card?.id === lastCardTakenId ? nextCard : card))
+      })
+
+      setCurrentCardIndex(state => state + 1)
+    }
+  }, [lastCardTakenId]) // eslint-disable-line
 
   function handleReserveCardFromStack() {
     setCurrentCardIndex(state => state + 1)
@@ -55,21 +62,13 @@ const CardsRow = observer(function CardsRow({ level }: { level: CardInterface['l
         )}
       </CardHolder>
 
-      <CardHolder>
-        {cardsToDisplay[0] && <Card card={cardsToDisplay[0]} onTakeCard={handleTakeCard} />}
-      </CardHolder>
+      <CardHolder>{cardsToDisplay[0] && <Card card={cardsToDisplay[0]} />}</CardHolder>
 
-      <CardHolder>
-        {cardsToDisplay[1] && <Card card={cardsToDisplay[1]} onTakeCard={handleTakeCard} />}
-      </CardHolder>
+      <CardHolder>{cardsToDisplay[1] && <Card card={cardsToDisplay[1]} />}</CardHolder>
 
-      <CardHolder>
-        {cardsToDisplay[2] && <Card card={cardsToDisplay[2]} onTakeCard={handleTakeCard} />}
-      </CardHolder>
+      <CardHolder>{cardsToDisplay[2] && <Card card={cardsToDisplay[2]} />}</CardHolder>
 
-      <CardHolder>
-        {cardsToDisplay[3] && <Card card={cardsToDisplay[3]} onTakeCard={handleTakeCard} />}
-      </CardHolder>
+      <CardHolder>{cardsToDisplay[3] && <Card card={cardsToDisplay[3]} />}</CardHolder>
     </Div>
   )
 })

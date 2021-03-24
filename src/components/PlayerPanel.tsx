@@ -1,14 +1,15 @@
-import { useContext } from 'react'
+// import { useContext } from 'react'
 import { observer } from 'mobx-react-lite'
 import styled from 'styled-components/macro'
 import Div from 'styled-kit/Div'
 
 import type { PlayerInterface } from 'types'
-import { gameStore, playerStore } from 'store'
-import { getGemColor, sc } from 'utils'
+// import { playerStore } from 'store'
+import { getGemColor } from 'utils'
 
 import Card from 'components/Card'
 
+// TODO: take from an enum from types.ts
 const colors = ['red', 'green', 'blue', 'white', 'black', 'gold']
 
 type Props = {
@@ -16,23 +17,29 @@ type Props = {
 }
 
 export default observer(function PlayerPanel({ player }: Props) {
-  const { name: playerName } = useContext(playerStore)
-  const { activePlayerId } = useContext(gameStore)
+  // const { name: playerName } = useContext(playerStore)
   const { id, name, score, cardAmount, gems, reservedCards, totalColorPoints } = player
 
   return (
-    <Wrapper key={id} isActive={id === activePlayerId} data-player-id={id}>
+    <Wrapper key={id} data-player-id={id}>
       <Div listLeft={4}>
         <span>{name}</span>
-        {playerName === name && <span>(you)</span>}
+        {/* {playerName === name && <span>(you)</span>} */}
         <span>({score}/15)</span>
       </Div>
 
-      <p>{player.id.split('-')[0]}</p>
+      {/* <p>{player.id.split('-')[0]}</p> */}
 
       <Div columnTop mTop={4}>
         {colors.map(color => (
-          <Div key={color} listLeft={4} itemsCenter data-indicator-color={color}>
+          <Div
+            key={color}
+            listLeft={4}
+            itemsCenter
+            data-indicator-color={color}
+            // @ts-ignore
+            style={{ opacity: totalColorPoints[color] === 0 ? 0.2 : 1 }}
+          >
             {color !== 'gold' && (
               <Div relative itemsCenter justifyCenter>
                 <span
@@ -80,13 +87,12 @@ export default observer(function PlayerPanel({ player }: Props) {
   )
 })
 
-const Wrapper = styled.div<{ isActive: boolean }>`
+const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   padding: 8px;
   border: 1px solid;
   border-radius: 8px;
-  ${sc('isActive')`box-shadow: 0 0 15px -3px green;`}
 `
 
 export const GemIndicator = styled.span<{ color: string; size?: number }>`

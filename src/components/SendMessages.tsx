@@ -24,6 +24,7 @@ export default observer(function SendMessages() {
   const { roomId, nobles, activePlayerId } = useContext(gameStore)
   const [messageToShow, setMessageToShow] = useState<Message | null>(null)
 
+  // TODO: maybe move it somewhere higher?
   const yourTurn = activePlayerId === player.id
 
   useEffect(() => {
@@ -35,6 +36,7 @@ export default observer(function SendMessages() {
     setMessageToShow(null)
   }
 
+  // eslint-disable-next-line
   function sendMessage(type: MessageTypes) {
     if (type === MessageTypes.ReservedCard) {
       socket.emitSendMessage(roomId, {
@@ -72,12 +74,12 @@ export default observer(function SendMessages() {
 
   return (
     <>
-      <Div listLeft padding={4} absolute bottom={10} right={10}>
+      {/* <Div listLeft padding={4} absolute bottom={10} right={10}>
         <button onClick={() => sendMessage(MessageTypes.ReservedCard)}>ReservedCard</button>
         <button onClick={() => sendMessage(MessageTypes.ReserveTable)}>ReserveTable</button>
         <button onClick={() => sendMessage(MessageTypes.ReserveStack)}>ReserveStack</button>
         <button onClick={() => sendMessage(MessageTypes.Noble)}>Noble</button>
-      </Div>
+      </Div> */}
 
       <Modal show={Boolean(messageToShow)} onClose={clearMessage}>
         <Div columnTop={40}>

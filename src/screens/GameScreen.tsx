@@ -25,9 +25,13 @@ export default observer(function GameScreen() {
         style={notYourTurn ? { opacity: 0.5, pointerEvents: 'none' } : undefined}
       >
         <Div listLeft>
-          <span>ID: {game.id.split('-')[0]}</span>
-          <span>ROUND: {game.currentRound}</span>
+          {/* <span>ID: {game.id.split('-')[0]}</span> */}
+          <span>Round: {game.currentRound}</span>
         </Div>
+
+        <h3>
+          {game.activePlayer.id === player.id ? 'Your turn' : `${game.activePlayer.name}'s turn`}
+        </h3>
 
         <NoblesRow />
 

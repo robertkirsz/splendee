@@ -28,18 +28,18 @@ export class Player implements PlayerInterface {
   name: PlayerInterface['name']
   isReady: PlayerInterface['isReady']
   gems: PlayerInterface['gems'] = {
-    // red: 0,
-    // green: 0,
-    // blue: 0,
-    // white: 0,
-    // black: 0,
-    // gold: 0,
-    red: 5,
-    green: 5,
-    blue: 5,
-    white: 5,
-    black: 5,
+    red: 0,
+    green: 0,
+    blue: 0,
+    white: 0,
+    black: 0,
     gold: 0,
+    // red: 5,
+    // green: 5,
+    // blue: 5,
+    // white: 5,
+    // black: 5,
+    // gold: 0,
   }
   chosenGems: GemColorsType[] = []
   // cards: PlayerInterface['cards'] = _.shuffle(getCards()).slice(0, 30)
@@ -152,6 +152,7 @@ class Game {
     black: 0,
     gold: 0,
   }
+  lastCardTakenId: CardInterface['id'] | null = null
 
   constructor() {
     makeAutoObservable(this)
@@ -274,27 +275,22 @@ class Game {
   }
 
   // TODO: change to cardId, like in earnNoble?
-  public buyCard = (card: CardInterface, player: PlayerInterface, animate = true) => {
+  public buyCard = (card: CardInterface, player: PlayerInterface, isSyncing = false) => {
     this.actionInProgress = true
+    this.lastCardTakenId = card.id
 
     const cardIsReservedByPlayer = card.isReservedBy === player.id
 
-    const animation = animate
-      ? flyCard(
-          // prettier-ignore
-          cardIsReservedByPlayer
+    return flyCard(
+      cardIsReservedByPlayer
         ? document.querySelector(`[data-player-id="${player.id}"] [data-card-id="${card.id}"]`)
         : document.querySelector(`#card-board [data-card-id="${card.id}"]`),
-          document.querySelector(
-            `[data-player-id="${player.id}"] [data-indicator-color="${card.color}"]`
-          )
-        )
-      : Promise.resolve()
-
-    return animation.then(() => {
+      document.querySelector(
+        `[data-player-id="${player.id}"] [data-indicator-color="${card.color}"]`
+      )
+    ).then(() => {
       runInAction(() => {
         let cardFound: CardInterface
-
         this.payCardCost(card, player)
 
         if (cardIsReservedByPlayer) {
@@ -307,22 +303,23 @@ class Game {
         player.cards.push(cardFound)
         this.actionInProgress = false
 
-        // socket.emitSyncCards(this.roomId, player.id, cardFound)
-        this.giveTurnToNextPlayer()
+        if (!isSyncing) {
+          if (cardIsReservedByPlayer) {
+            socket.emitSendMessage(this.roomId, {
+              type: MessageTypes.ReservedCard,
+              text: `${player.name} bought this previously reserved card`,
+              cardId: card.id,
+            })
+          } else {
+            socket.emitSendMessage(this.roomId, {
+              type: MessageTypes.Card,
+              text: `${player.name} bought this card`,
+              cardId: card.id,
+            })
+          }
 
-        console.log('🚀 ~ Game ~ runInAction ~ player.id', player.id)
-        if (cardIsReservedByPlayer) {
-          socket.emitSendMessage(this.roomId, {
-            type: MessageTypes.ReservedCard,
-            text: `${player.name} bought this previously reserved card`,
-            cardId: cardFound.id,
-          })
-        } else {
-          socket.emitSendMessage(this.roomId, {
-            type: MessageTypes.Card,
-            text: `${player.name} bought this card`,
-            cardId: cardFound.id,
-          })
+          socket.emitSyncCards(this.roomId, player.id, card)
+          this.giveTurnToNextPlayer()
         }
       })
     })
@@ -399,7 +396,7 @@ class Game {
   }
 
   private syncGems = (playerId: PlayerInterface['id'], gems: GemColorsType[]) => {
-    console.log('🚀 ~ Game ~ syncGems')
+    log('🚀 ~ Game ~ syncGems')
     const player = getById(this.players, playerId)
 
     gems.forEach(gem => {
@@ -410,10 +407,10 @@ class Game {
   }
 
   private syncCards = (playerId: PlayerInterface['id'], card: CardInterface) => {
-    console.log('🚀 ~ Game ~ syncCards')
+    log('🚀 ~ Game ~ syncCards')
     const player = getById(this.players, playerId)!
 
-    this.buyCard(card, player, false)
+    this.buyCard(card, player, true)
   }
 }
 

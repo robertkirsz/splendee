@@ -19,12 +19,14 @@ type Props = {
 export default observer(function Card({ card, isStatic, onTakeCard }: Props) {
   const { value, cost, color, isReservedBy } = card
   const player = useContext(playerStore)
-  const { buyCard, reserveCard, actionInProgress } = useContext(gameStore)
+  const { buyCard, reserveCard, actionInProgress, activePlayerId } = useContext(gameStore)
+
+  const notYourTurn = activePlayerId !== player.id
 
   function checkPurchasability() {
     let isPurchasable: boolean | undefined = undefined
 
-    if (isReservedBy && isReservedBy !== player.id) {
+    if (notYourTurn || (isReservedBy && isReservedBy !== player.id)) {
       return false
     }
 
@@ -51,6 +53,7 @@ export default observer(function Card({ card, isStatic, onTakeCard }: Props) {
   const isPurchasable = checkPurchasability()
   const colorCost: string[] = []
   const showButtonsOverlay = !actionInProgress && (isPurchasable || player.canReserveCards)
+  // eslint-disable-next-line
   const cardCanBeReserved = player.canReserveCards && !isReservedBy
 
   Object.entries(cost).forEach(([color, amount]) => {
@@ -65,9 +68,10 @@ export default observer(function Card({ card, isStatic, onTakeCard }: Props) {
   })
 
   function handleBuyCardButtonClick() {
-    buyCard(card, player).then(() => onTakeCard?.(card.id))
+    buyCard(card, player)
   }
 
+  // eslint-disable-next-line
   function handleReserveCardButtonClick() {
     reserveCard(card, player).then(() => onTakeCard?.(card.id))
   }
@@ -85,7 +89,7 @@ export default observer(function Card({ card, isStatic, onTakeCard }: Props) {
             <BuyCardButton colorCost={colorCost} onClick={handleBuyCardButtonClick} />
           )}
 
-          {cardCanBeReserved && <button onClick={handleReserveCardButtonClick}>RESERVE</button>}
+          {/* {cardCanBeReserved && <button onClick={handleReserveCardButtonClick}>RESERVE</button>} */}
         </ButtonsOverlay>
       )}
 
@@ -132,11 +136,14 @@ export const ButtonsOverlay = styled.div`
   right: 0;
   bottom: 0;
   left: 0;
-  background: rgba(255, 255, 255, 0.1);
 
   > button {
     margin: 8px;
     cursor: pointer;
+    background: white;
+    padding: 8px;
+    border-radius: 8px;
+    box-shadow: 0 8px 10px 0 rgba(0, 0, 0, 0.7);
   }
 `
 

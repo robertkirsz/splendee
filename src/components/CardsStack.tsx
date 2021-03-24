@@ -19,9 +19,11 @@ type Props = {
 
 export default observer(function CardsStack({ level, numberOfCards, topCard, onTakeCard }: Props) {
   const player = useContext(playerStore)
+  // eslint-disable-next-line
   const { activePlayer, reserveCard } = useContext(gameStore)
 
-  const showButtonsOverlay = typeof topCard !== 'undefined' && activePlayer.canReserveCards
+  // const showButtonsOverlay = typeof topCard !== 'undefined' && activePlayer.canReserveCards
+  const showButtonsOverlay = false
 
   function handleReserveCardButtonClick() {
     if (typeof topCard === 'undefined') return

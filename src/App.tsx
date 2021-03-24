@@ -41,7 +41,7 @@ export default observer(function App() {
         <IntroScreen rooms={data.rooms} />
       )}
 
-      <pre id="data-preview">{JSON.stringify(data, null, 1)}</pre>
+      {/* <pre id="data-preview">{JSON.stringify(data, null, 1)}</pre> */}
       <SendMessages />
     </>
   )
@@ -53,6 +53,9 @@ export default observer(function App() {
 // Break game when someone leaves
 // Allow to take fewer gems when not enough left
 // Hide card button overlays when choosing gems (maybe disable whole board)
+// Gem animations when syncing
+// Check if import { toJS } from 'mobx' is really needed
+// Check for eslint-disable
 
 /* LATER */
 // Limit gem amount to 10
