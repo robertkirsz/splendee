@@ -1,6 +1,5 @@
 import { useContext } from 'react'
 import { observer } from 'mobx-react-lite'
-import Div from 'styled-kit/Div'
 import styled from 'styled-components'
 
 import type { CardInterface } from 'types'
@@ -8,6 +7,7 @@ import type { CardInterface } from 'types'
 import { gameStore, playerStore } from 'store'
 import { getCardStackColor } from 'utils'
 
+import Div from 'components/Div'
 import { ButtonsOverlay } from 'components/Card'
 
 type Props = {

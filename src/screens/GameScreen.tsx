@@ -19,11 +19,7 @@ export default observer(function GameScreen() {
     <Div justifyBetween itemsStart>
       <PlayersSection />
 
-      <Div
-        columnTop
-        itemsCenter
-        style={notYourTurn ? { opacity: 0.5, pointerEvents: 'none' } : undefined}
-      >
+      <Div columnTop itemsCenter opacity={notYourTurn ? 0.5 : 1} noPointerEvents={notYourTurn}>
         <Div listLeft>
           {/* <span>ID: {game.id.split('-')[0]}</span> */}
           <span>Round: {game.currentRound}</span>

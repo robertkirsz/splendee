@@ -1,12 +1,13 @@
 // import { useContext } from 'react'
 import { observer } from 'mobx-react-lite'
 import styled from 'styled-components/macro'
-import Div from 'styled-kit/Div'
 
 import type { PlayerInterface } from 'types'
+
 // import { playerStore } from 'store'
 import { getGemColor } from 'utils'
 
+import Div from 'components/Div'
 import Card from 'components/Card'
 
 // TODO: take from an enum from types.ts

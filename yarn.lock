@@ -10623,11 +10623,6 @@ styled-components@5.2.1:
     shallowequal "^1.1.0"
     supports-color "^5.5.0"
 
-styled-kit@1.0.5:
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/styled-kit/-/styled-kit-1.0.5.tgz#ff70bcf59998ca31636cb85e33a5b32d81680f39"
-  integrity sha512-HSkEYdb1nhxLyMhgYd5OJyjJriB+6tdYpb/UF1uERS4jN4kMUmkJIeO891zq4LKNxrLU6bG4TdEZ/KSrrOnAQQ==
-
 stylehacks@^4.0.0:
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/stylehacks/-/stylehacks-4.0.3.tgz#6718fcaf4d1e07d8a1318690881e8d96726a71d5"

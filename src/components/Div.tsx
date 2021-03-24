@@ -118,6 +118,7 @@ const stuff = {
   ),
   // Other
   overflow: (value: string) => `overflow: ${value};` /* Tested */,
+  // TODO: I'd like to be able to do opacity={foo && 0.5} (accept booleans)
   opacity: (value: number) => `opacity: ${value};`,
   // Helpers
   layer: layerStyles,

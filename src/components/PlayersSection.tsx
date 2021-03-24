@@ -1,9 +1,9 @@
 import { useContext } from 'react'
 import { observer } from 'mobx-react-lite'
-import Div from 'styled-kit/Div'
 
 import { gameStore, playerStore } from 'store'
 
+import Div from 'components/Div'
 import PlayerPanel from 'components/PlayerPanel'
 
 export default observer(function PlayersSection() {

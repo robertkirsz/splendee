@@ -1,13 +1,13 @@
 import { useContext } from 'react'
 import { observer } from 'mobx-react-lite'
 import styled from 'styled-components'
-import Div from 'styled-kit/Div'
 
 import type { CardInterface } from 'types'
 
 import { getCardColor, sc } from 'utils'
 import { gameStore, playerStore } from 'store'
 
+import Div from 'components/Div'
 import { GemIndicator } from 'components/PlayerPanel'
 
 type Props = {
@@ -21,12 +21,15 @@ export default observer(function Card({ card, isStatic, onTakeCard }: Props) {
   const player = useContext(playerStore)
   const { buyCard, reserveCard, actionInProgress, activePlayerId } = useContext(gameStore)
 
+  // TODO: move to computed property?
   const notYourTurn = activePlayerId !== player.id
+  // TODO: move to computed property?
+  const chosenSomeGemsAlready = player.chosenGems.length > 0
 
   function checkPurchasability() {
     let isPurchasable: boolean | undefined = undefined
 
-    if (notYourTurn || (isReservedBy && isReservedBy !== player.id)) {
+    if (notYourTurn || chosenSomeGemsAlready || (isReservedBy && isReservedBy !== player.id)) {
       return false
     }
 

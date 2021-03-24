@@ -1,14 +1,15 @@
 import { useContext, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { observer } from 'mobx-react-lite'
-import Div from 'styled-kit/Div'
 
 import type { CardInterface } from 'types'
-import { gameStore } from 'store'
 
+import { getById } from 'utils'
+import { gameStore, playerStore } from 'store'
+
+import Div from 'components/Div'
 import CardsStack from 'components/CardsStack'
 import Card from 'components/Card'
-import { getById } from 'utils'
 
 export default observer(function CardsBoard() {
   return (
@@ -21,6 +22,7 @@ export default observer(function CardsBoard() {
 })
 
 const CardsRow = observer(function CardsRow({ level }: { level: CardInterface['level'] }) {
+  const { chosenGems } = useContext(playerStore)
   const { cards, lastCardTakenId } = useContext(gameStore)
 
   const currentLevelCards = cards.filter(card => card.level === level)
@@ -48,9 +50,17 @@ const CardsRow = observer(function CardsRow({ level }: { level: CardInterface['l
   }
 
   const numberOfCards = currentLevelCards.length - cardsToDisplay.filter(card => card).length
+  // TODO: move to computed property?
+  const chosenSomeGemsAlready = chosenGems.length > 0
 
   return (
-    <Div key={level} itemsCenter listLeft>
+    <Div
+      key={level}
+      itemsCenter
+      listLeft
+      opacity={chosenSomeGemsAlready ? 0.5 : 1}
+      noPointerEvents={chosenSomeGemsAlready}
+    >
       <CardHolder>
         {numberOfCards > 0 && (
           <CardsStack

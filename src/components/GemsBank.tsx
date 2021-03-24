@@ -2,7 +2,6 @@ import { useContext, useEffect } from 'react'
 import { toJS } from 'mobx'
 import { observer } from 'mobx-react-lite'
 import styled, { css } from 'styled-components/macro'
-import Div from 'styled-kit/Div'
 import Color from 'color'
 
 import type { GemColorsType } from 'types'
@@ -11,6 +10,8 @@ import { MessageTypes } from 'types'
 import { playerStore, gameStore } from 'store'
 import { getGemColor, sc } from 'utils'
 import socket from 'socket'
+
+import Div from 'components/Div'
 
 const Label = styled.span`
   height: 20px;
@@ -93,7 +94,6 @@ export default observer(function GemsBank() {
         &:hover ${Label} {
           opacity: 1;
           transform: translate(0, -50%);
-          transition-delay: 1s;
         }
       `}
     >

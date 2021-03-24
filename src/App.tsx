@@ -56,6 +56,7 @@ export default observer(function App() {
 // Gem animations when syncing
 // Check if import { toJS } from 'mobx' is really needed
 // Check for eslint-disable
+// Don't show green shadow on card when flying
 
 /* LATER */
 // Limit gem amount to 10
