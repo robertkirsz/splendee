@@ -36,6 +36,7 @@ export default function Modal({ show, onClose, children, ...props }: Props) {
           radius={4}
           color="var(--near-black)"
           overflow="auto"
+          shadow="box-shadow: rgba(46, 41, 51, 0.08) 0px 7px 19px 11px, rgba(71, 63, 79, 0.08) 0px 2px 4px;"
           {...props}
         >
           {children}
@@ -51,7 +52,8 @@ const Background = styled.div`
   justify-content: center;
   align-items: center;
   padding: 8px;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(72, 67, 79, 0.5);
+  backdrop-filter: blur(10px);
   position: fixed;
   top: 0;
   right: 0;

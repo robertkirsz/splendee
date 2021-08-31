@@ -118,6 +118,7 @@ const stuff = {
   ),
   // Other
   overflow: (value: string) => `overflow: ${value};` /* Tested */,
+  shadow: (value: string) => `box-shadow: ${value};`,
   // TODO: I'd like to be able to do opacity={foo && 0.5} (accept booleans)
   opacity: (value: number) => `opacity: ${value};`,
   // Helpers
@@ -341,6 +342,7 @@ export type DivProps = {
   columnBottom?: boolean | number | string
   // Other
   overflow?: string
+  shadow?: string
   opacity?: number
   // Helpers
   layer?: boolean
